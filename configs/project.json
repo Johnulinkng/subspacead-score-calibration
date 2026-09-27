@@ -17,6 +17,23 @@
     "official_readme_example": { "image_size": 256, "batch_size": 8, "epochs": 700, "learning_rate": 0.0001 },
     "formal_training_recipe_frozen": false
   },
+  "comparators": {
+    "protocol": "docs/comparator_protocol.md",
+    "source_manifest": "manifests/comparator_sources.json",
+    "methods": [
+      {
+        "name": "PatchCore",
+        "role": "feature_memory_strong_control",
+        "commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad"
+      },
+      {
+        "name": "RD4AD",
+        "role": "representation_distillation_strong_control",
+        "commit": "6554076872c65f8784f6ece8cfb39ce77e1aee12"
+      }
+    ],
+    "runtime_validated": false
+  },
   "paths": {
     "python": ".venv/Scripts/python.exe",
     "mvtec": "data/mvtec_ad",

@@ -10,7 +10,7 @@
 - 工程参考：Anomalib。库内实现与作者实现必须逐项核对，暂不替代官方基线。
 - 条件备选：RD4AD；较强参照：PatchCore。不得因为测试成绩更低而更换基线。
 - 正式数据范围：MVTec AD 全 15 类和 VisA 全 12 类；DRAEM 的训练异常源为 DTD 纹理。目标是形成达到 SCI 三区研究完整度的双数据集证据，不能将其表述为录用保证。
-- 可检查的论文级实验门槛见 `docs/research_acceptance.md`；主基线采用 DRAEM 作者实现，同时保留更强方法作公平参照，避免只与较老基线比较。
+- 可检查的论文级实验门槛见 `docs/research_acceptance.md`；主基线采用 DRAEM 作者实现，同时冻结 PatchCore 与 RD4AD 为两类更强参照，避免只与较老基线比较。具体公平协议见 `docs/comparator_protocol.md`。
 - 增加第三个数据集前，先说明要解决的审稿风险、预计成本和是否影响现有实验矩阵。
 
 ## 已有文件
