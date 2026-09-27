@@ -1,0 +1,9 @@
+.venv/
+.runtime/
+.cache/
+tmp/
+data/
+runs/
+artifacts/weights/
+__pycache__/
+.pytest_cache/

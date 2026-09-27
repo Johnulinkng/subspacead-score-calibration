@@ -1,0 +1,9 @@
+{
+  "tag": "0.12.19",
+  "asset": "uv-x86_64-pc-windows-msvc.zip",
+  "url": "https://github.com/astral-sh/uv/releases/download/0.12.19/uv-x86_64-pc-windows-msvc.zip",
+  "digest": "sha256:6dbb02d79e419522f1c500f0adb1cddcff0cda7d59b0d66ea7f5e3b4a1b2f5f0",
+  "size": 17955780,
+  "published_at": "2026-09-25T00:33:02Z",
+  "fetched_at_utc": "2026-09-27T06:56:08.8415748Z"
+}

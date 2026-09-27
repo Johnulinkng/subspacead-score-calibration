@@ -1,0 +1,50 @@
+[
+  {
+    "repository": "VitjanZ/DRAEM",
+    "url": "https://github.com/VitjanZ/DRAEM",
+    "stars": 294,
+    "forks": 71,
+    "open_issues_and_prs": 18,
+    "pushed_at": "2023-01-02T08:40:33Z",
+    "archived": false,
+    "license_spdx": "MIT",
+    "default_branch": "main",
+    "fetched_at_utc": "2026-09-27T06:32:46.1830516Z"
+  },
+  {
+    "repository": "hq-deng/RD4AD",
+    "url": "https://github.com/hq-deng/RD4AD",
+    "stars": 254,
+    "forks": 37,
+    "open_issues_and_prs": 21,
+    "pushed_at": "2023-06-23T07:02:39Z",
+    "archived": false,
+    "license_spdx": "MIT",
+    "default_branch": "main",
+    "fetched_at_utc": "2026-09-27T06:32:48.4273919Z"
+  },
+  {
+    "repository": "open-edge-platform/anomalib",
+    "url": "https://github.com/open-edge-platform/anomalib",
+    "stars": 6201,
+    "forks": 995,
+    "open_issues_and_prs": 81,
+    "pushed_at": "2026-09-26T03:16:45Z",
+    "archived": false,
+    "license_spdx": "Apache-2.0",
+    "default_branch": "main",
+    "fetched_at_utc": "2026-09-27T06:32:51.1573895Z"
+  },
+  {
+    "repository": "amazon-science/patchcore-inspection",
+    "url": "https://github.com/amazon-science/patchcore-inspection",
+    "stars": 1401,
+    "forks": 257,
+    "open_issues_and_prs": 84,
+    "pushed_at": "2024-07-10T01:35:09Z",
+    "archived": false,
+    "license_spdx": "Apache-2.0",
+    "default_branch": "main",
+    "fetched_at_utc": "2026-09-27T06:32:53.1453845Z"
+  }
+]

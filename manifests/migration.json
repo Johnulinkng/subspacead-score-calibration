@@ -1,0 +1,9 @@
+{
+  "source": "D:\\3k",
+  "destination": "E:\\3k",
+  "status": "working_copy_ready_source_residue_retained",
+  "recovery_files_sha256_verified": 2,
+  "source_files_retained": 2,
+  "source_cleanup": "automatic approval policy blocked deletion; preserved original residue",
+  "completed_at_utc": "2026-09-27T06:34:21.6309739Z"
+}

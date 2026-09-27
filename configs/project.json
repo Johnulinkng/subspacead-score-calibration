@@ -1,0 +1,66 @@
+{
+  "schema_version": 1,
+  "status": "environment_and_visa_verified_mvtec_pending",
+  "project_root": "E:/3k",
+  "research_target": {
+    "level": "SCI_Q3_experimental_completeness",
+    "required_datasets": ["MVTec AD", "VisA"],
+    "additional_dataset_policy": "Explain the scientific need and cost to the user before adding another dataset.",
+    "acceptance_guaranteed": false
+  },
+  "baseline": {
+    "name": "DRAEM",
+    "implementation": "author_official",
+    "repository": "https://github.com/VitjanZ/DRAEM",
+    "commit": "2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef",
+    "source_directory": "third_party/DRAEM",
+    "official_readme_example": { "image_size": 256, "batch_size": 8, "epochs": 700, "learning_rate": 0.0001 },
+    "formal_training_recipe_frozen": false
+  },
+  "paths": {
+    "python": ".venv/Scripts/python.exe",
+    "mvtec": "data/mvtec_ad",
+    "visa": "data/visa/1cls",
+    "dtd": "data/dtd/images",
+    "weights": "artifacts/weights",
+    "runs": "runs"
+  },
+  "datasets": {
+    "mvtec_ad": {
+      "categories": ["bottle", "cable", "capsule", "carpet", "grid", "hazelnut", "leather", "metal_nut", "pill", "screw", "tile", "toothbrush", "transistor", "wood", "zipper"],
+      "downloaded": false,
+      "manifest_verified": false,
+      "development_split_frozen": false
+    },
+    "visa": {
+      "categories": ["candle", "capsules", "cashew", "chewinggum", "fryum", "macaroni1", "macaroni2", "pcb1", "pcb2", "pcb3", "pcb4", "pipe_fryum"],
+      "downloaded": true,
+      "manifest_verified": true,
+      "one_class_split_prepared": true,
+      "development_split_frozen": false
+    }
+  },
+  "anomaly_source": {
+    "name": "DTD",
+    "version": "R1.0.1",
+    "downloaded": true,
+    "archive_sha256": "e42855a52a4950a3b59612834602aa253914755c95b0cff9ead6d07395f8e205",
+    "archive_integrity_test": "passed",
+    "image_count": 5640,
+    "category_count": 47,
+    "manifest": "manifests/dtd_r1.0.1.json"
+  },
+  "evaluation": {
+    "primary_metric_candidate": "AUPRO@0.30",
+    "additional_metrics": ["P-AUROC", "I-AUROC", "P-AP"],
+    "minimum_seeds": 3,
+    "seeds": null,
+    "acceptance_gain_pp": null,
+    "permitted_regressions_pp": null,
+    "implementation_validated": true,
+    "formal_protocol_frozen": false
+  },
+  "improvement": { "design": null, "performance_claim": null },
+  "minimum_preparation_free_gib": 40,
+  "minimum_preparation_free_gib_note": "Conservative local preparation reserve, not a measured total training storage estimate."
+}

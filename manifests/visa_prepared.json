@@ -1,0 +1,90 @@
+{
+  "schema_version": 1,
+  "dataset": "VisA",
+  "protocol": "official_1cls",
+  "generated_at_utc": "2026-09-27T07:28:59.998511+00:00",
+  "split_file": "E:\\3k\\third_party\\spot-diff\\split_csv\\1cls.csv",
+  "split_sha256": "a48557e6033318cb90556f706196bc9d247a776a23ea51aecee5a80dd0332995",
+  "split": {
+    "row_count": 10821,
+    "category_count": 12,
+    "normal_count": 9621,
+    "anomaly_count": 1200,
+    "partition_counts": {
+      "candle": {
+        "train_normal": 900,
+        "test_normal": 100,
+        "test_anomaly": 100
+      },
+      "capsules": {
+        "train_normal": 542,
+        "test_normal": 60,
+        "test_anomaly": 100
+      },
+      "cashew": {
+        "train_normal": 450,
+        "test_normal": 50,
+        "test_anomaly": 100
+      },
+      "chewinggum": {
+        "train_normal": 453,
+        "test_normal": 50,
+        "test_anomaly": 100
+      },
+      "fryum": {
+        "train_normal": 450,
+        "test_normal": 50,
+        "test_anomaly": 100
+      },
+      "macaroni1": {
+        "train_normal": 900,
+        "test_normal": 100,
+        "test_anomaly": 100
+      },
+      "macaroni2": {
+        "train_normal": 900,
+        "test_normal": 100,
+        "test_anomaly": 100
+      },
+      "pcb1": {
+        "train_normal": 904,
+        "test_normal": 100,
+        "test_anomaly": 100
+      },
+      "pcb2": {
+        "train_normal": 901,
+        "test_normal": 100,
+        "test_anomaly": 100
+      },
+      "pcb3": {
+        "train_normal": 905,
+        "test_normal": 101,
+        "test_anomaly": 100
+      },
+      "pcb4": {
+        "train_normal": 904,
+        "test_normal": 101,
+        "test_anomaly": 100
+      },
+      "pipe_fryum": {
+        "train_normal": 450,
+        "test_normal": 50,
+        "test_anomaly": 100
+      }
+    }
+  },
+  "raw": {
+    "root": "E:\\3k\\data\\visa\\raw\\VisA",
+    "source_image_count": 10821,
+    "source_mask_count": 1200,
+    "all_files_present_and_nonempty": true
+  },
+  "prepared": {
+    "root": "E:\\3k\\data\\visa\\1cls",
+    "image_count": 10821,
+    "mask_count": 1200,
+    "category_count": 12,
+    "exact_split_match": true,
+    "binary_nonempty_masks": true
+  }
+}

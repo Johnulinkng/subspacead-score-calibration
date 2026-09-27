@@ -1,0 +1,6 @@
+[submodule "third_party/DRAEM"]
+	path = third_party/DRAEM
+	url = https://github.com/VitjanZ/DRAEM.git
+[submodule "third_party/spot-diff"]
+	path = third_party/spot-diff
+	url = https://github.com/amazon-science/spot-diff.git

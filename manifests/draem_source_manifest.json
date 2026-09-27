@@ -1,0 +1,68 @@
+{
+  "repository": "https://github.com/VitjanZ/DRAEM",
+  "commit": "2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef",
+  "worktree_clean": true,
+  "source_files": [
+    {
+      "path": "LICENSE",
+      "bytes": 1085,
+      "sha256": "3E816DDAB5DEBB4A55ED3D5195E7167E1591F3E6FD8D03C89359E90DA63D7E3A"
+    },
+    {
+      "path": "README.md",
+      "bytes": 2790,
+      "sha256": "B6D615ECB779A9E8DC48FD00164252E9407E9FF809BD29EF6F2CA556794B7860"
+    },
+    {
+      "path": "data_loader.py",
+      "bytes": 7143,
+      "sha256": "D1A12BEFBEC4A96E021749E3610DFC9628023F2BC720A9EFAD10793D96899F91"
+    },
+    {
+      "path": "loss.py",
+      "bytes": 6354,
+      "sha256": "ACD0189376902BDC7E18ACEAC3BD73C2D78028FD3D327EC6EE8A04C95E718352"
+    },
+    {
+      "path": "model_unet.py",
+      "bytes": 14299,
+      "sha256": "377D3852C6D9984780EFAFEF448C5DC163BC4D22F7F8F25564A3F6C52EDB3B4D"
+    },
+    {
+      "path": "perlin.py",
+      "bytes": 4548,
+      "sha256": "E508007371D46CBD1E3C909D9577F138223ED0DB437E1C70A40139736AD26A1A"
+    },
+    {
+      "path": "requirements.txt",
+      "bytes": 2660,
+      "sha256": "5D229821C38BCEE4396FCFB34140B994E00F51CDCAFA0995D869D5D428DFEADC"
+    },
+    {
+      "path": "scripts/download_dataset.sh",
+      "bytes": 499,
+      "sha256": "022183F3C5C5129E2BD627D52D915855EFB1D7EEDB8EF2E00042191C95E2F406"
+    },
+    {
+      "path": "scripts/download_pretrained.sh",
+      "bytes": 176,
+      "sha256": "C72C4513182BA9997109F0F12EBF1AEDA36CB4F321BCA457B5D3209D8B4CE894"
+    },
+    {
+      "path": "tensorboard_visualizer.py",
+      "bytes": 727,
+      "sha256": "9C991CFE18B3B999227CA3D1C456CD25AD052A30F965806CAAC76820E89C4230"
+    },
+    {
+      "path": "test_DRAEM.py",
+      "bytes": 7283,
+      "sha256": "EA1E83F14DDC7B102FEE04BEB0C04549F0E1B10A54483C9ED75C692D388C2775"
+    },
+    {
+      "path": "train_DRAEM.py",
+      "bytes": 6444,
+      "sha256": "BFD92BE46C964B3F877651E4F5B7A7BAFCD545626D8727579FD2ED56EE78FC2D"
+    }
+  ],
+  "created_at_utc": "2026-09-27T06:37:49.0744139Z"
+}

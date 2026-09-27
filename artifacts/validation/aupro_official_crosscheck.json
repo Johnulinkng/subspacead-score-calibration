@@ -1,0 +1,285 @@
+{
+  "schema_version": 1,
+  "status": "pass",
+  "official_source": {
+    "page": "https://www.mvtec.com/research-teaching/datasets/mvtec-ad",
+    "archive_url": "https://www.mydrive.ch/shares/150450/bb24b914a28ddd2b5e35bd53d23177cd/download/439517473-1665675012/mvtec_ad_evaluation.tar.xz",
+    "archive_path": "data/archives/mvtec_ad_evaluation.tar.xz",
+    "archive_size_bytes": 11056,
+    "archive_sha256": "dfcda7d67eee25316ec6ae5042c0b1684a4cabf33b2346be351e2ce36013f220",
+    "license": "BSD-3-Clause; see extracted LICENSE.txt",
+    "pro_curve_util_sha256": "80feff3b5c96023a93ec3a28494583c7732f639547f572982952bb6d0469a29d",
+    "generic_util_sha256": "96ed3135f23f49a75a767891dd1e3c975973590af31cad0cc39f655f6d76fef2"
+  },
+  "protocol": {
+    "connectivity": 8,
+    "region_weighting": "equal connected-component weight",
+    "background": "all non-anomalous pixels, including normal images",
+    "tie_handling": "one curve point after the complete tied-score group",
+    "integration": "linear interpolation at limit, trapezoidal area / limit"
+  },
+  "comparison": {
+    "fixed_case_count": 7,
+    "fixed_comparison_count": 35,
+    "random_seed": 20260927,
+    "random_case_count": 500,
+    "random_comparison_count": 2500,
+    "fpr_limits": [
+      0.01,
+      0.05,
+      0.1,
+      0.3,
+      1.0
+    ],
+    "tolerance": 1e-06,
+    "max_absolute_difference": 3.193105974075294e-08,
+    "failures": [],
+    "fixed_results": [
+      {
+        "name": "perfect_with_normal_image",
+        "fpr_limit": 0.01,
+        "official": 1.0,
+        "project": 1.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "perfect_with_normal_image",
+        "fpr_limit": 0.05,
+        "official": 1.0,
+        "project": 1.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "perfect_with_normal_image",
+        "fpr_limit": 0.1,
+        "official": 1.0,
+        "project": 1.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "perfect_with_normal_image",
+        "fpr_limit": 0.3,
+        "official": 1.0,
+        "project": 1.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "perfect_with_normal_image",
+        "fpr_limit": 1.0,
+        "official": 1.0,
+        "project": 1.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "reverse_ranking",
+        "fpr_limit": 0.01,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "reverse_ranking",
+        "fpr_limit": 0.05,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "reverse_ranking",
+        "fpr_limit": 0.1,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "reverse_ranking",
+        "fpr_limit": 0.3,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "reverse_ranking",
+        "fpr_limit": 1.0,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "all_scores_tied",
+        "fpr_limit": 0.01,
+        "official": 0.005,
+        "project": 0.005,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "all_scores_tied",
+        "fpr_limit": 0.05,
+        "official": 0.025000000000000005,
+        "project": 0.025000000000000005,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "all_scores_tied",
+        "fpr_limit": 0.1,
+        "official": 0.05000000000000001,
+        "project": 0.05000000000000001,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "all_scores_tied",
+        "fpr_limit": 0.3,
+        "official": 0.15,
+        "project": 0.15,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "all_scores_tied",
+        "fpr_limit": 1.0,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "unequal_region_sizes",
+        "fpr_limit": 0.01,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "unequal_region_sizes",
+        "fpr_limit": 0.05,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "unequal_region_sizes",
+        "fpr_limit": 0.1,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "unequal_region_sizes",
+        "fpr_limit": 0.3,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "unequal_region_sizes",
+        "fpr_limit": 1.0,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "eight_connected_diagonal",
+        "fpr_limit": 0.01,
+        "official": 0.75,
+        "project": 0.75,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "eight_connected_diagonal",
+        "fpr_limit": 0.05,
+        "official": 0.7500000000000001,
+        "project": 0.7500000000000001,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "eight_connected_diagonal",
+        "fpr_limit": 0.1,
+        "official": 0.7500000000000001,
+        "project": 0.7500000000000001,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "eight_connected_diagonal",
+        "fpr_limit": 0.3,
+        "official": 0.75,
+        "project": 0.75,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "eight_connected_diagonal",
+        "fpr_limit": 1.0,
+        "official": 0.75,
+        "project": 0.75,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "normal_image_background",
+        "fpr_limit": 0.01,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "normal_image_background",
+        "fpr_limit": 0.05,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "normal_image_background",
+        "fpr_limit": 0.1,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "normal_image_background",
+        "fpr_limit": 0.3,
+        "official": 0.0,
+        "project": 0.0,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "normal_image_background",
+        "fpr_limit": 1.0,
+        "official": 0.48275864124298096,
+        "project": 0.48275862068965514,
+        "absolute_difference": 2.0553325819072654e-08
+      },
+      {
+        "name": "exact_fpr_boundary_and_ties",
+        "fpr_limit": 0.01,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "exact_fpr_boundary_and_ties",
+        "fpr_limit": 0.05,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "exact_fpr_boundary_and_ties",
+        "fpr_limit": 0.1,
+        "official": 0.5,
+        "project": 0.5,
+        "absolute_difference": 0.0
+      },
+      {
+        "name": "exact_fpr_boundary_and_ties",
+        "fpr_limit": 0.3,
+        "official": 0.5416666635622581,
+        "project": 0.5416666666666666,
+        "absolute_difference": 3.1044085080367267e-09
+      },
+      {
+        "name": "exact_fpr_boundary_and_ties",
+        "fpr_limit": 1.0,
+        "official": 0.8499999977648258,
+        "project": 0.85,
+        "absolute_difference": 2.235174156872688e-09
+      }
+    ]
+  }
+}

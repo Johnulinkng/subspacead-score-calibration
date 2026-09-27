@@ -1,0 +1,15 @@
+{
+  "name": "Describable Textures Dataset",
+  "version": "R1.0.1",
+  "source_url": "https://www.robots.ox.ac.uk/~vgg/data/dtd/download/dtd-r1.0.1.tar.gz",
+  "resolved_host": "thor.robots.ox.ac.uk",
+  "archive_path": "data/archives/dtd-r1.0.1.tar.gz",
+  "archive_bytes": 625239812,
+  "archive_sha256": "e42855a52a4950a3b59612834602aa253914755c95b0cff9ead6d07395f8e205",
+  "archive_integrity_test": "passed",
+  "extracted_root": "data/dtd",
+  "extracted_jpg_count": 5640,
+  "category_count": 47,
+  "verified_at_utc": "2026-09-27T07:04:37.5363520Z",
+  "usage_boundary": "Official page states research use; no standard open-source or Creative Commons license was identified. Do not redistribute the archive."
+}

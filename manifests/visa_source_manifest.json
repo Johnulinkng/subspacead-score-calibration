@@ -1,0 +1,58 @@
+{
+  "schema_version": 1,
+  "dataset": "VisA",
+  "official_repository": "https://github.com/amazon-science/spot-diff.git",
+  "source_directory": "third_party/spot-diff",
+  "branch_at_clone": "main",
+  "commit": "2a692ab575001cbde74d402d897a7286086c6199",
+  "commit_date": "2022-09-22T12:54:22-07:00",
+  "git_tree": "c32a640d2fd70767b30b0342e0aa89c5f8fa2505",
+  "checkout_clean_at_audit": true,
+  "dataset_download_url": "https://amazon-visual-anomaly.s3.us-west-2.amazonaws.com/VisA_20220922.tar",
+  "licenses": {
+    "code": {
+      "spdx": "Apache-2.0",
+      "path": "third_party/spot-diff/LICENSE",
+      "sha256": "3ddf9be5c28fe27dad143a5dc76eea25222ad1dd68934a047064e56ed2fa40c5"
+    },
+    "dataset": {
+      "spdx": "CC-BY-4.0",
+      "path": "third_party/spot-diff/LICENSE-DATASET",
+      "sha256": "cbd5af318286b74656f145dff5091907cc23d6d8c9ad09e0291ec2497792ba41"
+    },
+    "notice": {
+      "path": "third_party/spot-diff/NOTICE",
+      "sha256": "af863e8f43a100363e998a03617cf2a621d44abf7f4d45089a468842842ccb5c"
+    }
+  },
+  "official_one_class_protocol": {
+    "split_file": "third_party/spot-diff/split_csv/1cls.csv",
+    "split_sha256": "a48557e6033318cb90556f706196bc9d247a776a23ea51aecee5a80dd0332995",
+    "preparation_script": "third_party/spot-diff/utils/prepare_data.py",
+    "preparation_script_sha256": "6e70f97b16b589dc3cf6eab55e104bf13bbd7949909dc2279ebad5cb9f4c1c40",
+    "row_count": 10821,
+    "normal_count": 9621,
+    "anomaly_count": 1200,
+    "category_count": 12,
+    "partition_counts": {
+      "candle": {"train_normal": 900, "test_normal": 100, "test_anomaly": 100},
+      "capsules": {"train_normal": 542, "test_normal": 60, "test_anomaly": 100},
+      "cashew": {"train_normal": 450, "test_normal": 50, "test_anomaly": 100},
+      "chewinggum": {"train_normal": 453, "test_normal": 50, "test_anomaly": 100},
+      "fryum": {"train_normal": 450, "test_normal": 50, "test_anomaly": 100},
+      "macaroni1": {"train_normal": 900, "test_normal": 100, "test_anomaly": 100},
+      "macaroni2": {"train_normal": 900, "test_normal": 100, "test_anomaly": 100},
+      "pcb1": {"train_normal": 904, "test_normal": 100, "test_anomaly": 100},
+      "pcb2": {"train_normal": 901, "test_normal": 100, "test_anomaly": 100},
+      "pcb3": {"train_normal": 905, "test_normal": 101, "test_anomaly": 100},
+      "pcb4": {"train_normal": 904, "test_normal": 101, "test_anomaly": 100},
+      "pipe_fryum": {"train_normal": 450, "test_normal": 50, "test_anomaly": 100}
+    }
+  },
+  "local_adapter": {
+    "module": "src/industrial_anomaly_lab/visa.py",
+    "audit_command": ".venv/Scripts/python.exe scripts/audit_visa.py",
+    "preparation_wrapper": "scripts/Prepare-VisA.ps1",
+    "vendor_modified": false
+  }
+}
