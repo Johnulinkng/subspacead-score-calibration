@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "launcher": "scripts/Invoke-MonitoredExperiment.ps1",
+  "launcher_sha256": "d4ebd904264a7d2faf9f0db2301c1428bcbbb8415939b8fc3f3b9e0ebd1bc306",
+  "started_at_utc": "2026-10-07T15:28:11.4233753Z",
+  "finished_at_utc": "2026-10-07T15:28:13.2587053Z",
+  "duration_seconds": 1.835,
+  "status": "preflight_rejected",
+  "failure_kind": "preflight_not_ready",
+  "failure_message": "Fixed training preflight rejected the launch.",
+  "mode": "experiment",
+  "run_purpose": "debug_limited",
+  "claim_eligible": null,
+  "claim_eligibility_reason": "Not adjudicated by the resource launcher; use the formal provenance and aggregation gates.",
+  "project_root": "E:\\3k",
+  "output_directory": "E:\\3k\\runs\\monitored\\draem-s0-gpu-contract-probe-20261007T1530",
+  "command_record": "E:\\3k\\runs\\monitored\\draem-s0-gpu-contract-probe-20261007T1530\\command.json",
+  "preflight": {
+    "required": true,
+    "fixed_script": "E:\\3k\\scripts\\Test-TrainingPreflight.ps1",
+    "report": "E:\\3k\\runs\\monitored\\draem-s0-gpu-contract-probe-20261007T1530\\preflight\\preflight_20261007T152813031Z.json",
+    "ready": false,
+    "exit_code": 2
+  },
+  "lock": {
+    "path": "E:\\3k\\runs\\.training.lock.json",
+    "token": "c19c463aa8844eb6a714c5d00b57c5b5",
+    "created": false,
+    "released": false,
+    "release_status": "not_created"
+  },
+  "child": {
+    "pid": null,
+    "executable": null,
+    "process_launcher_pid": null,
+    "exit_code": null,
+    "still_running_at_launcher_exit": false
+  },
+  "monitoring": {
+    "sample_interval_seconds": 5,
+    "sample_count": 0,
+    "samples_jsonl": "E:\\3k\\runs\\monitored\\draem-s0-gpu-contract-probe-20261007T1530\\resource_samples.jsonl"
+  },
+  "stdout_log": "E:\\3k\\runs\\monitored\\draem-s0-gpu-contract-probe-20261007T1530\\stdout.log",
+  "stderr_log": "E:\\3k\\runs\\monitored\\draem-s0-gpu-contract-probe-20261007T1530\\stderr.log",
+  "evidence_sha256": {
+    "command": "42fa4dff56bc12d8b2d2253d52bea761f144af9584d80db9e580ad7a9fef333f",
+    "resource_samples_jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "preflight_report": "53b986485f1d8b5fd1dc191dd479b7d7c83d39dfc2ab0c7e1abcfd2bb811116f",
+    "mutable_child_logs_omitted": false
+  },
+  "launcher_exit_code": 2,
+  "interrupted": false
+}

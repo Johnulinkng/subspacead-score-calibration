@@ -1,0 +1,166 @@
+{
+  "claim_eligible": false,
+  "created_at_utc": "2026-09-27T09:26:00.919920+00:00",
+  "evaluation_scope": "synthetic-development-only",
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "input_evidence": {
+    "category_manifest": {
+      "path": "E:/3k/manifests/development/visa_v1/visa_candle_split.jsonl",
+      "selected_dev_rows": 180,
+      "selected_dev_sha256": "2daae78429eb3d34267de5fc34cdbc2c234e4a94d3d86babc2f7f2e148fb5d18",
+      "sha256": "509591ad8f3dc229f13fa35ac4c527495843f212517337d2b754ec0bac1a6c5a"
+    },
+    "claim_eligible": false,
+    "dtd_dev_bytes": 127561834,
+    "dtd_dev_images": 1128,
+    "dtd_manifest": {
+      "path": "E:/3k/manifests/development/visa_v1/dtd_source_split.jsonl",
+      "selected_dev_rows": 1128,
+      "selected_dev_sha256": "e11ab02cca32497d4b61d331f01c61dd7c42816313cae154d89b3e16a6021ed2",
+      "sha256": "3b4e64b093cd0aaed066aad4f032db417386a11660abdb8219303d49dca9c6a8"
+    },
+    "evaluation_scope": "synthetic-development-only",
+    "formal_test_content_accessed": false,
+    "global_recipe_derivation_verified": true,
+    "global_recipe_rows": 3468,
+    "ground_truth_content_accessed": false,
+    "manifest_backed": true,
+    "normal_dev_bytes": 20992458,
+    "normal_dev_images": 180,
+    "normal_false_positive_threshold": 0.5,
+    "performance_evaluated": false,
+    "protocol_config_path": "E:/3k/configs/development_protocol.json",
+    "protocol_config_sha256": "2aa2328283fca083f68f6be26635ea05dc7b9d359f8662be6b7156e9ac37c2b2",
+    "recipe_manifest": {
+      "path": "E:/3k/manifests/development/visa_v1/synthetic_dev_recipes.jsonl",
+      "selected_rows": 360,
+      "selected_sha256": "198efc4276cacfb218459459db66c5860f79a6eb24c9964acb0537f1ecf00fe1",
+      "sha256": "73bb7060ca1d69a628125a3232d498c15b77a21eb1b5d43594db8576b369ee0f"
+    },
+    "recipe_schema_version": 3,
+    "registered_seed": 1887537248,
+    "registered_seeds": [
+      1887537248,
+      1337854654,
+      1609762728
+    ],
+    "renderer_id": "draem_synthetic_dev_renderer_v2",
+    "renderer_provenance": {
+      "files": [
+        {
+          "path": "pyproject.toml",
+          "sha256": "8022184a110884449f8a1c98e96ffd42b26d34f916446b10de0b4534b36acbf3",
+          "size_bytes": 928
+        },
+        {
+          "path": "uv.lock",
+          "sha256": "a1ea9c057188a3ad3f34f5fc4d8c9bb2d480eca222c3e77f15ec83f1437e190a",
+          "size_bytes": 122908
+        },
+        {
+          "path": "src/industrial_anomaly_lab/development_protocol.py",
+          "sha256": "5f13bc3653c58e7f76beb66f4651adce16cc40fc9d3194bd8d832c25a6e32408",
+          "size_bytes": 32929
+        },
+        {
+          "path": "src/industrial_anomaly_lab/synthetic_development.py",
+          "sha256": "090194699757480a1c45472171a8cb50386e8aa0557421e6e400411369661bf2",
+          "size_bytes": 36300
+        },
+        {
+          "path": "src/industrial_anomaly_lab/draem_synthetic_dev.py",
+          "sha256": "efcd4dccc683176d2c0805bcfe1dbd4d89fbf728c31f613441e550db7dc5bb03",
+          "size_bytes": 16650
+        },
+        {
+          "path": "src/industrial_anomaly_lab/training_inputs.py",
+          "sha256": "08490a5ff7f38b1ad25fc99060ce63deba58908f3c06b92f653a429c2386799f",
+          "size_bytes": 23933
+        },
+        {
+          "path": "src/industrial_anomaly_lab/draem_runtime.py",
+          "sha256": "5995426e0fc02ff1863d14a5c37419f0da42cc997d4b87bbfbaf6319f11a6e91",
+          "size_bytes": 5977
+        },
+        {
+          "path": "src/industrial_anomaly_lab/draem_infer.py",
+          "sha256": "ec45776316e815a0b2dcd05ff77aca40e7a8e6d0f9f42e7d7316e2450731c295",
+          "size_bytes": 14613
+        },
+        {
+          "path": "src/industrial_anomaly_lab/draem_train.py",
+          "sha256": "75d0ced0d2bc8dcdff1a4dc70957fcf641c8375984db04dbec82dde2a8b78a97",
+          "size_bytes": 16750
+        },
+        {
+          "path": "src/industrial_anomaly_lab/metrics.py",
+          "sha256": "66c05e6035dc6ef49b10f38e1205a5d5da90c42ed1a2a576fa46b1850082a773",
+          "size_bytes": 7893
+        },
+        {
+          "path": "src/industrial_anomaly_lab/run_artifacts.py",
+          "sha256": "15f936f1e33d513a988e5289c574c1f882825d351d5322dc80d65743f12df98e",
+          "size_bytes": 2774
+        },
+        {
+          "path": "scripts/train_draem.py",
+          "sha256": "ccac743413479e95c63af378ea9b262b21adf68a5fbc379cd19097b8658ae521",
+          "size_bytes": 5074
+        },
+        {
+          "path": "scripts/evaluate_draem_synthetic_dev.py",
+          "sha256": "d252819258f98dcb0ced17f24e199dd6b068b6371c842ca115fab6fe80b3a9b7",
+          "size_bytes": 4812
+        },
+        {
+          "path": "third_party/DRAEM/data_loader.py",
+          "sha256": "d1a12befbec4a96e021749e3610dfc9628023f2bc720a9efad10793d96899f91",
+          "size_bytes": 7143
+        },
+        {
+          "path": "third_party/DRAEM/perlin.py",
+          "sha256": "e508007371d46cbd1e3c909d9577f138223ed0db437e1c70a40139736ad26a1a",
+          "size_bytes": 4548
+        },
+        {
+          "path": "third_party/DRAEM/model_unet.py",
+          "sha256": "377d3852c6d9984780efafef448c5dc163bc4d22f7f8f25564a3f6c52edb3b4d",
+          "size_bytes": 14299
+        }
+      ],
+      "recipe_schema_version": 3,
+      "renderer_id": "draem_synthetic_dev_renderer_v2",
+      "schema_version": 1,
+      "versions": {
+        "Pillow": "11.1.0",
+        "imgaug": "0.4.0",
+        "numpy": "1.26.4",
+        "opencv-python": "4.11.0.86",
+        "python": "3.11.16",
+        "scikit-learn": "1.6.1",
+        "scipy": "1.15.2",
+        "torch": "2.7.0+cu128"
+      }
+    },
+    "renderer_provenance_sha256": "8c6daa38de46aaa3cecc0eae0ad5d41f7fba2800e1acd6b2b3c4826ff5cd2e59",
+    "root_manifest_path": "E:/3k/manifests/development/visa_v1/manifest.json",
+    "root_manifest_sha256": "11050e39f6e448f2b947cc0b04d3e124696317d4abb717ef9595b7cb56555c86",
+    "schema_version": 1,
+    "selected_file_size_and_sha256_verified": true,
+    "synthetic_positive_recipes": 360,
+    "training_started": false
+  },
+  "mode": "limited-render-integrity-audit",
+  "performance_evaluated": false,
+  "requested_recipe_count": 2,
+  "schema_version": 1,
+  "settings": {
+    "anomaly_source_root": "E:\\3k\\data\\dtd\\images",
+    "category": "candle",
+    "dataset_root": "E:\\3k\\data\\visa\\1cls",
+    "protocol_config_path": "E:\\3k\\configs\\development_protocol.json",
+    "seed": 1887537248
+  },
+  "training_started": false
+}

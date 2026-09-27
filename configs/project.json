@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "status": "environment_and_visa_verified_mvtec_pending",
+  "status": "both_datasets_verified_formal_train_inputs_frozen_training_gate_pending",
   "project_root": "E:/3k",
   "research_target": {
     "level": "SCI_Q3_experimental_completeness",
@@ -39,7 +39,11 @@
         "commit": "6554076872c65f8784f6ece8cfb39ce77e1aee12"
       }
     ],
-    "runtime_validated": false
+    "runtime_validation": {
+      "PatchCore": "adapter_audit_and_cpu_smoke_passed",
+      "RD4AD": "teacher_strict_load_and_cpu_forward_smoke_passed",
+      "formal_runs_completed": false
+    }
   },
   "paths": {
     "python": ".venv/Scripts/python.exe",
@@ -52,16 +56,30 @@
   "datasets": {
     "mvtec_ad": {
       "categories": ["bottle", "cable", "capsule", "carpet", "grid", "hazelnut", "leather", "metal_nut", "pill", "screw", "tile", "toothbrush", "transistor", "wood", "zipper"],
-      "downloaded": false,
-      "manifest_verified": false,
-      "development_split_frozen": false
+      "downloaded": true,
+      "manifest_verified": true,
+      "development_split": "not_applicable_formal_evaluation_only",
+      "development_use": "formal evaluation only after method freeze; not used for candidate selection",
+      "download_status": "verified",
+      "source_manifest": "manifests/mvtec_source_manifest.json",
+      "prepared_manifest": "manifests/mvtec_prepared.json",
+      "audit_summary": {
+        "train_good_images": 3629,
+        "test_good_images": 467,
+        "test_anomaly_images": 1258,
+        "ground_truth_masks": 1258,
+        "metadata_tree_sha256": "1c54d37591730895371fefc741bee145b4057e9b34347117cb997d759f3ad348",
+        "image_decode_performed": false
+      }
     },
     "visa": {
       "categories": ["candle", "capsules", "cashew", "chewinggum", "fryum", "macaroni1", "macaroni2", "pcb1", "pcb2", "pcb3", "pcb4", "pipe_fryum"],
       "downloaded": true,
       "manifest_verified": true,
       "one_class_split_prepared": true,
-      "development_split_frozen": false
+      "development_split_frozen": true,
+      "development_manifest": "manifests/development/visa_v1/manifest.json",
+      "prepared_manifest": "manifests/visa_prepared.json"
     }
   },
   "anomaly_source": {
@@ -74,13 +92,52 @@
     "category_count": 47,
     "manifest": "manifests/dtd_r1.0.1.json"
   },
+  "formal_training_inputs": {
+    "status": "frozen_train_only_before_formal_evaluation",
+    "contract": "formal_training_input_bundle_v1",
+    "manifest": "manifests/formal_training_inputs/v1/manifest.json",
+    "sha256": "8c40abce70270309f9b3f8f9135aa559c07b4849a97957722b2e479e01836e8a",
+    "normal_training_images": {
+      "mvtec_ad": 3629,
+      "visa": 8659
+    },
+    "dtd_images": 5640,
+    "formal_test_content_accessed": false,
+    "ground_truth_content_accessed": false,
+    "test_or_ground_truth_enumerated": false,
+    "training_started": false
+  },
+  "formal_test_inventory": {
+    "status": "pending_formal_method_and_recipe_freeze",
+    "protocol": "configs/formal_test_inventory_protocol.json",
+    "required_datasets": ["mvtec_ad", "visa"],
+    "bundle_root": "manifests/formal_evaluation",
+    "inventory_generated": false,
+    "formal_test_content_accessed": false,
+    "ground_truth_content_accessed": false
+  },
+  "formal_source_provenance": {
+    "status": "required_clean_at_formal_launch",
+    "contract": "clean_git_source_provenance_v1",
+    "scope": "configs/formal_source_provenance.json"
+  },
   "evaluation": {
-    "primary_metric_candidate": "AUPRO@0.30",
-    "additional_metrics": ["P-AUROC", "I-AUROC", "P-AP"],
+    "primary_metric": "AUPRO@0.30",
+    "additional_metrics": [
+      "P-AUROC",
+      "I-AUROC(raw-map max, common cross-method contract)",
+      "I-AUROC(method-native, diagnostic only)",
+      "P-AP"
+    ],
     "minimum_seeds": 3,
-    "seeds": null,
-    "acceptance_gain_pp": null,
-    "permitted_regressions_pp": null,
+    "seeds": [1887537248, 1337854654, 1609762728],
+    "acceptance_gain_pp": {
+      "development_candidate_vs_draem": 1.0,
+      "formal_equal_dataset_average_vs_draem": 1.0
+    },
+    "permitted_regressions_pp": {
+      "secondary_metric_macro_each_dataset": 0.5
+    },
     "implementation_validated": true,
     "formal_protocol_frozen": false
   },

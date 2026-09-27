@@ -5,7 +5,7 @@ from __future__ import annotations
 import os
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import numpy as np
 import torch
@@ -19,7 +19,27 @@ from .draem_runtime import (
     make_generator,
     seed_dataloader_worker,
 )
-from .metrics import draem_image_scores, evaluate_category
+from .formal_provenance import (
+    DEFAULT_PROJECT_CONFIG,
+    DEFAULT_REGISTRATION,
+    RunPurpose,
+    classify_run_purpose,
+    validate_formal_authority,
+    validate_formal_checkpoint_manifest,
+)
+from .formal_test_inventory import (
+    resolve_formal_test_inventory_category,
+    validate_formal_prediction_rows,
+)
+from .metrics import (
+    EVALUATION_PROTOCOL,
+    METRICS_SCHEMA_VERSION,
+    draem_image_scores,
+    evaluate_category,
+    image_auroc_from_scores,
+    image_score_contract,
+    raw_map_max_image_scores,
+)
 from .run_artifacts import (
     prepare_output_directory,
     sha256_file,
@@ -37,11 +57,22 @@ class InferenceSettings:
     reconstructive_checkpoint: Path
     discriminative_checkpoint: Path
     output_dir: Path
+    execution_scope: Literal["full", "debug_limited"]
     seed: int = 42
     image_size: int = 256
     batch_size: int = 8
     workers: int = 0
     device: str = "cpu"
+    run_purpose: RunPurpose | None = None
+    checkpoint_manifest: Path | None = None
+    formal_test_inventory_dir: Path | None = None
+    project_config_path: Path = DEFAULT_PROJECT_CONFIG
+    registration_path: Path = DEFAULT_REGISTRATION
+
+    def resolved_run_purpose(self) -> RunPurpose:
+        if self.run_purpose is not None:
+            return self.run_purpose
+        return "debug_limited" if self.execution_scope == "debug_limited" else "author_reproduction"
 
     def validate(self) -> None:
         if self.dataset not in {"mvtec_ad", "visa"}:
@@ -50,6 +81,26 @@ class InferenceSettings:
             raise ValueError("category must not be empty")
         if self.seed < 0:
             raise ValueError("seed must be non-negative")
+        if self.execution_scope not in {"full", "debug_limited"}:
+            raise ValueError("execution_scope must be 'full' or 'debug_limited'")
+        purpose = classify_run_purpose(
+            self.resolved_run_purpose(),
+            max_steps=1 if self.execution_scope == "debug_limited" else None,
+        )
+        if purpose["execution_scope"] != self.execution_scope:
+            raise ValueError("run_purpose and execution_scope disagree")
+        if self.resolved_run_purpose() == "development_full":
+            raise ValueError(
+                "development_full must use the synthetic development evaluator, "
+                "not the formal test inference entry point"
+            )
+        if (
+            self.resolved_run_purpose() != "formal_full"
+            and self.formal_test_inventory_dir is not None
+        ):
+            raise ValueError(
+                "formal_test_inventory_dir is only valid for formal_full inference"
+            )
         if self.image_size <= 0 or self.batch_size <= 0:
             raise ValueError("image_size and batch_size must be positive")
         if self.workers < 0:
@@ -68,9 +119,33 @@ class InferenceSettings:
             "reconstructive_checkpoint",
             "discriminative_checkpoint",
             "output_dir",
+            "project_config_path",
+            "registration_path",
         ):
             payload[key] = str(payload[key])
+        payload["checkpoint_manifest"] = (
+            None if self.checkpoint_manifest is None else str(self.checkpoint_manifest)
+        )
+        payload["formal_test_inventory_dir"] = (
+            None
+            if self.formal_test_inventory_dir is None
+            else str(self.formal_test_inventory_dir)
+        )
         return payload
+
+
+def draem_inference_recipe(settings: InferenceSettings) -> dict[str, object]:
+    return {
+        "schema_version": 2,
+        "method": "DRAEM",
+        "image_size": settings.image_size,
+        "evaluation_protocol": EVALUATION_PROTOCOL,
+        "raw_map": "segmentation_softmax_anomaly_channel",
+        "common_image_score": "max_of_persisted_raw_anomaly_map",
+        "method_native_image_score": "max_after_21x21_average_pool",
+        "mask_resize": "nearest",
+        "raw_map_normalization": "none",
+    }
 
 
 def _resolve_device(requested: str) -> torch.device:
@@ -100,8 +175,74 @@ def run_inference(settings: InferenceSettings) -> dict[str, Any]:
     """Infer one full category, then evaluate by reloading the saved arrays."""
 
     settings.validate()
+    run_purpose = settings.resolved_run_purpose()
+    purpose = classify_run_purpose(
+        run_purpose,
+        max_steps=1 if settings.execution_scope == "debug_limited" else None,
+    )
+    formal_provenance: dict[str, object] | None = None
+    formal_test_selection: dict[str, Any] | None = None
+    formal_test_evidence: dict[str, object] | None = None
+    if run_purpose == "formal_full":
+        inference_recipe = draem_inference_recipe(settings)
+        inference_authority = validate_formal_authority(
+            method="DRAEM",
+            dataset=settings.dataset,
+            category=settings.category,
+            seed=settings.seed,
+            phase="inference",
+            recipe=inference_recipe,
+            project_config_path=settings.project_config_path,
+            registration_path=settings.registration_path,
+        )
+        manifest_path = settings.checkpoint_manifest or (
+            Path(settings.reconstructive_checkpoint).resolve().parent / "manifest.json"
+        )
+        checkpoint_validation = validate_formal_checkpoint_manifest(
+            manifest_path,
+            method="DRAEM",
+            dataset=settings.dataset,
+            category=settings.category,
+            seed=settings.seed,
+            checkpoint_files={
+                "reconstructive": settings.reconstructive_checkpoint,
+                "discriminative": settings.discriminative_checkpoint,
+            },
+            project_config_path=settings.project_config_path,
+            registration_path=settings.registration_path,
+        )
+        if settings.formal_test_inventory_dir is None:
+            raise ValueError(
+                "formal_full DRAEM inference requires formal_test_inventory_dir"
+            )
+        config_path = Path(settings.project_config_path).resolve()
+        project_root = (
+            config_path.parent.parent
+            if config_path.parent.name == "configs"
+            else config_path.parent
+        )
+        formal_test_selection = resolve_formal_test_inventory_category(
+            output_dir=settings.formal_test_inventory_dir,
+            dataset=settings.dataset,
+            category=settings.category,
+            dataset_root=settings.dataset_root,
+            project_root=project_root,
+        )
+        formal_test_evidence = formal_test_selection["evidence"]
+        formal_provenance = {
+            "claim_scope": "formal_matrix_candidate",
+            "inference_recipe": inference_recipe,
+            "inference_authority": inference_authority,
+            "checkpoint_validation": checkpoint_validation,
+            "formal_test_inventory": formal_test_evidence,
+        }
     configure_reproducibility(settings.seed, deterministic=True)
     device = _resolve_device(settings.device)
+    evaluation_protocol = (
+        EVALUATION_PROTOCOL
+        if settings.image_size == 256
+        else f"synthetic_nonstandard_{settings.image_size}px"
+    )
     output_dir = prepare_output_directory(settings.output_dir)
     raw_dir = output_dir / "predictions" / "raw_maps"
     mask_dir = output_dir / "predictions" / "evaluation_masks"
@@ -112,6 +253,11 @@ def run_inference(settings: InferenceSettings) -> dict[str, Any]:
         dataset_root,
         settings.category,
         image_size=settings.image_size,
+        samples=(
+            None
+            if formal_test_selection is None
+            else formal_test_selection["samples"]
+        ),
     )
     loader = DataLoader(
         dataset,
@@ -135,16 +281,23 @@ def run_inference(settings: InferenceSettings) -> dict[str, Any]:
         },
     }
     run_config = {
-        "schema_version": 1,
+        "schema_version": 2,
         "method": "DRAEM",
-        "evaluation_protocol": "draem_256_unified_v1",
+        "execution_scope": settings.execution_scope,
+        "run_purpose": run_purpose,
+        "claim_scope": purpose["claim_scope"],
+        "formal_matrix_eligible": purpose["formal_matrix_eligible"],
+        "formal_provenance": formal_provenance,
+        "evaluation_protocol": evaluation_protocol,
         "settings": settings.to_dict(),
         "checkpoint_provenance": checkpoint_provenance,
         "prediction_contract": {
             "raw_map_dtype": "float32",
             "raw_map_normalization": "none",
             "mask_resize": "nearest",
-            "image_score": "max_after_21x21_average_pool",
+            "image_scores": image_score_contract(
+                "draem_max_after_21x21_average_pool"
+            ),
             "metrics_reload_saved_arrays": True,
         },
         "runtime": {
@@ -156,6 +309,8 @@ def run_inference(settings: InferenceSettings) -> dict[str, Any]:
         },
         "created_at_utc": utc_now(),
     }
+    if formal_test_evidence is not None:
+        run_config["formal_test_inventory"] = formal_test_evidence
     write_json(output_dir / "run_config.json", run_config)
     write_json(output_dir / "run_state.json", {"status": "running"})
 
@@ -184,28 +339,44 @@ def run_inference(settings: InferenceSettings) -> dict[str, Any]:
                     evaluation_mask = masks[within_batch]
                     _atomic_save_npy(raw_path, raw_map)
                     _atomic_save_npy(mask_path, evaluation_mask)
-                    rows.append(
-                        {
-                            "index": sample_index,
-                            "sample_id": batch["sample_id"][within_batch],
-                            "label": int(labels[within_batch]),
-                            "defect_type": batch["sample_id"][within_batch].split("/")[1],
-                            "input_image": _relative_to_root(
-                                batch["image_path"][within_batch], dataset_root
-                            ),
-                            "source_ground_truth": _relative_to_root(
-                                batch["mask_path"][within_batch], dataset_root
-                            ),
-                            "raw_map": raw_path.relative_to(output_dir).as_posix(),
-                            "raw_map_sha256": sha256_file(raw_path),
-                            "evaluation_mask": mask_path.relative_to(output_dir).as_posix(),
-                            "evaluation_mask_sha256": sha256_file(mask_path),
-                            "original_height": int(
-                                batch["original_height"][within_batch]
-                            ),
-                            "original_width": int(batch["original_width"][within_batch]),
-                        }
-                    )
+                    row = {
+                        "index": sample_index,
+                        "sample_id": batch["sample_id"][within_batch],
+                        "label": int(labels[within_batch]),
+                        "defect_type": batch["defect_type"][within_batch],
+                        "input_image": _relative_to_root(
+                            batch["image_path"][within_batch], dataset_root
+                        ),
+                        "source_ground_truth": _relative_to_root(
+                            batch["mask_path"][within_batch], dataset_root
+                        ),
+                        "raw_map": raw_path.relative_to(output_dir).as_posix(),
+                        "raw_map_sha256": sha256_file(raw_path),
+                        "evaluation_mask": mask_path.relative_to(output_dir).as_posix(),
+                        "evaluation_mask_sha256": sha256_file(mask_path),
+                        "original_height": int(batch["original_height"][within_batch]),
+                        "original_width": int(batch["original_width"][within_batch]),
+                    }
+                    if formal_test_selection is not None:
+                        entry = formal_test_selection["entries"][sample_index]
+                        row.update(
+                            {
+                                "source_image_sha256": entry["source_image_sha256"],
+                                "source_ground_truth_sha256": entry[
+                                    "source_mask_sha256"
+                                ],
+                                "formal_test_inventory_id": formal_test_evidence[
+                                    "inventory_id"
+                                ],
+                                "formal_test_inventory_sha256": formal_test_evidence[
+                                    "inventory_sha256"
+                                ],
+                                "formal_test_inventory_receipt_sha256": formal_test_evidence[
+                                    "receipt_sha256"
+                                ],
+                            }
+                        )
+                    rows.append(row)
                     sample_index += 1
 
         write_jsonl(output_dir / "predictions" / "index.jsonl", rows)
@@ -222,33 +393,53 @@ def run_inference(settings: InferenceSettings) -> dict[str, Any]:
             ]
         )
         saved_labels = np.asarray([row["label"] for row in rows], dtype=np.int64)
-        image_scores = draem_image_scores(saved_maps)
-        for row, image_score in zip(rows, image_scores, strict=True):
-            row["image_score"] = float(image_score)
+        raw_map_max_scores = raw_map_max_image_scores(saved_maps)
+        method_native_scores = draem_image_scores(saved_maps)
+        for row, common_score, native_score in zip(
+            rows, raw_map_max_scores, method_native_scores, strict=True
+        ):
+            row["raw_map_max_score"] = float(common_score)
+            row["method_native_image_score"] = float(native_score)
+        if formal_test_selection is not None:
+            validate_formal_prediction_rows(rows, formal_test_selection)
         write_jsonl(output_dir / "predictions" / "index.jsonl", rows)
 
-        metrics = evaluate_category(
-            saved_maps,
-            saved_masks,
-            saved_labels,
-            image_scores=image_scores,
-        ).to_dict()
+        metrics = evaluate_category(saved_maps, saved_masks, saved_labels).to_dict()
+        metrics["image_auroc_method_native"] = image_auroc_from_scores(
+            saved_labels, method_native_scores
+        )
         metrics_payload = {
-            "schema_version": 1,
+            "schema_version": METRICS_SCHEMA_VERSION,
             "dataset": settings.dataset,
             "category": settings.category,
             "num_images": len(rows),
-            "protocol": "draem_256_unified_v1",
+            "protocol": evaluation_protocol,
+            "image_score_contract": image_score_contract(
+                "draem_max_after_21x21_average_pool"
+            ),
             "metrics": metrics,
             "computed_from": "predictions/index.jsonl raw_map and evaluation_mask files",
             "computed_at_utc": utc_now(),
         }
+        if formal_test_evidence is not None:
+            metrics_payload["formal_test_inventory"] = formal_test_evidence
         write_json(output_dir / "metrics.json", metrics_payload)
         final_state = {
             "status": "completed",
+            "execution_scope": settings.execution_scope,
+            "run_purpose": run_purpose,
+            "claim_scope": purpose["claim_scope"],
+            "formal_matrix_eligible": purpose["formal_matrix_eligible"],
             "num_images": len(rows),
+            "run_config_sha256": sha256_file(output_dir / "run_config.json"),
+            "metrics_sha256": sha256_file(output_dir / "metrics.json"),
+            "predictions_index_sha256": sha256_file(
+                output_dir / "predictions" / "index.jsonl"
+            ),
             "updated_at_utc": utc_now(),
         }
+        if formal_test_evidence is not None:
+            final_state["formal_test_inventory"] = formal_test_evidence
         write_json(output_dir / "run_state.json", final_state)
         return {**final_state, "metrics": metrics}
     except BaseException as error:

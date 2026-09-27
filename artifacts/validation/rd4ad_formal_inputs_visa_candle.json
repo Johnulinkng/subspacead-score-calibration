@@ -1,0 +1,67 @@
+{
+  "anomaly_source_images": 0,
+  "builder_validator_provenance": {
+    "builder": [
+      {
+        "label": "builder_cli",
+        "path": "scripts/build_formal_training_inputs.py",
+        "sha256": "e74ca96503dd575046351bc6cae1d577ead5b2b045de70df695551d8515b1537"
+      },
+      {
+        "label": "builder_validator_module",
+        "path": "src/industrial_anomaly_lab/formal_training_inputs.py",
+        "sha256": "17dd7704fd53cfc6df356bf5c648557eae0246a48e24327480a183024ed7c85a"
+      }
+    ],
+    "validator": [
+      {
+        "label": "builder_cli",
+        "path": "scripts/build_formal_training_inputs.py",
+        "sha256": "e74ca96503dd575046351bc6cae1d577ead5b2b045de70df695551d8515b1537"
+      },
+      {
+        "label": "builder_validator_module",
+        "path": "src/industrial_anomaly_lab/formal_training_inputs.py",
+        "sha256": "17dd7704fd53cfc6df356bf5c648557eae0246a48e24327480a183024ed7c85a"
+      }
+    ]
+  },
+  "category": "candle",
+  "category_manifest": {
+    "path": "manifests/formal_training_inputs/v1/visa__candle__train_good.jsonl",
+    "rows": 900,
+    "selected_file_bytes": 105056660,
+    "selection_sha256": "2167fffc5e1b927e23f00d7207373061743c675e57dd6c74ca2cc55b3d3e2a75",
+    "sha256": "2167fffc5e1b927e23f00d7207373061743c675e57dd6c74ca2cc55b3d3e2a75"
+  },
+  "contract": "formal_training_input_bundle_v1",
+  "current_file_set_and_content_sha256_verified": true,
+  "dataset": "visa",
+  "dataset_root": "data/visa/1cls",
+  "dtd_manifest": null,
+  "dtd_root": null,
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "method": "RD4AD",
+  "normal_training_images": 900,
+  "path_base": "project_root",
+  "project_root": ".",
+  "root_manifest_path": "manifests/formal_training_inputs/v1/manifest.json",
+  "root_manifest_sha256": "8c40abce70270309f9b3f8f9135aa559c07b4849a97957722b2e479e01836e8a",
+  "schema_version": 1,
+  "source_manifests": {
+    "dtd": {
+      "path": "manifests/dtd_r1.0.1.json",
+      "sha256": "e5092d5699f28b15419fdea7b96bb424033a1d70016b3fe4d960cc517999f491"
+    },
+    "mvtec_ad": {
+      "path": "manifests/mvtec_source_manifest.json",
+      "sha256": "8b406dbc042795ac9bf809a1fc63c2b9a5f01176953676f522f87ab5ee6debbe"
+    },
+    "visa": {
+      "path": "manifests/visa_source_manifest.json",
+      "sha256": "2aa3d6787df0ac805a26a0372d88e690255898616d9069dc54fabf5527010586"
+    }
+  },
+  "test_or_ground_truth_enumerated": false
+}

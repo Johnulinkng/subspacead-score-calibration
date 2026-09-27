@@ -1,0 +1,230 @@
+{
+  "backbone_checkpoint": {
+    "architecture": "wide_resnet50_2",
+    "audit_retained_model": false,
+    "checkpoint_filename": "wide_resnet50_2-95faca4d.pth",
+    "checkpoint_path": "E:\\3k\\artifacts\\weights\\wide_resnet50_2-95faca4d.pth",
+    "constructor": "torchvision.models.wide_resnet50_2(weights=None, progress=False)",
+    "download_attempted": false,
+    "dtype_conversion": {
+      "allowed": [
+        {
+          "reason": "floating_point_widening",
+          "source_dtype": "torch.float16",
+          "target_dtype": "torch.float32"
+        }
+      ],
+      "applied": [
+        {
+          "key_count": 55,
+          "keys": [
+            "conv1.weight",
+            "fc.bias",
+            "fc.weight",
+            "layer1.0.conv1.weight",
+            "layer1.0.conv2.weight",
+            "layer1.0.conv3.weight",
+            "layer1.0.downsample.0.weight",
+            "layer1.1.conv1.weight",
+            "layer1.1.conv2.weight",
+            "layer1.1.conv3.weight",
+            "layer1.2.conv1.weight",
+            "layer1.2.conv2.weight",
+            "layer1.2.conv3.weight",
+            "layer2.0.conv1.weight",
+            "layer2.0.conv2.weight",
+            "layer2.0.conv3.weight",
+            "layer2.0.downsample.0.weight",
+            "layer2.1.conv1.weight",
+            "layer2.1.conv2.weight",
+            "layer2.1.conv3.weight",
+            "layer2.2.conv1.weight",
+            "layer2.2.conv2.weight",
+            "layer2.2.conv3.weight",
+            "layer2.3.conv1.weight",
+            "layer2.3.conv2.weight",
+            "layer2.3.conv3.weight",
+            "layer3.0.conv1.weight",
+            "layer3.0.conv2.weight",
+            "layer3.0.conv3.weight",
+            "layer3.0.downsample.0.weight",
+            "layer3.1.conv1.weight",
+            "layer3.1.conv2.weight",
+            "layer3.1.conv3.weight",
+            "layer3.2.conv1.weight",
+            "layer3.2.conv2.weight",
+            "layer3.2.conv3.weight",
+            "layer3.3.conv1.weight",
+            "layer3.3.conv2.weight",
+            "layer3.3.conv3.weight",
+            "layer3.4.conv1.weight",
+            "layer3.4.conv2.weight",
+            "layer3.4.conv3.weight",
+            "layer3.5.conv1.weight",
+            "layer3.5.conv2.weight",
+            "layer3.5.conv3.weight",
+            "layer4.0.conv1.weight",
+            "layer4.0.conv2.weight",
+            "layer4.0.conv3.weight",
+            "layer4.0.downsample.0.weight",
+            "layer4.1.conv1.weight",
+            "layer4.1.conv2.weight",
+            "layer4.1.conv3.weight",
+            "layer4.2.conv1.weight",
+            "layer4.2.conv2.weight",
+            "layer4.2.conv3.weight"
+          ],
+          "reason": "floating_point_widening",
+          "source_dtype": "torch.float16",
+          "target_dtype": "torch.float32"
+        }
+      ],
+      "applied_tensor_count": 55,
+      "policy": "allowlisted_widening_only",
+      "unsafe_or_narrowing_conversion_allowed": false
+    },
+    "expected_sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+    "implicit_download_used": false,
+    "legacy_pretrained_true_target": "Wide_ResNet50_2_Weights.IMAGENET1K_V1",
+    "license_context": "torchvision model weights; retain upstream attribution and terms",
+    "official_filename": "wide_resnet50_2-95faca4d.pth",
+    "official_url": "https://download.pytorch.org/models/wide_resnet50_2-95faca4d.pth",
+    "parameter_count": 68883240,
+    "preprocessing": {
+      "center_crop": 224,
+      "interpolation": "bilinear",
+      "mean": [
+        0.485,
+        0.456,
+        0.406
+      ],
+      "resize_short_edge": 256,
+      "std": [
+        0.229,
+        0.224,
+        0.225
+      ]
+    },
+    "safe_load": {
+      "map_location": "cpu",
+      "string_keys_only": true,
+      "tensor_values_only": true,
+      "top_level_mapping": true,
+      "weights_only": true
+    },
+    "sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+    "sha256_verified": true,
+    "size_bytes": 138223492,
+    "source_dtype_counts": {
+      "torch.float16": 55,
+      "torch.float32": 212,
+      "torch.int64": 53
+    },
+    "state_tensor_count": 320,
+    "state_tensor_numel": 68951517,
+    "strict_load": {
+      "missing_keys": [],
+      "nonfinite_tensors": [],
+      "passed": true,
+      "shape_mismatches": [],
+      "unexpected_keys": [],
+      "unsafe_dtype_mismatches": []
+    },
+    "torchvision_weight_enum": "Wide_ResNet50_2_Weights.IMAGENET1K_V1",
+    "url_hash_prefix": "95faca4d",
+    "url_hash_prefix_matched": true
+  },
+  "category": "candle",
+  "dataset": "visa",
+  "execution_scope": "debug_limited",
+  "fit_started": false,
+  "frozen_configuration": {
+    "anomaly_score_num_nn": 1,
+    "backbone": "wideresnet50",
+    "coreset": "approx_greedy",
+    "coreset_percentage": 0.1,
+    "faiss_metric": "squared_l2",
+    "faiss_on_gpu": false,
+    "input_shape": [
+      3,
+      224,
+      224
+    ],
+    "layers": [
+      "layer2",
+      "layer3"
+    ],
+    "patchsize": 3,
+    "pretrain_embed_dimension": 1024,
+    "target_embed_dimension": 1024
+  },
+  "input_inventory": {
+    "allowed_split": "train/good only",
+    "normal_training_file_bytes": 105056660,
+    "normal_training_images": 900,
+    "relative_path_size_and_content_sha256": "cae1f03f122386af9310bbe4da1a6df4fd58d7cd180a12da43f3855f6b7ad1d5",
+    "test_or_ground_truth_enumerated": false
+  },
+  "method": "PatchCore",
+  "project_environment": {
+    "MPLCONFIGDIR": "E:\\3k\\.cache\\matplotlib",
+    "PYTHONPYCACHEPREFIX": "E:\\3k\\.cache\\pycache",
+    "TEMP": "E:\\3k\\tmp",
+    "TMP": "E:\\3k\\tmp",
+    "TORCH_HOME": "E:\\3k\\.cache\\torch",
+    "XDG_CACHE_HOME": "E:\\3k\\.cache"
+  },
+  "registered_seeds": [
+    1887537248,
+    1337854654,
+    1609762728
+  ],
+  "schema_version": 1,
+  "settings": {
+    "backbone_checkpoint": "E:\\3k\\artifacts\\weights\\wide_resnet50_2-95faca4d.pth",
+    "backbone_sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+    "batch_size": 8,
+    "category": "candle",
+    "coreset_device": "cpu",
+    "dataset": "visa",
+    "dataset_root": "E:\\3k\\data\\visa\\1cls",
+    "device": "cpu",
+    "execution_scope": "debug_limited",
+    "faiss_workers": 8,
+    "geometry": {
+      "evaluation_size": 256,
+      "image_size": 224,
+      "resize": 256
+    },
+    "max_steps": 1,
+    "output_dir": "E:\\3k\\runs\\patchcore\\visa\\candle\\fit_seed1887537248_20260927T085621Z",
+    "registration_path": "E:\\3k\\configs\\preregistered_experiments.json",
+    "seed": 1887537248,
+    "workers": 0
+  },
+  "test_split_accessed": false,
+  "validated_at_utc": "2026-09-27T08:56:22.954864+00:00",
+  "vendor_source": {
+    "actual_commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+    "checked_at_utc": "2026-09-27T08:56:22.146905+00:00",
+    "commit_matches": true,
+    "expected_files": {
+      "LICENSE": true,
+      "src/patchcore/backbones.py": true,
+      "src/patchcore/common.py": true,
+      "src/patchcore/patchcore.py": true,
+      "src/patchcore/sampler.py": true
+    },
+    "frozen_commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+    "import_attempted": false,
+    "required_runtime_modules": {
+      "faiss": true,
+      "timm": true
+    },
+    "runtime_import_ready": true,
+    "schema_version": 1,
+    "training_or_test_evaluation_run": false,
+    "vendor_root": "E:\\3k\\third_party\\PatchCore",
+    "vendor_worktree_clean": true
+  }
+}

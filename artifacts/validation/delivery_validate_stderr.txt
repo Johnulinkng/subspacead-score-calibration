@@ -1,0 +1,6 @@
+{
+  "status": "rejected",
+  "error_type": "ValueError",
+  "error": "formal evaluation protocol is not frozen",
+  "archive_created": false
+}

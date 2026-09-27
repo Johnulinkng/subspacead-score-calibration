@@ -12,9 +12,11 @@ DTD 已从 Oxford VGG 官方入口下载到 `data/archives/dtd-r1.0.1.tar.gz`，
 
 MVTec AD 官方页面确认数据含 15 类、超过 5,000 张高分辨率图像，许可为 CC BY-NC-SA 4.0，并明确禁止商业使用。
 
-截至 2026-09-27，官方下载入口要求提交 First Name、Last Name、Email 和非商业使用确认。DRAEM 作者仓库中的旧 MyDrive 链接当前返回 404，旧静态下载地址也不可用。项目不会使用未知镜像或生成数据替代真实 MVTec AD。
+MVTec 官网当前交互入口显示下载表单；DRAEM 仓库中的旧 MyDrive 链接已失效。为避免未知镜像，项目采用 `open-edge-platform/anomalib` 官方主分支在 commit `d716bb94...` 登记的 MVTec AD 下载信息。该登记同时给出归档 SHA-256 `cf4313b1...98cd3d`，因此可对取得的数据做强校验。Anomalib 源码以子模块固定，登记文件自身的哈希也写入 `manifests/mvtec_source_manifest.json`。
 
-待办：由用户提供官方表单所需身份信息并授权提交，或者由用户自行提交表单后提供生成的官方下载链接。取得归档后，必须记录来源、大小、SHA-256、归档完整性和逐类文件清单，再解锁正式评测。
+HTTP 入口核对为 5,264,982,680 字节并支持 Range 续传。归档现已匹配登记 SHA-256 `cf4313b1...98cd3d`，通过 `tar.xz` 路径安全与 15 类结构审计；完整证据见 `manifests/mvtec_source_manifest.json` 和 `manifests/mvtec_prepared.json`。项目不会使用生成数据替代真实 MVTec AD，也不会在交付包中重新分发受非商业、相同方式共享条款约束的数据。
+
+安全解压与机械审计由 `scripts/prepare_mvtec_ad.py` 完成，具体 fail-closed 规则见 `docs/mvtec_preparation.md`。脚本只检查归档 metadata、文件路径/大小和掩码文件名配对，不解码或展示正式 test 图像；成功后才生成 `manifests/mvtec_prepared.json`。
 
 来源：https://www.mvtec.com/research-teaching/datasets/mvtec-ad
 

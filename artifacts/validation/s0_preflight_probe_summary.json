@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "launcher": "scripts/Invoke-MonitoredExperiment.ps1",
+  "launcher_sha256": "d4ebd904264a7d2faf9f0db2301c1428bcbbb8415939b8fc3f3b9e0ebd1bc306",
+  "started_at_utc": "2026-09-27T11:01:36.0045822Z",
+  "finished_at_utc": "2026-09-27T11:01:38.2468540Z",
+  "duration_seconds": 2.242,
+  "status": "preflight_rejected",
+  "failure_kind": "preflight_not_ready",
+  "failure_message": "Fixed training preflight rejected the launch.",
+  "mode": "experiment",
+  "run_purpose": "debug_limited",
+  "claim_eligible": null,
+  "claim_eligibility_reason": "Not adjudicated by the resource launcher; use the formal provenance and aggregation gates.",
+  "project_root": "E:\\3k",
+  "output_directory": "E:\\3k\\runs\\monitored\\s0_preflight_probe_20260927T1101",
+  "command_record": "E:\\3k\\runs\\monitored\\s0_preflight_probe_20260927T1101\\command.json",
+  "preflight": {
+    "required": true,
+    "fixed_script": "E:\\3k\\scripts\\Test-TrainingPreflight.ps1",
+    "report": "E:\\3k\\runs\\monitored\\s0_preflight_probe_20260927T1101\\preflight\\preflight_20260927T110138159Z.json",
+    "ready": false,
+    "exit_code": 2
+  },
+  "lock": {
+    "path": "E:\\3k\\runs\\.training.lock.json",
+    "token": "41f8f0f21092411482111b28fede6bb1",
+    "created": false,
+    "released": false,
+    "release_status": "not_created"
+  },
+  "child": {
+    "pid": null,
+    "executable": null,
+    "process_launcher_pid": null,
+    "exit_code": null,
+    "still_running_at_launcher_exit": false
+  },
+  "monitoring": {
+    "sample_interval_seconds": 30,
+    "sample_count": 0,
+    "samples_jsonl": "E:\\3k\\runs\\monitored\\s0_preflight_probe_20260927T1101\\resource_samples.jsonl"
+  },
+  "stdout_log": "E:\\3k\\runs\\monitored\\s0_preflight_probe_20260927T1101\\stdout.log",
+  "stderr_log": "E:\\3k\\runs\\monitored\\s0_preflight_probe_20260927T1101\\stderr.log",
+  "evidence_sha256": {
+    "command": "3ca9391fb9f920c16c762ce9c7e2d4a1ce6ee63ea7f4982f4fdc6010f6bf27e8",
+    "resource_samples_jsonl": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stdout_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "stderr_log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "preflight_report": "b4394a3148ff0afeeb1fd23a1dd0f6977a2fd06acee2e159aa6a02d40ef383e5",
+    "mutable_child_logs_omitted": false
+  },
+  "launcher_exit_code": 2,
+  "interrupted": false
+}

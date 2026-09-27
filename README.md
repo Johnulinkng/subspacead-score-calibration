@@ -1,30 +1,41 @@
 # 工业异常检测实验项目
 
-项目目录：`E:\3k`。本项目从公开实现和真实公开数据集开始，与用户此前的 DDAD、MDG-AD 研究完全分离。
+项目目录：`E:\3k`。本项目从公开实现和真实公开数据集开始，此前个人研究不进入本项目的方法、代码或结果。
 
-当前阶段：环境与数据准备。已取得 DRAEM 官方代码并锁定现代运行环境；DTD R1.0.1 已从官方入口下载、通过归档检查并核对为 47 类 5,640 张图。VisA 官方归档已完成长度、SHA-256、路径安全和完整划分审计，并按官方 1-class 协议准备为 12 类、10,821 张图和 1,200 张异常掩码。MVTec AD 仍待通过官方表单取得，因此尚未运行正式模型实验，也没有性能提升结论。
+当前阶段：数据、运行环境、防泄漏开发协议和正式 train-only 输入已经准备，训练仍受资源门禁约束。冻结输入清单包含 MVTec AD 3,629 张 `train/good`、VisA 8,659 张 `train/good` 与 DTD 5,640 张纹理图，不含 test/GT。VisA 已按官方 1-class 协议核对为 12 类、10,821 张图和 1,200 张异常掩码；MVTec AD 已通过登记大小、完整 SHA-256、安全解压、15 类结构和 1,258 对异常图/掩码审计，审计过程未解码或查看正式测试图像。目前尚未运行正式模型实验，也没有性能提升结论。
 
 DRAEM 作者发布的 5.43 GB 权重归档已完成 SHA-256、ZIP CRC 与路径安全检查；解出的 15 类 30 个 checkpoint 均使用 `torch.load(weights_only=True)` 审计，并严格加载进当前作者网络结构。它们只用于作者发布权重核对，不能替代本项目多种子训练结果。
 
 ## 当前路线
 
-- 首个复现候选：作者官方 DRAEM，提交 `2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef`，MIT。
+- 主基线：作者官方 DRAEM，提交 `2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef`，MIT。
 - 工程参考：Anomalib。库内实现与作者实现必须逐项核对，暂不替代官方基线。
-- 条件备选：RD4AD；较强参照：PatchCore。不得因为测试成绩更低而更换基线。
+- 强对照：PatchCore 与 RD4AD。不得因为测试成绩不利而替换基线或对照。
 - 正式数据范围：MVTec AD 全 15 类和 VisA 全 12 类；DRAEM 的训练异常源为 DTD 纹理。目标是形成达到 SCI 三区研究完整度的双数据集证据，不能将其表述为录用保证。
 - 可检查的论文级实验门槛见 `docs/research_acceptance.md`；主基线采用 DRAEM 作者实现，同时冻结 PatchCore 与 RD4AD 为两类更强参照，避免只与较老基线比较。具体公平协议见 `docs/comparator_protocol.md`。
 - 增加第三个数据集前，先说明要解决的审稿风险、预计成本和是否影响现有实验矩阵。
+- 开发阶段只使用 VisA `train/good` 与内容隔离的 DTD 划分；正式测试集不参与模块、超参数、checkpoint 或样本选择。固定划分、三组派生种子、候选预算和停止规则见 `docs/development_protocol.md`。
 
 ## 已有文件
 
 - `docs/baseline_selection.md`：社区、来源、方法匹配与工程风险。
-- `docs/experiment_protocol.md`：开发/测试隔离、统一评测和交付约定草案。
+- `docs/experiment_protocol.md`：开发/正式隔离、统一评测和交付协议。
+- `docs/formal_training_inputs.md`：MVTec AD、VisA 与 DTD 的冻结 train-only 输入及重验链。
+- `docs/formal_test_inventory.md`：仅在 F0 冻结后创建的完整 test/GT 身份清单。
+- `docs/formal_source_provenance.md`：正式运行的项目/vendor Git HEAD、tree 与干净状态门禁。
+- `docs/visualization_delivery.md`：固定样本、机械失败案例和异常图可追溯渲染。
+- `docs/monitored_experiments.md`：训练前预检、原子锁和运行中资源证据。
 - `configs/project.json`：路径、候选配置、阶段状态。
 - `manifests/repository_snapshot.json`：GitHub API 社区状态快照；热度不是性能证据。
 - `manifests/migration.json`：D 盘到 E 盘的迁移记录。
 - `third_party/DRAEM`：未改动的作者代码，保留 Git 历史和许可证。
 - `scripts/Set-ProjectEnvironment.ps1`：将本次 shell 的缓存、临时文件和后续运行路径设在项目内。
 - `scripts/Test-ProjectReadiness.ps1`：只读检查源代码、数据目录、项目环境和空间；不启动训练。
+- `scripts/Invoke-MonitoredExperiment.ps1`：先执行固定资源门禁，再以原子锁启动并监控项目 Python 子进程。
+- `scripts/build_formal_test_inventory.py`：正式方法冻结后构建或重验逐文件哈希的完整测试清单。
+- `artifacts/validation/draem_manifest_inputs_candle.json`：冻结 train 清单的 candle 只读核验；未启动训练。
+- `artifacts/validation/synthetic_dev_candle_validate/validation.json`：VisA-dev/DTD-dev 全部登记文件的大小与 SHA-256 核验；渲染数和模型加载数均为 0。
+- `artifacts/validation/synthetic_dev_render_candle_v3`：两个固定 recipe 的重复渲染完整性审计；保存 `float32` 输入与布尔 mask，不计算性能。
 
 ```powershell
 Set-Location E:\3k
@@ -36,9 +47,9 @@ Set-Location E:\3k
 
 ## 下一步
 
-1. 验证真实数据下载入口、归档完整性和许可证；保存文件清单及哈希。
-2. 完成项目内专用环境，处理官方旧 Linux 依赖与本机兼容性，记录所有修复。
-3. 单类运行链验证、资源测量及官方权重核验；这些结果不得当成完整基线成绩。
-4. 冻结完整训练与评测协议后，再开展全类别复现和改进开发。
+1. 在训练资源门禁通过后完成不计入性能结论的单类运行链和峰值资源 smoke。
+2. 按冻结开发矩阵复现 DRAEM，再依据可测短板冻结候选改进与消融。
+3. 使用已核验的 schema-v3 固定合成开发入口筛选候选；这些结果不作为真实缺陷性能证据。
+4. 方法和全部运行规则冻结后，只进行一轮 MVTec AD 与 VisA 正式评测并汇总完整矩阵。
 
-本轮只完成准备材料。四项最终交付物（实验包、指标/消融表、可视化、复现说明）尚未形成。
+四项最终交付物（实验包、指标/消融表、可视化、复现说明）尚未形成。

@@ -4,7 +4,13 @@ import numpy as np
 import pytest
 from sklearn.metrics import auc, precision_recall_curve
 
-from industrial_anomaly_lab.metrics import aupro, draem_image_scores, evaluate_category
+from industrial_anomaly_lab.metrics import (
+    aupro,
+    draem_image_scores,
+    evaluate_category,
+    image_auroc_from_scores,
+    raw_map_max_image_scores,
+)
 
 
 def test_perfect_prediction_has_unit_metrics() -> None:
@@ -39,7 +45,6 @@ def test_pixel_ap_is_not_trapezoidal_pr_auc() -> None:
         maps,
         masks,
         np.array([0, 1]),
-        image_scores=np.array([0.0, 1.0]),
     )
 
     assert result.pixel_auroc == pytest.approx(0.5)
@@ -125,3 +130,21 @@ def test_draem_pooling_matches_torch_and_validates_inputs() -> None:
         aupro(np.array([[[np.nan]]]), np.array([[[0]]]))
     with pytest.raises(ValueError, match="binary"):
         aupro(np.zeros((1, 2, 2)), np.array([[[0, 2], [0, 1]]]))
+
+
+def test_common_image_auroc_uses_raw_map_max_not_draem_pooling() -> None:
+    maps = np.zeros((2, 25, 25), dtype=np.float64)
+    maps[0, 0, 0] = 1.0
+    maps[1, 2:23, 2:23] = 0.5
+    masks = np.zeros_like(maps, dtype=np.uint8)
+    masks[1, 8:17, 8:17] = 1
+    labels = np.array([0, 1], dtype=np.int64)
+
+    common_scores = raw_map_max_image_scores(maps)
+    native_scores = draem_image_scores(maps)
+    result = evaluate_category(maps, masks, labels)
+
+    assert common_scores == pytest.approx([1.0, 0.5])
+    assert native_scores[0] < native_scores[1]
+    assert result.image_auroc == pytest.approx(0.0)
+    assert image_auroc_from_scores(labels, native_scores) == pytest.approx(1.0)

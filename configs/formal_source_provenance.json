@@ -1,0 +1,35 @@
+{
+  "authority_files": [
+    "configs/formal_source_provenance.json",
+    "configs/project.json",
+    "configs/preregistered_experiments.json",
+    "configs/development_protocol.json",
+    "configs/formal_test_inventory_protocol.json",
+    "manifests/formal_training_inputs/v1/manifest.json"
+  ],
+  "kind": "formal_source_scope",
+  "repositories": [
+    {
+      "expected_commit": null,
+      "name": "project",
+      "path": "."
+    },
+    {
+      "expected_commit": "2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef",
+      "name": "DRAEM",
+      "path": "third_party/DRAEM"
+    },
+    {
+      "expected_commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+      "name": "PatchCore",
+      "path": "third_party/PatchCore"
+    },
+    {
+      "expected_commit": "6554076872c65f8784f6ece8cfb39ce77e1aee12",
+      "name": "RD4AD",
+      "path": "third_party/RD4AD"
+    }
+  ],
+  "schema_version": 1,
+  "status": "required_clean_at_formal_launch"
+}

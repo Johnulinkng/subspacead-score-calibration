@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "checked_at_utc": "2026-09-27T10:57:45.7766386Z",
+  "project_root": "E:\\3k",
+  "ready_for_training_launch": false,
+  "thresholds": {
+    "minimum_free_ram_gib": 8.0,
+    "minimum_free_disk_gib": 40.0
+  },
+  "checks": {
+    "free_ram": false,
+    "free_disk": true,
+    "gpu_query": true,
+    "no_compute_processes": true,
+    "no_running_wsl": true,
+    "no_active_project_lock": true
+  },
+  "host": {
+    "total_ram_gib": 15.679,
+    "free_ram_gib": 5.68,
+    "project_drive": "E",
+    "free_disk_gib": 219.675
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+      "uuid": "GPU-9b84c34b-6467-acca-bffc-d03b8d0f7d4a",
+      "memory_total_mib": 8192,
+      "memory_used_mib": 0,
+      "memory_free_mib": 8018,
+      "utilization_percent": 0
+    }
+  ],
+  "gpu_query_error": null,
+  "compute_processes": [],
+  "compute_query_error": null,
+  "running_wsl_distributions": [],
+  "wsl_query_error": null,
+  "project_lock": {
+    "path": "E:\\3k\\runs\\.training.lock.json",
+    "exists": false,
+    "pid": null,
+    "process_alive": false,
+    "parse_error": null
+  }
+}

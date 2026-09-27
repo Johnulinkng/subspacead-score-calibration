@@ -1,0 +1,31 @@
+{
+  "anomaly_scale_thresholds": {
+    "large_rule": "area_fraction > medium_max_fraction",
+    "medium_max_fraction": 0.1,
+    "medium_rule": "small_max_fraction < area_fraction <= medium_max_fraction",
+    "small_max_fraction": 0.01,
+    "small_rule": "0 < area_fraction <= small_max_fraction"
+  },
+  "datasets": [
+    "mvtec_ad",
+    "visa"
+  ],
+  "freeze_boundary": "The builder may enumerate or decode formal test data only after the evaluation protocol, method registry, candidate, and all method recipes are frozen.",
+  "inventory_contract": {
+    "completeness": "all registered categories and every official test sample",
+    "normal_scale": "normal",
+    "sample_id": "category/defect_type/image_stem",
+    "source_binding": "SHA-256 of every source image and anomalous source mask"
+  },
+  "kind": "formal_test_inventory_protocol",
+  "mask_interpretation": {
+    "accepted_native_values": [
+      0,
+      255
+    ],
+    "area_denominator": "all_native_mask_pixels",
+    "positive_rule": "pixel_value_gt_0"
+  },
+  "schema_version": 1,
+  "status": "frozen_before_formal_test_enumeration"
+}

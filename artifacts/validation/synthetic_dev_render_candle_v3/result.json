@@ -1,0 +1,13 @@
+{
+  "all_repeat_renders_equal": true,
+  "claim_eligible": false,
+  "evaluation_scope": "synthetic-development-only",
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "mode": "limited-render-integrity-audit",
+  "performance_evaluated": false,
+  "recipes_rendered": 2,
+  "status": "completed",
+  "training_started": false,
+  "updated_at_utc": "2026-09-27T10:45:59.433393+00:00"
+}

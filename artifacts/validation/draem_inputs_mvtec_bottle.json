@@ -1,0 +1,20 @@
+{
+  "anomaly_source_images": 5640,
+  "category": "bottle",
+  "dataset": "mvtec_ad",
+  "image_size": 256,
+  "input_evidence": {
+    "anomaly_source_images": 5640,
+    "development_protocol_eligible": false,
+    "formal_test_content_accessed": false,
+    "ground_truth_content_accessed": false,
+    "input_protocol": "author_full_train",
+    "manifest_backed": false,
+    "normal_training_images": 209,
+    "training_started": false
+  },
+  "input_protocol": "author_full_train",
+  "normal_training_images": 209,
+  "training_started": false,
+  "validated_at_utc": "2026-09-27T08:33:38.300247+00:00"
+}

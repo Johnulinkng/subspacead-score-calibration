@@ -1,4 +1,4 @@
-"""Frozen metric definitions for the DRAEM 256 px unified protocol.
+"""Frozen metric definitions for the cross-method 256 px protocol.
 
 The functions in this module operate on unquantized anomaly scores. They do
 not normalize individual maps, because that would change ranking across
@@ -19,6 +19,15 @@ from sklearn.metrics import average_precision_score, roc_auc_score
 
 FloatArray = NDArray[np.float64]
 BoolArray = NDArray[np.bool_]
+
+
+EVALUATION_PROTOCOL = "industrial_anomaly_raw_map_max_256_v2"
+METRICS_SCHEMA_VERSION = 2
+COMMON_IMAGE_SCORE_FIELD = "raw_map_max_score"
+METHOD_NATIVE_IMAGE_SCORE_FIELD = "method_native_image_score"
+COMMON_IMAGE_SCORE_SEMANTICS = "max_of_persisted_raw_anomaly_map"
+COMMON_IMAGE_AUROC_METRIC = "image_auroc"
+METHOD_NATIVE_IMAGE_AUROC_METRIC = "image_auroc_method_native"
 
 
 @dataclass(frozen=True)
@@ -88,6 +97,49 @@ def draem_image_scores(anomaly_maps: ArrayLike, kernel_size: int = 21) -> FloatA
         cval=0.0,
     )
     return pooled.max(axis=(1, 2))
+
+
+def raw_map_max_image_scores(anomaly_maps: ArrayLike) -> FloatArray:
+    """Return the cross-method image score from each persisted raw map.
+
+    This is the only image score used by :func:`evaluate_category`.  Keeping
+    method-native aggregations out of that function prevents a method-specific
+    score (for example DRAEM's pooled maximum or PatchCore's patch score) from
+    silently entering the common ``image_auroc`` column.
+    """
+
+    maps = _as_map_stack(anomaly_maps, "anomaly_maps")
+    return maps.max(axis=(1, 2))
+
+
+def image_auroc_from_scores(image_labels: ArrayLike, image_scores: ArrayLike) -> float:
+    """Evaluate a named, method-specific image score after strict validation."""
+
+    scores = np.asarray(image_scores, dtype=np.float64)
+    if scores.ndim != 1 or scores.size == 0:
+        raise ValueError("image_scores must be a non-empty one-dimensional array")
+    if not np.isfinite(scores).all():
+        raise ValueError("image_scores contains NaN or infinite values")
+    labels = _as_binary_labels(image_labels, scores.shape[0])
+    return float(roc_auc_score(labels, scores))
+
+
+def image_score_contract(method_native_semantics: str) -> dict[str, object]:
+    """Describe the persisted common and method-native image-score fields."""
+
+    if not isinstance(method_native_semantics, str) or not method_native_semantics:
+        raise ValueError("method_native_semantics must be a non-empty string")
+    return {
+        "schema_version": METRICS_SCHEMA_VERSION,
+        "common_image_auroc_metric": COMMON_IMAGE_AUROC_METRIC,
+        "common_image_score_field": COMMON_IMAGE_SCORE_FIELD,
+        "common_image_score_semantics": COMMON_IMAGE_SCORE_SEMANTICS,
+        "method_native_image_auroc_metric": METHOD_NATIVE_IMAGE_AUROC_METRIC,
+        "method_native_image_score_field": METHOD_NATIVE_IMAGE_SCORE_FIELD,
+        "method_native_image_score_semantics": method_native_semantics,
+        "raw_map_field": "raw_map",
+        "visualization_source_field": "raw_map",
+    }
 
 
 def _region_weights(masks: BoolArray) -> tuple[FloatArray, int]:
@@ -182,23 +234,15 @@ def evaluate_category(
     masks: ArrayLike,
     image_labels: ArrayLike,
     *,
-    image_scores: ArrayLike | None = None,
     fpr_limit: float = 0.30,
 ) -> CategoryMetrics:
-    """Evaluate one complete category under ``draem_256_unified_v1``."""
+    """Evaluate a category using raw-map max as the common image score."""
 
     maps = _as_map_stack(anomaly_maps, "anomaly_maps")
     binary_masks = _as_binary_masks(masks, maps.shape)
     labels = _as_binary_labels(image_labels, maps.shape[0])
 
-    if image_scores is None:
-        resolved_image_scores = draem_image_scores(maps)
-    else:
-        resolved_image_scores = np.asarray(image_scores, dtype=np.float64)
-        if resolved_image_scores.shape != (maps.shape[0],):
-            raise ValueError(f"image_scores must have shape ({maps.shape[0]},)")
-        if not np.isfinite(resolved_image_scores).all():
-            raise ValueError("image_scores contains NaN or infinite values")
+    resolved_image_scores = raw_map_max_image_scores(maps)
 
     flat_masks = binary_masks.ravel().astype(np.uint8)
     if np.unique(flat_masks).size != 2:

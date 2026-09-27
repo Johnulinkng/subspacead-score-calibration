@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "dataset": "MVTec AD",
+  "official_dataset_page": "https://www.mvtec.com/research-teaching/datasets/mvtec-ad",
+  "dataset_license": "CC-BY-NC-SA-4.0",
+  "commercial_use_allowed": false,
+  "download_registry": {
+    "project": "open-edge-platform/anomalib",
+    "repository": "https://github.com/open-edge-platform/anomalib.git",
+    "local_path": "third_party/anomalib",
+    "commit": "d716bb94f86505eb28a2e473f4ce00f9e98dedf7",
+    "commit_date": "2026-09-23T09:29:04+02:00",
+    "registry_file": "src/anomalib/data/datamodules/image/mvtecad.py",
+    "registry_file_sha256": "7c6fae68eb588a7d554065a93b3d4ba29fc3ef75d08c2371c81a67ca573f6a42",
+    "code_license": "Apache-2.0",
+    "code_license_sha256": "7ae7504c2b7e895c3f61320a389af7fdde68143cd4dfd7941247640b0b62cc76",
+    "relationship_to_release_manifest": "This frozen main-branch commit is the download registry identity; manifests/anomalib_release.json is an independent release snapshot and is not the source identity used here."
+  },
+  "archive": {
+    "url": "https://www.mydrive.ch/shares/150996/b52ecdcbf521176e9db9c731f2304b27/download/420938113-1629960298/mvtec_anomaly_detection.tar.xz",
+    "path": "data/archives/mvtec_anomaly_detection.tar.xz",
+    "expected_bytes_from_http": 5264982680,
+    "expected_sha256_from_anomalib": "cf4313b13603bec67abb49ca959488f7eedce2a9f7795ec54446c649ac98cd3d",
+    "http_accept_ranges": true,
+    "http_last_modified": "2021-08-26T06:28:14Z",
+    "download_status": "verified",
+    "observed_bytes": 5264982680,
+    "observed_sha256": "cf4313b13603bec67abb49ca959488f7eedce2a9f7795ec54446c649ac98cd3d",
+    "expected_bytes_match": true,
+    "expected_sha256_match": true,
+    "archive_member_count": 6880,
+    "path_safety_passed": true,
+    "verified_at_utc": "2026-09-27T08:29:00.634449+00:00"
+  },
+  "prepared_manifest": "manifests/mvtec_prepared.json"
+}

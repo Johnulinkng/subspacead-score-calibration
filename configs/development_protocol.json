@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "protocol_id": "visa_train_dev_dtd_v1",
+  "status": "frozen_before_model_development",
+  "model_seeds": [
+    1887537248,
+    1337854654,
+    1609762728
+  ],
+  "model_seed_registration": {
+    "derivation_string": "industrial-anomaly-lab|formal-v1|2026-09-27",
+    "sha256": "f08188604fbe0abedff307a881d63b5c32a99bc27c1fdf5a294b9098cbab4055",
+    "hex_chunk_offsets": [
+      0,
+      8,
+      16
+    ],
+    "transform": "int(sha256_hex[offset:offset+8], 16) & 0x7fffffff",
+    "derived_seeds": [
+      1887537248,
+      1337854654,
+      1609762728
+    ]
+  },
+  "frozen_manifest": {
+    "path": "manifests/development/visa_v1/manifest.json",
+    "sha256": "8b96aefa389078990ad00bd0dfab1e17de561af2d8c559758eda011aa62bc958",
+    "policy": "Any regeneration or edit requires an explicit hash refreeze before a development run."
+  },
+  "visa": {
+    "root": "data/visa/1cls",
+    "categories": [
+      "candle",
+      "capsules",
+      "cashew",
+      "chewinggum",
+      "fryum",
+      "macaroni1",
+      "macaroni2",
+      "pcb1",
+      "pcb2",
+      "pcb3",
+      "pcb4",
+      "pipe_fryum"
+    ],
+    "source_scope": "<category>/train/good only",
+    "split_unit": "original_file_content_group",
+    "dev_fraction": 0.2,
+    "split_salt": "visa-normal-original-v1-20260927"
+  },
+  "dtd": {
+    "root": "data/dtd/images",
+    "split_unit": "original_file_content_group_stratified_by_texture_category",
+    "dev_fraction": 0.2,
+    "split_salt": "dtd-source-original-v1-20260927"
+  },
+  "synthetic_development": {
+    "renderer_id": "draem_synthetic_dev_renderer_v2",
+    "recipe_schema_version": 3,
+    "normal_examples_per_dev_image": 1,
+    "positive_variants_per_dev_image": 2,
+    "target_rotation_probability": 0.3,
+    "recipe_salt": "draem-synthetic-dev-recipes-v1-20260927",
+    "image_size": 256,
+    "perlin_scales": [
+      1,
+      2,
+      4,
+      8,
+      16,
+      32
+    ],
+    "perlin_threshold": 0.5,
+    "blend_beta_range": [
+      0.0,
+      0.8
+    ],
+    "normal_false_positive_threshold": 0.5,
+    "augmenters_per_positive": 3,
+    "render_policy": "Render from the frozen recipe fields and locked environment; never resample a development recipe at evaluation time."
+  },
+  "formal_test_policy": {
+    "content_access_during_development": "forbidden",
+    "path_inventory_during_manifest_build": "forbidden",
+    "use_for_checkpoint_or_hyperparameter_selection": "forbidden"
+  }
+}

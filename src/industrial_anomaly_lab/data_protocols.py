@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Callable, Literal
+from typing import Callable, Literal, Sequence
 
 import cv2
 import imgaug.augmenters as iaa
@@ -149,6 +149,110 @@ def validate_train_layout(dataset_root: str | Path, category: str) -> list[Path]
     return images
 
 
+def _validate_explicit_image_paths(
+    paths: Sequence[str | Path], label: str
+) -> list[Path]:
+    """Validate a previously authenticated path selection without rediscovery."""
+
+    resolved: list[Path] = []
+    seen: set[str] = set()
+    for raw_path in paths:
+        path = Path(raw_path).resolve()
+        if path.is_symlink() or not path.is_file():
+            raise FileNotFoundError(f"{label} image is missing or linked: {path}")
+        if path.suffix.lower() not in SUPPORTED_IMAGE_SUFFIXES:
+            raise ValueError(f"{label} image suffix is unsupported: {path}")
+        key = str(path).casefold()
+        if key in seen:
+            raise ValueError(f"duplicate {label} image path: {path}")
+        seen.add(key)
+        resolved.append(path)
+    if not resolved:
+        raise ValueError(f"explicit {label} image list is empty")
+    return resolved
+
+
+def _validate_explicit_test_samples(
+    samples: Sequence[TestSample],
+    *,
+    dataset: str,
+    dataset_root: str | Path,
+    category: str,
+) -> list[TestSample]:
+    """Validate an authenticated test selection without directory discovery."""
+
+    resolved_dataset = _validate_dataset_name(dataset)
+    root = Path(dataset_root).resolve()
+    if not samples:
+        raise ValueError("explicit test sample list is empty")
+    checked: list[TestSample] = []
+    seen_ids: set[str] = set()
+    seen_images: set[str] = set()
+    for position, sample in enumerate(samples):
+        if not isinstance(sample, TestSample):
+            raise TypeError(f"explicit test sample {position} is not a TestSample")
+        if sample.dataset != resolved_dataset or sample.category != category:
+            raise ValueError(f"explicit test sample {position} dataset/category mismatch")
+        if isinstance(sample.label, bool) or sample.label not in (0, 1):
+            raise ValueError(f"explicit test sample {position} has invalid label")
+        if (sample.label == 0) != (sample.defect_type.casefold() == "good"):
+            raise ValueError(f"explicit test sample {position} label/defect mismatch")
+        image_path = Path(sample.image_path)
+        if image_path.is_symlink() or not image_path.is_file():
+            raise FileNotFoundError(
+                f"explicit test sample {position} image is missing or linked: {image_path}"
+            )
+        image_path = image_path.resolve()
+        try:
+            image_path.relative_to(root)
+        except ValueError as error:
+            raise ValueError(
+                f"explicit test sample {position} image escapes dataset root"
+            ) from error
+        if image_path.suffix.lower() not in SUPPORTED_IMAGE_SUFFIXES:
+            raise ValueError(f"explicit test sample {position} image suffix is unsupported")
+        mask_path: Path | None = None
+        if sample.label == 0:
+            if sample.mask_path is not None:
+                raise ValueError(f"normal explicit test sample {position} has a mask")
+        else:
+            if sample.mask_path is None:
+                raise ValueError(f"anomalous explicit test sample {position} has no mask")
+            candidate_mask = Path(sample.mask_path)
+            if candidate_mask.is_symlink() or not candidate_mask.is_file():
+                raise FileNotFoundError(
+                    f"explicit test sample {position} mask is missing or linked: "
+                    f"{candidate_mask}"
+                )
+            mask_path = candidate_mask.resolve()
+            try:
+                mask_path.relative_to(root)
+            except ValueError as error:
+                raise ValueError(
+                    f"explicit test sample {position} mask escapes dataset root"
+                ) from error
+            if mask_path.suffix.lower() not in SUPPORTED_IMAGE_SUFFIXES:
+                raise ValueError(f"explicit test sample {position} mask suffix is unsupported")
+        sample_key = sample.sample_id.casefold()
+        image_key = str(image_path).casefold()
+        if not sample.sample_id or sample_key in seen_ids or image_key in seen_images:
+            raise ValueError("explicit test samples contain empty/duplicate IDs or images")
+        seen_ids.add(sample_key)
+        seen_images.add(image_key)
+        checked.append(
+            TestSample(
+                dataset=resolved_dataset,
+                category=category,
+                defect_type=sample.defect_type,
+                sample_id=sample.sample_id,
+                image_path=image_path,
+                mask_path=mask_path,
+                label=sample.label,
+            )
+        )
+    return checked
+
+
 class DraemTestDataset(Dataset[dict[str, object]]):
     """DRAEM-compatible test loader with nearest-neighbor mask resizing."""
 
@@ -159,11 +263,21 @@ class DraemTestDataset(Dataset[dict[str, object]]):
         category: str,
         *,
         image_size: int = 256,
+        samples: Sequence[TestSample] | None = None,
     ) -> None:
         if image_size <= 0:
             raise ValueError("image_size must be positive")
         self.dataset_root = Path(dataset_root).resolve()
-        self.samples = build_test_manifest(dataset, self.dataset_root, category)
+        self.samples = (
+            build_test_manifest(dataset, self.dataset_root, category)
+            if samples is None
+            else _validate_explicit_test_samples(
+                samples,
+                dataset=dataset,
+                dataset_root=self.dataset_root,
+                category=category,
+            )
+        )
         self.image_size = image_size
 
     def __len__(self) -> int:
@@ -202,6 +316,7 @@ class DraemTestDataset(Dataset[dict[str, object]]):
             "mask": torch.from_numpy(mask[None, :, :].astype(np.float32)),
             "label": torch.tensor(sample.label, dtype=torch.int64),
             "sample_id": sample.sample_id,
+            "defect_type": sample.defect_type,
             "image_path": str(sample.image_path),
             "mask_path": "" if sample.mask_path is None else str(sample.mask_path),
             "original_height": original_height,
@@ -236,11 +351,25 @@ class DraemSyntheticTrainDataset(Dataset[dict[str, object]]):
         *,
         image_size: int = 256,
         vendor_root: Path = DEFAULT_VENDOR_ROOT,
+        normal_image_paths: Sequence[str | Path] | None = None,
+        anomaly_source_paths: Sequence[str | Path] | None = None,
     ) -> None:
         if image_size <= 0:
             raise ValueError("image_size must be positive")
-        self.image_paths = validate_train_layout(dataset_root, category)
-        self.anomaly_source_paths = discover_images(anomaly_source_root, recursive=True)
+        if (normal_image_paths is None) != (anomaly_source_paths is None):
+            raise ValueError(
+                "normal_image_paths and anomaly_source_paths must be provided together"
+            )
+        self.image_paths = (
+            validate_train_layout(dataset_root, category)
+            if normal_image_paths is None
+            else _validate_explicit_image_paths(normal_image_paths, "normal training")
+        )
+        self.anomaly_source_paths = (
+            discover_images(anomaly_source_root, recursive=True)
+            if anomaly_source_paths is None
+            else _validate_explicit_image_paths(anomaly_source_paths, "anomaly source")
+        )
         if not self.anomaly_source_paths:
             raise ValueError(f"no anomaly-source images found in {anomaly_source_root}")
         self.image_size = image_size

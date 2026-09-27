@@ -61,7 +61,8 @@ under the frozen experiment protocol:
 From the project root, with the locked environment already synchronized:
 
 ```powershell
-.\.venv\Scripts\python.exe scripts\validate_aupro_against_official.py
+. .\scripts\Set-ProjectEnvironment.ps1 | Out-Null
+.\.venv\Scripts\python.exe .\scripts\validate_aupro_against_official.py
 ```
 
 The script verifies the archive hash before importing the official code and

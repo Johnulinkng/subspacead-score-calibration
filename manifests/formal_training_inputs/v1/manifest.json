@@ -1,0 +1,359 @@
+{
+  "children": [
+    {
+      "category": null,
+      "dataset": "dtd",
+      "path": "manifests/formal_training_inputs/v1/dtd__all__images.jsonl",
+      "role": "draem_anomaly_source",
+      "rows": 5640,
+      "sha256": "ed95d34ec5bc5e0a431269c8fac37fc63888584cf47f84a7d804e38ac8dbbe95",
+      "size_bytes": 1576215
+    },
+    {
+      "category": "bottle",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__bottle__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 209,
+      "sha256": "1fa83fc0ea988657059a8cfb7c6ce5f121968f1b47ede6e323c5583f5b41cf1a",
+      "size_bytes": 56430
+    },
+    {
+      "category": "cable",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__cable__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 224,
+      "sha256": "3fe325fa6a32ed11217237a3626f3db77ce52ee1f0ae6caf9f2fe719b775f4b9",
+      "size_bytes": 60256
+    },
+    {
+      "category": "capsule",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__capsule__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 219,
+      "sha256": "012404a7d8e7abeb151b1e4f885b978ef253c0c23cde5e3630ea0d0ea9121d12",
+      "size_bytes": 59787
+    },
+    {
+      "category": "carpet",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__carpet__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 280,
+      "sha256": "07e643f0dfb2942ddbbc6a8711ab2e0deb2911205952b862707ad3809919e8cb",
+      "size_bytes": 75880
+    },
+    {
+      "category": "grid",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__grid__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 264,
+      "sha256": "abf5857ca13a14523efbfcf9bb8eb7657d80fde599c920693252cd0dcb66457f",
+      "size_bytes": 70224
+    },
+    {
+      "category": "hazelnut",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__hazelnut__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 391,
+      "sha256": "44d14d881defaa9fcac370f78cbe1fab4c96454b9a3d265151d05989dda3b5c1",
+      "size_bytes": 107525
+    },
+    {
+      "category": "leather",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__leather__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 245,
+      "sha256": "09784251471d005daae2f7c4d73fc564b223fb88d140725523c6c19722d25a67",
+      "size_bytes": 66885
+    },
+    {
+      "category": "metal_nut",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__metal_nut__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 220,
+      "sha256": "12fd3ded17bf2b5b5d280604e3190b37cc9aa35afc4655d225cee20e5dc15b69",
+      "size_bytes": 60720
+    },
+    {
+      "category": "pill",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__pill__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 267,
+      "sha256": "a3d2ada2bf34b44b54f491e25845118740ff6979ff80d891a82bb7102de37227",
+      "size_bytes": 71022
+    },
+    {
+      "category": "screw",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__screw__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 320,
+      "sha256": "8465392e07f3d646428e9ad40968f186e8b261bf482bd695bc6ecf925a8d2a1c",
+      "size_bytes": 85760
+    },
+    {
+      "category": "tile",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__tile__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 230,
+      "sha256": "be3b28bf4218805c87cd3606605a79161475d005f2d8baa9aafc5e68f9025f5c",
+      "size_bytes": 61367
+    },
+    {
+      "category": "toothbrush",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__toothbrush__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 60,
+      "sha256": "4b7a18979f1e7e964e067bb07102610deb5f933990fc0b63c6546aec68a6393f",
+      "size_bytes": 16740
+    },
+    {
+      "category": "transistor",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__transistor__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 213,
+      "sha256": "416a3b6aba3e93151b148a6f3fd68fe6964555febd57002b2d4ac2d2aff2f04c",
+      "size_bytes": 59427
+    },
+    {
+      "category": "wood",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__wood__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 247,
+      "sha256": "4a8e1d13d4dd7d60f9ac09f96cf185dcff72629c91b854d86fc866595c2b5c2f",
+      "size_bytes": 65949
+    },
+    {
+      "category": "zipper",
+      "dataset": "mvtec_ad",
+      "path": "manifests/formal_training_inputs/v1/mvtec_ad__zipper__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 240,
+      "sha256": "6002a0f45c5a82dd435731f085f3f334245f3c505f4b699ed6e2389c4d3e5e35",
+      "size_bytes": 64800
+    },
+    {
+      "category": "candle",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__candle__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 900,
+      "sha256": "2167fffc5e1b927e23f00d7207373061743c675e57dd6c74ca2cc55b3d3e2a75",
+      "size_bytes": 241199
+    },
+    {
+      "category": "capsules",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__capsules__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 542,
+      "sha256": "19a4e3c99fe959ebbf673bf464a7c0fdfa7be3e2f4e5d0f66ab407aaf629816d",
+      "size_bytes": 146882
+    },
+    {
+      "category": "cashew",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__cashew__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 450,
+      "sha256": "2fc45fd128db5ddfca2472a63cd674a4b3ca3c987d5cb73e88b2287cf76fa5d8",
+      "size_bytes": 120150
+    },
+    {
+      "category": "chewinggum",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__chewinggum__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 453,
+      "sha256": "98a736f7e9f4d1561a39d4ca1e7fba47f9b4c9b2241da26f14822526166f02f6",
+      "size_bytes": 124575
+    },
+    {
+      "category": "fryum",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__fryum__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 450,
+      "sha256": "20f03de81c66676a47a9e8c05a3ef323e1073284d2312ded52c5e94a9039ab4b",
+      "size_bytes": 119250
+    },
+    {
+      "category": "macaroni1",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__macaroni1__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 900,
+      "sha256": "071ed81a31e42f20904f53a641954f544df837fe0e545e1b519b948631b7bea6",
+      "size_bytes": 246533
+    },
+    {
+      "category": "macaroni2",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__macaroni2__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 900,
+      "sha256": "cd14221ad69d30ffff03e3a2547c774a1e9528ff4e99a0195a37648ae9957c94",
+      "size_bytes": 246562
+    },
+    {
+      "category": "pcb1",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__pcb1__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 904,
+      "sha256": "11989b4610efd1e953a0aa8a2ee4ab40d63b2a19253f9c8eec9019b39379c68f",
+      "size_bytes": 238656
+    },
+    {
+      "category": "pcb2",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__pcb2__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 901,
+      "sha256": "c87a4d6c10fb9ba98ee3cdcb26e6eb2ece8e4a58a7e667a330963a3ab0a0ec50",
+      "size_bytes": 237864
+    },
+    {
+      "category": "pcb3",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__pcb3__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 905,
+      "sha256": "200181a7da2df6affc13d74b994c2d2b852389c2372ef29e6d32b3fe4a1dc023",
+      "size_bytes": 238920
+    },
+    {
+      "category": "pcb4",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__pcb4__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 904,
+      "sha256": "492e26ada99f84effa3af9e6854537426f6b113f038838900821ce084271cf76",
+      "size_bytes": 238656
+    },
+    {
+      "category": "pipe_fryum",
+      "dataset": "visa",
+      "path": "manifests/formal_training_inputs/v1/visa__pipe_fryum__train_good.jsonl",
+      "role": "normal_training",
+      "rows": 450,
+      "sha256": "8bf6545ddfbf2b70277ef2c012b3d67d8a6dab66d783ab3fb04738e97991e249",
+      "size_bytes": 123376
+    }
+  ],
+  "contract": "formal_training_input_bundle_v1",
+  "data_roots": {
+    "dtd": "data/dtd/images",
+    "mvtec_ad": "data/mvtec_ad",
+    "visa": "data/visa/1cls"
+  },
+  "datasets": {
+    "mvtec_ad": {
+      "categories": {
+        "bottle": 209,
+        "cable": 224,
+        "capsule": 219,
+        "carpet": 280,
+        "grid": 264,
+        "hazelnut": 391,
+        "leather": 245,
+        "metal_nut": 220,
+        "pill": 267,
+        "screw": 320,
+        "tile": 230,
+        "toothbrush": 60,
+        "transistor": 213,
+        "wood": 247,
+        "zipper": 240
+      },
+      "normal_training_images": 3629
+    },
+    "visa": {
+      "categories": {
+        "candle": 900,
+        "capsules": 542,
+        "cashew": 450,
+        "chewinggum": 453,
+        "fryum": 450,
+        "macaroni1": 900,
+        "macaroni2": 900,
+        "pcb1": 904,
+        "pcb2": 901,
+        "pcb3": 905,
+        "pcb4": 904,
+        "pipe_fryum": 450
+      },
+      "normal_training_images": 8659
+    }
+  },
+  "dtd": {
+    "categories": 47,
+    "images": 5640
+  },
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "path_base": "project_root",
+  "project_root": ".",
+  "provenance": {
+    "builder": [
+      {
+        "label": "builder_cli",
+        "path": "scripts/build_formal_training_inputs.py",
+        "sha256": "e74ca96503dd575046351bc6cae1d577ead5b2b045de70df695551d8515b1537",
+        "size_bytes": 1921
+      },
+      {
+        "label": "builder_validator_module",
+        "path": "src/industrial_anomaly_lab/formal_training_inputs.py",
+        "sha256": "17dd7704fd53cfc6df356bf5c648557eae0246a48e24327480a183024ed7c85a",
+        "size_bytes": 41833
+      }
+    ],
+    "validator": [
+      {
+        "label": "builder_cli",
+        "path": "scripts/build_formal_training_inputs.py",
+        "sha256": "e74ca96503dd575046351bc6cae1d577ead5b2b045de70df695551d8515b1537",
+        "size_bytes": 1921
+      },
+      {
+        "label": "builder_validator_module",
+        "path": "src/industrial_anomaly_lab/formal_training_inputs.py",
+        "sha256": "17dd7704fd53cfc6df356bf5c648557eae0246a48e24327480a183024ed7c85a",
+        "size_bytes": 41833
+      }
+    ]
+  },
+  "schema_version": 1,
+  "source_manifests": {
+    "dtd": {
+      "path": "manifests/dtd_r1.0.1.json",
+      "sha256": "e5092d5699f28b15419fdea7b96bb424033a1d70016b3fe4d960cc517999f491",
+      "size_bytes": 707
+    },
+    "mvtec_ad": {
+      "path": "manifests/mvtec_source_manifest.json",
+      "sha256": "8b406dbc042795ac9bf809a1fc63c2b9a5f01176953676f522f87ab5ee6debbe",
+      "size_bytes": 1888
+    },
+    "visa": {
+      "path": "manifests/visa_source_manifest.json",
+      "sha256": "2aa3d6787df0ac805a26a0372d88e690255898616d9069dc54fabf5527010586",
+      "size_bytes": 2731
+    }
+  },
+  "test_or_ground_truth_enumerated": false,
+  "training_started": false
+}

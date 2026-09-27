@@ -1,0 +1,447 @@
+{
+  "archive": {
+    "bytes": 5264982680,
+    "expected_bytes": 5264982680,
+    "expected_bytes_match": true,
+    "expected_sha256": "cf4313b13603bec67abb49ca959488f7eedce2a9f7795ec54446c649ac98cd3d",
+    "expected_sha256_match": true,
+    "member_count": 6880,
+    "path": "data/archives/mvtec_anomaly_detection.tar.xz",
+    "path_safety_passed": true,
+    "sha256": "cf4313b13603bec67abb49ca959488f7eedce2a9f7795ec54446c649ac98cd3d"
+  },
+  "commercial_use_allowed": false,
+  "content_access_boundary": {
+    "image_decode_performed": false,
+    "metrics_computed": false,
+    "model_inference_started": false,
+    "test_image_content_viewed": false,
+    "training_started": false
+  },
+  "dataset": "MVTec AD",
+  "dataset_license": "CC-BY-NC-SA-4.0",
+  "extraction": {
+    "destination": "data/mvtec_ad",
+    "existing_destination_overwritten": false,
+    "initial_verified_at_utc": "2026-09-27T08:29:00.634449+00:00",
+    "safe_extraction_completed": true
+  },
+  "generated_at_utc": "2026-09-27T08:30:22.237254+00:00",
+  "layout": {
+    "all_required_images_and_masks_nonempty": true,
+    "categories": {
+      "bottle": {
+        "all_category_file_bytes": 156570806,
+        "all_category_files": 357,
+        "ground_truth_by_type": {
+          "broken_large": 20,
+          "broken_small": 22,
+          "contamination": 21
+        },
+        "ground_truth_masks": 63,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "06158b1a0ce0100eeb3e71909caeee3c51008f1f382a8ab6676d5bcc0804a39a",
+        "test_anomaly_images": 63,
+        "test_by_type": {
+          "broken_large": 20,
+          "broken_small": 22,
+          "contamination": 21,
+          "good": 20
+        },
+        "test_good_images": 20,
+        "test_images_total": 83,
+        "train_good_images": 209
+      },
+      "cable": {
+        "all_category_file_bytes": 505197025,
+        "all_category_files": 468,
+        "ground_truth_by_type": {
+          "bent_wire": 13,
+          "cable_swap": 12,
+          "combined": 11,
+          "cut_inner_insulation": 14,
+          "cut_outer_insulation": 10,
+          "missing_cable": 12,
+          "missing_wire": 10,
+          "poke_insulation": 10
+        },
+        "ground_truth_masks": 92,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "f87c44b01871ca3d528a766aaf6c4f1329c9efdf0079563dca063cf5144ec3ab",
+        "test_anomaly_images": 92,
+        "test_by_type": {
+          "bent_wire": 13,
+          "cable_swap": 12,
+          "combined": 11,
+          "cut_inner_insulation": 14,
+          "cut_outer_insulation": 10,
+          "good": 58,
+          "missing_cable": 12,
+          "missing_wire": 10,
+          "poke_insulation": 10
+        },
+        "test_good_images": 58,
+        "test_images_total": 150,
+        "train_good_images": 224
+      },
+      "capsule": {
+        "all_category_file_bytes": 404753963,
+        "all_category_files": 462,
+        "ground_truth_by_type": {
+          "crack": 23,
+          "faulty_imprint": 22,
+          "poke": 21,
+          "scratch": 23,
+          "squeeze": 20
+        },
+        "ground_truth_masks": 109,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "19aa8bf417bb2e8a53972ebd2725410f87ec65b86ede93ec3173b885df1296e8",
+        "test_anomaly_images": 109,
+        "test_by_type": {
+          "crack": 23,
+          "faulty_imprint": 22,
+          "good": 23,
+          "poke": 21,
+          "scratch": 23,
+          "squeeze": 20
+        },
+        "test_good_images": 23,
+        "test_images_total": 132,
+        "train_good_images": 219
+      },
+      "carpet": {
+        "all_category_file_bytes": 740943525,
+        "all_category_files": 488,
+        "ground_truth_by_type": {
+          "color": 19,
+          "cut": 17,
+          "hole": 17,
+          "metal_contamination": 17,
+          "thread": 19
+        },
+        "ground_truth_masks": 89,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "3cd5491cd1a99b62bac04084ef561baee57131a7afe25cfd3b32378627182168",
+        "test_anomaly_images": 89,
+        "test_by_type": {
+          "color": 19,
+          "cut": 17,
+          "good": 28,
+          "hole": 17,
+          "metal_contamination": 17,
+          "thread": 19
+        },
+        "test_good_images": 28,
+        "test_images_total": 117,
+        "train_good_images": 280
+      },
+      "grid": {
+        "all_category_file_bytes": 161398735,
+        "all_category_files": 401,
+        "ground_truth_by_type": {
+          "bent": 12,
+          "broken": 12,
+          "glue": 11,
+          "metal_contamination": 11,
+          "thread": 11
+        },
+        "ground_truth_masks": 57,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "8267eb3b3a3da841c802c1599837888c30ef2c3f2c5f4d0d15ce5031ef3cf97a",
+        "test_anomaly_images": 57,
+        "test_by_type": {
+          "bent": 12,
+          "broken": 12,
+          "glue": 11,
+          "good": 21,
+          "metal_contamination": 11,
+          "thread": 11
+        },
+        "test_good_images": 21,
+        "test_images_total": 78,
+        "train_good_images": 264
+      },
+      "hazelnut": {
+        "all_category_file_bytes": 617585949,
+        "all_category_files": 573,
+        "ground_truth_by_type": {
+          "crack": 18,
+          "cut": 17,
+          "hole": 18,
+          "print": 17
+        },
+        "ground_truth_masks": 70,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "9a1d1b4fb67f312aecdbb3a5ce723d8836a0671e11ce3101454d20e453d301fc",
+        "test_anomaly_images": 70,
+        "test_by_type": {
+          "crack": 18,
+          "cut": 17,
+          "good": 40,
+          "hole": 18,
+          "print": 17
+        },
+        "test_good_images": 40,
+        "test_images_total": 110,
+        "train_good_images": 391
+      },
+      "leather": {
+        "all_category_file_bytes": 525442153,
+        "all_category_files": 463,
+        "ground_truth_by_type": {
+          "color": 19,
+          "cut": 19,
+          "fold": 17,
+          "glue": 19,
+          "poke": 18
+        },
+        "ground_truth_masks": 92,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "2367a687cd4063423f5834918944c954563c59ec878cd7a12d827182072aaa18",
+        "test_anomaly_images": 92,
+        "test_by_type": {
+          "color": 19,
+          "cut": 19,
+          "fold": 17,
+          "glue": 19,
+          "good": 32,
+          "poke": 18
+        },
+        "test_good_images": 32,
+        "test_images_total": 124,
+        "train_good_images": 245
+      },
+      "metal_nut": {
+        "all_category_file_bytes": 165862477,
+        "all_category_files": 430,
+        "ground_truth_by_type": {
+          "bent": 25,
+          "color": 22,
+          "flip": 23,
+          "scratch": 23
+        },
+        "ground_truth_masks": 93,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "109396c7e01f9b620166270d548c4e2f335f18fd0d8e2f9bac8758438919cbf0",
+        "test_anomaly_images": 93,
+        "test_by_type": {
+          "bent": 25,
+          "color": 22,
+          "flip": 23,
+          "good": 22,
+          "scratch": 23
+        },
+        "test_good_images": 22,
+        "test_images_total": 115,
+        "train_good_images": 220
+      },
+      "pill": {
+        "all_category_file_bytes": 275077521,
+        "all_category_files": 577,
+        "ground_truth_by_type": {
+          "color": 25,
+          "combined": 17,
+          "contamination": 21,
+          "crack": 26,
+          "faulty_imprint": 19,
+          "pill_type": 9,
+          "scratch": 24
+        },
+        "ground_truth_masks": 141,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "f40706fb0bc88a8aa2d512c7287b3060643311d578b4a08c5101f67858e7f14b",
+        "test_anomaly_images": 141,
+        "test_by_type": {
+          "color": 25,
+          "combined": 17,
+          "contamination": 21,
+          "crack": 26,
+          "faulty_imprint": 19,
+          "good": 26,
+          "pill_type": 9,
+          "scratch": 24
+        },
+        "test_good_images": 26,
+        "test_images_total": 167,
+        "train_good_images": 267
+      },
+      "screw": {
+        "all_category_file_bytes": 195961707,
+        "all_category_files": 601,
+        "ground_truth_by_type": {
+          "manipulated_front": 24,
+          "scratch_head": 24,
+          "scratch_neck": 25,
+          "thread_side": 23,
+          "thread_top": 23
+        },
+        "ground_truth_masks": 119,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "a556d4b2e9aa83c032d1b6a822b05977efe796f4dd381b5ceb92858446c86d1e",
+        "test_anomaly_images": 119,
+        "test_by_type": {
+          "good": 41,
+          "manipulated_front": 24,
+          "scratch_head": 24,
+          "scratch_neck": 25,
+          "thread_side": 23,
+          "thread_top": 23
+        },
+        "test_good_images": 41,
+        "test_images_total": 160,
+        "train_good_images": 320
+      },
+      "tile": {
+        "all_category_file_bytes": 351734556,
+        "all_category_files": 433,
+        "ground_truth_by_type": {
+          "crack": 17,
+          "glue_strip": 18,
+          "gray_stroke": 16,
+          "oil": 18,
+          "rough": 15
+        },
+        "ground_truth_masks": 84,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "dad0a636106a151246f61edec0d85cddc37817481b41d4bb8659cdd1b011ea0b",
+        "test_anomaly_images": 84,
+        "test_by_type": {
+          "crack": 17,
+          "glue_strip": 18,
+          "good": 33,
+          "gray_stroke": 16,
+          "oil": 18,
+          "rough": 15
+        },
+        "test_good_images": 33,
+        "test_images_total": 117,
+        "train_good_images": 230
+      },
+      "toothbrush": {
+        "all_category_file_bytes": 109503304,
+        "all_category_files": 134,
+        "ground_truth_by_type": {
+          "defective": 30
+        },
+        "ground_truth_masks": 30,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "a225dc711394a9e77843b071c25eaf230280bfb7f5b6510ead1ab5a27b864cff",
+        "test_anomaly_images": 30,
+        "test_by_type": {
+          "defective": 30,
+          "good": 12
+        },
+        "test_good_images": 12,
+        "test_images_total": 42,
+        "train_good_images": 60
+      },
+      "transistor": {
+        "all_category_file_bytes": 403195203,
+        "all_category_files": 355,
+        "ground_truth_by_type": {
+          "bent_lead": 10,
+          "cut_lead": 10,
+          "damaged_case": 10,
+          "misplaced": 10
+        },
+        "ground_truth_masks": 40,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "6a42abcd3be072aaa312e9334de5209195699e74a40d014e6cb67d3c633132ab",
+        "test_anomaly_images": 40,
+        "test_by_type": {
+          "bent_lead": 10,
+          "cut_lead": 10,
+          "damaged_case": 10,
+          "good": 60,
+          "misplaced": 10
+        },
+        "test_good_images": 60,
+        "test_images_total": 100,
+        "train_good_images": 213
+      },
+      "wood": {
+        "all_category_file_bytes": 498470495,
+        "all_category_files": 388,
+        "ground_truth_by_type": {
+          "color": 8,
+          "combined": 11,
+          "hole": 10,
+          "liquid": 10,
+          "scratch": 21
+        },
+        "ground_truth_masks": 60,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "1cec6eb5b0cc2ce3eaad02f0ea7c71f44b9558edcf680ad62b1a36f160e5ba89",
+        "test_anomaly_images": 60,
+        "test_by_type": {
+          "color": 8,
+          "combined": 11,
+          "good": 19,
+          "hole": 10,
+          "liquid": 10,
+          "scratch": 21
+        },
+        "test_good_images": 19,
+        "test_images_total": 79,
+        "train_good_images": 247
+      },
+      "zipper": {
+        "all_category_file_bytes": 159527979,
+        "all_category_files": 512,
+        "ground_truth_by_type": {
+          "broken_teeth": 19,
+          "combined": 16,
+          "fabric_border": 17,
+          "fabric_interior": 16,
+          "rough": 17,
+          "split_teeth": 18,
+          "squeezed_teeth": 16
+        },
+        "ground_truth_masks": 119,
+        "mask_pairing": "exact_by_<test_stem>_mask.png",
+        "metadata_tree_sha256": "70311ae37a654b20cd2d0196254ae533ef2e25a3827a5c78840471dd90489a92",
+        "test_anomaly_images": 119,
+        "test_by_type": {
+          "broken_teeth": 19,
+          "combined": 16,
+          "fabric_border": 17,
+          "fabric_interior": 16,
+          "good": 32,
+          "rough": 17,
+          "split_teeth": 18,
+          "squeezed_teeth": 16
+        },
+        "test_good_images": 32,
+        "test_images_total": 151,
+        "train_good_images": 240
+      }
+    },
+    "category_count": 15,
+    "image_decode_performed": false,
+    "mask_pairing_complete": true,
+    "metadata_tree_sha256": "1c54d37591730895371fefc741bee145b4057e9b34347117cb997d759f3ad348",
+    "root": "data/mvtec_ad",
+    "test_image_content_viewed": false,
+    "totals": {
+      "all_file_bytes": 5271247124,
+      "all_files": 6644,
+      "ground_truth_masks": 1258,
+      "test_anomaly_images": 1258,
+      "test_good_images": 467,
+      "test_images_total": 1725,
+      "train_good_images": 3629
+    }
+  },
+  "mode": "safe_extraction_completed_then_existing_tree_reaudit",
+  "official_dataset_page": "https://www.mvtec.com/research-teaching/datasets/mvtec-ad",
+  "provenance": {
+    "audit_module": "src/industrial_anomaly_lab/mvtec.py",
+    "audit_module_sha256": "12a468c131a35eebe327a9477d5b77cbd74baacc7ddd53e819812f4a5fa06017",
+    "preparation_script": "scripts/prepare_mvtec_ad.py",
+    "preparation_script_sha256": "2d77b07375030a933408091294d69cf9f9598d05645c930fd72fb1ef33bc10cb",
+    "source_manifest": "manifests/mvtec_source_manifest.json",
+    "source_manifest_sha256": "8b406dbc042795ac9bf809a1fc63c2b9a5f01176953676f522f87ab5ee6debbe"
+  },
+  "schema_version": 1
+}

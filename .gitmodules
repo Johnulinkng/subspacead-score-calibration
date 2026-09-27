@@ -10,3 +10,6 @@
 [submodule "third_party/RD4AD"]
 	path = third_party/RD4AD
 	url = https://github.com/hq-deng/RD4AD.git
+[submodule "third_party/anomalib"]
+	path = third_party/anomalib
+	url = https://github.com/open-edge-platform/anomalib.git

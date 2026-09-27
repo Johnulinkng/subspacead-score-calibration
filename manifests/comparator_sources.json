@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "created_at": "2026-09-27T15:42:00+08:00",
-  "scope": "source_and_protocol_freeze_only",
+  "scope": "source_protocol_adapter_dependencies_and_shared_teacher_verified",
   "training_or_evaluation_run": false,
   "comparators": [
     {
@@ -38,8 +38,23 @@
   ],
   "required_datasets": ["MVTec AD", "VisA 1-class"],
   "additional_datasets_added": false,
-  "environment_installed": false,
-  "weights_downloaded": false,
+  "environment_installed": true,
+  "runtime_dependencies": {
+    "faiss_cpu": "1.12.0",
+    "timm": "1.0.20",
+    "import_and_faiss_probe_passed": true
+  },
+  "project_adapters": {
+    "PatchCore": "implemented_and_synthetic_runtime_verified",
+    "RD4AD": "implemented_training_and_inference_contract_verified"
+  },
+  "weights_downloaded": true,
+  "shared_teacher_weight": {
+    "manifest": "manifests/wide_resnet50_2_imagenet1k_v1.json",
+    "sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+    "strict_load_verified": true,
+    "formal_use_allowed": true
+  },
   "eight_gib_gpu_verified": false,
   "protocol": "docs/comparator_protocol.md"
 }

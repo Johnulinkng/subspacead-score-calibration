@@ -1,0 +1,135 @@
+{
+  "schema_version": 1,
+  "registration_id": "iad_q3_dev_matrix_v1_20260927",
+  "status": "development_protocol_frozen_method_definition_pending",
+  "development_dataset": "VisA official 1-class train/good only",
+  "anomaly_source": "DTD R1.0.1 with frozen content-disjoint train/dev split",
+  "model_seeds": [1887537248, 1337854654, 1609762728],
+  "model_seed_registration": {
+    "derivation_string": "industrial-anomaly-lab|formal-v1|2026-09-27",
+    "sha256": "f08188604fbe0abedff307a881d63b5c32a99bc27c1fdf5a294b9098cbab4055",
+    "hex_chunk_offsets": [0, 8, 16],
+    "transform": "int(sha256_hex[offset:offset+8], 16) & 0x7fffffff"
+  },
+  "selection_metric_order": [
+    "synthetic_dev_AUPRO_at_0.30",
+    "synthetic_dev_P_AUROC",
+    "normal_dev_false_positive_rate"
+  ],
+  "synthetic_development_contract": {
+    "recipe_schema_version": 3,
+    "renderer_id": "draem_synthetic_dev_renderer_v2",
+    "normal_to_synthetic_ratio": "1:2",
+    "normal_false_positive_threshold": 0.5,
+    "p_ap_prevalence_note": "P-AP is specific to the frozen 1:2 development prevalence.",
+    "evaluation_scope": "synthetic-development-only",
+    "claim_eligible": false
+  },
+  "claim_boundary": "Synthetic development performance selects and debugs a method; it is not evidence of performance on real defects.",
+  "matrix": [
+    {
+      "stage": "S0_integrity_smoke",
+      "methods": ["author_baseline_adapter"],
+      "categories": ["candle"],
+      "seeds": [1887537248],
+      "budget": "at most 2 optimizer steps",
+      "runtime_config": {
+        "image_size": 256,
+        "batch_size": 8,
+        "workers": 0,
+        "pin_memory": false,
+        "device": "cuda:0",
+        "launcher": "scripts/Invoke-DraemS0Smoke.ps1"
+      },
+      "claim_eligible": false,
+      "purpose": "Validate data, logging, checkpoint and metric plumbing only."
+    },
+    {
+      "stage": "S1_baseline_development_reference",
+      "methods": ["author_baseline_adapter"],
+      "categories": "all_12_visa_categories",
+      "seeds": [1887537248, 1337854654, 1609762728],
+      "budget": "same full development schedule later used by candidates",
+      "claim_eligible": false,
+      "purpose": "Freeze the development reference without formal test access."
+    },
+    {
+      "stage": "S2_candidate_screen",
+      "methods": ["candidate_1", "candidate_2", "candidate_3_maximum"],
+      "method_definition_rule": "Each candidate config and hypothesis must be frozen before its first run.",
+      "categories": "all_12_visa_categories",
+      "seeds": [1887537248],
+      "budget": "identical to S1 per category; at most 8 hyperparameter configurations per candidate family",
+      "claim_eligible": false,
+      "purpose": "Bounded selection on frozen synthetic development data."
+    },
+    {
+      "stage": "S3_candidate_confirmation",
+      "methods": ["author_baseline_adapter", "one_selected_candidate"],
+      "categories": "all_12_visa_categories",
+      "seeds": [1887537248, 1337854654, 1609762728],
+      "budget": "identical schedules and checkpoint rule",
+      "claim_eligible": false,
+      "purpose": "Confirm development stability before any formal test evaluation."
+    },
+    {
+      "stage": "S4_ablation_confirmation",
+      "methods": ["baseline", "full_candidate", "each_single_component_removed"],
+      "categories": "all_12_visa_categories",
+      "seeds": [1887537248, 1337854654, 1609762728],
+      "budget": "identical schedules and checkpoint rule",
+      "claim_eligible": false,
+      "purpose": "Establish component attribution on development data."
+    },
+    {
+      "stage": "F0_formal_evaluation",
+      "methods": ["frozen_baseline", "frozen_full_candidate", "frozen_ablations", "frozen_strong_controls"],
+      "datasets": ["MVTec AD", "VisA"],
+      "seeds": [1887537248, 1337854654, 1609762728],
+      "entry_gate": "All implementation, hyperparameters, checkpoints, thresholds, table schemas and visualization selection rules are frozen; the fixed-sample manifest is generated from the complete test inventory before model inference.",
+      "claim_eligible": true,
+      "purpose": "One formal evaluation pass; no result-driven redesign in the same registered round."
+    }
+  ],
+  "advancement_rules": {
+    "candidate_primary_gain_pp_min": 1.0,
+    "categories_nonnegative_min": 8,
+    "normal_false_positive_rate_regression_pp_max": 1.0,
+    "paired_multi_seed_confirmation_required": true,
+    "best_seed_or_best_epoch_reporting_forbidden": true
+  },
+  "formal_claim_rules": {
+    "primary_metric": "AUPRO@0.30",
+    "required_dataset_direction": "candidate macro mean must exceed DRAEM separately on both MVTec AD and VisA",
+    "equal_dataset_average_gain_pp_min": 1.0,
+    "category_nonnegative_fraction_min_each_dataset": 0.6,
+    "ci_rule": "category-level paired 95% bootstrap lower bound must exceed zero on at least one dataset; the other dataset must retain a positive point estimate",
+    "secondary_metric_macro_regression_pp_max_each_dataset": 0.5,
+    "strong_control_boundary": "A passed DRAEM comparison supports only a DRAEM-improvement claim. If the candidate does not beat PatchCore or RD4AD under the common protocol, that result must be reported and best-overall or SOTA claims are forbidden.",
+    "failed_rule_policy": "report the complete registered matrix and downgrade or reject the corresponding improvement claim"
+  },
+  "formal_statistics": {
+    "paired_unit": "category mean across registered seeds",
+    "bootstrap_method": "category-level percentile bootstrap",
+    "bootstrap_samples": 10000,
+    "bootstrap_seed": 20260927,
+    "confidence_level": 0.95,
+    "paired_test": "two-sided exact category-level sign-flip"
+  },
+  "formal_method_registry": {
+    "status": "pending_candidate_and_ablation_freeze",
+    "methods": null,
+    "baseline": "DRAEM",
+    "candidate": null,
+    "recipes": null,
+    "freeze_rule": "Replace null values and set status=frozen_before_formal_evaluation before any F0 inference or aggregation."
+  },
+  "stopping_rules": [
+    "Stop a candidate family after its first registered-seed all-category screen if macro AUPRO is at least 0.5 percentage point below baseline.",
+    "Stop a candidate family if more than two categories regress by more than 3.0 percentage points on the primary development metric.",
+    "Stop development after three candidate families or eight hyperparameter configurations per family, whichever limit is reached first.",
+    "Do not replace a stopped candidate using any observation from formal test data.",
+    "Any formal test access before F0 invalidates this registered round and must be disclosed; start a new registration before further development.",
+    "After F0, report all registered seeds and categories. Further model changes belong to a new exploratory round."
+  ]
+}

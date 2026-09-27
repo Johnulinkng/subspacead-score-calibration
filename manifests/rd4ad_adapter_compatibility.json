@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-27T16:03:13.5624945+08:00",
+  "updated_at": "2026-09-27T16:33:42+08:00",
+  "scope": "project_layer_adapter_and_synthetic_cpu_compatibility_only",
+  "vendor": {
+    "repository": "https://github.com/hq-deng/RD4AD.git",
+    "commit": "6554076872c65f8784f6ece8cfb39ce77e1aee12",
+    "license_spdx": "MIT",
+    "checkout_clean_after_validation": true,
+    "source_sha256": {
+      "dataset.py": "2814901e5087cc924eca1939f529debdda5fab43c371c47603427be27683415a",
+      "de_resnet.py": "c2740b70cd38453c8521151c539f3976d6e51adf64336224d02d4187f8cce4ee",
+      "main.py": "9bbe543c3a45e1368df5c33761fb161051773266d86e2d88be4049d403ef0de4",
+      "resnet.py": "d70cc2de79f6d253cf4397ebe41550c2bf7a15b43427f1228006368fe6a01c1b",
+      "test.py": "0e29666d6586e57c0bf2558cc09568a8fe7d8d82b153c31356387ce4624d05ef"
+    }
+  },
+  "environment": {
+    "os": "Windows",
+    "python": "3.11.16",
+    "torch": "2.7.0+cu128",
+    "torchvision": "0.22.0",
+    "numpy": "1.26.4"
+  },
+  "implemented": {
+    "datasets": [
+      "MVTec AD MVTec-style directory",
+      "VisA official one-class prepared directory"
+    ],
+    "normal_train_adapter": true,
+    "reproducible_training_entry": true,
+    "training_requires_local_teacher_and_full_sha256": true,
+    "training_max_steps_debug_only": true,
+    "training_final_checkpoint_only": true,
+    "test_adapter": true,
+    "batched_raw_anomaly_map": true,
+    "explicit_local_tensor_only_checkpoint_loading": true,
+    "raw_map_persistence_with_sha256": true,
+    "unified_evaluator_from_reloaded_arrays": true,
+    "runtime_frozen_source_sha256_gate": true,
+    "vendor_files_modified": false
+  },
+  "prediction_contract": {
+    "per_scale_map": "1 - cosine_similarity(teacher_feature, student_feature)",
+    "resize": "bilinear_align_corners_true",
+    "scale_aggregation": "sum",
+    "gaussian_sigma": 4.0,
+    "raw_map_dtype": "float32",
+    "raw_map_normalization": "none",
+    "ground_truth_resize": "nearest",
+    "common_image_score": "max_of_persisted_raw_anomaly_map",
+    "common_image_score_field": "raw_map_max_score",
+    "method_native_image_score": "rd4ad_raw_map_max_after_gaussian",
+    "method_native_image_score_field": "method_native_image_score",
+    "evaluation_protocol": "industrial_anomaly_raw_map_max_256_v2"
+  },
+  "synthetic_tests": {
+    "command": ".venv\\Scripts\\python.exe -m pytest -q tests\\test_rd4ad_data.py tests\\test_rd4ad_runtime.py tests\\test_rd4ad_infer.py",
+    "result": "7 passed",
+    "duration_seconds": 3.98
+  },
+  "training_synthetic_tests": {
+    "command": ".venv\\Scripts\\python.exe -m pytest -q tests\\test_rd4ad_train.py",
+    "result": "5 passed",
+    "duration_seconds": 3.38,
+    "formal_test_images_accessed": false,
+    "real_training_started": false
+  },
+  "train_only_validations": [
+    {
+      "artifact": "artifacts/validation/rd4ad_train_validate_visa_candle.json",
+      "artifact_sha256": "b88dcf256e672ebed56b98d39c03dc5f769f0e3eeb7060f1492a840e28145dd6",
+      "dataset": "visa",
+      "category": "candle",
+      "normal_training_images": 900,
+      "normal_training_file_bytes": 105056660,
+      "input_content_digest": "cae1f03f122386af9310bbe4da1a6df4fd58d7cd180a12da43f3855f6b7ad1d5",
+      "teacher_sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+      "teacher_strict_load_passed": true,
+      "training_started": false,
+      "formal_test_images_accessed": false
+    },
+    {
+      "artifact": "artifacts/validation/rd4ad_train_validate_mvtec_bottle.json",
+      "artifact_sha256": "00995210dcc4f54d9599f517257d1e0903bf07ea6774530e1bbcab03dd88122c",
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "normal_training_images": 209,
+      "normal_training_file_bytes": 111806381,
+      "input_content_digest": "aa76e6d9fa7b8cd5321191063eb8cc27c0da0a34fb42d095f64b1a12ecf03284",
+      "teacher_sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+      "teacher_strict_load_passed": true,
+      "training_started": false,
+      "formal_test_images_accessed": false
+    }
+  ],
+  "vendor_teacher_load_validation": {
+    "artifact": "artifacts/validation/rd4ad_vendor_teacher_load.json",
+    "artifact_sha256": "2339855d463beafcc7e7d52db8bf632d36902cd5297353029a9925076173277b",
+    "teacher_sha256": "95faca4d11227dddf8633dbb5ff6c8a9003c1aa5b8945c73834b8007b10950b8",
+    "strict_load_passed": true,
+    "missing_unexpected_shape_unsafe_dtype_nonfinite_counts": [0, 0, 0, 0, 0],
+    "optimizer_constructed": false,
+    "training_started": false,
+    "dataset_accessed": false,
+    "formal_test_images_accessed": false
+  },
+  "project_test_suite": {
+    "command": ".venv\\Scripts\\python.exe -m pytest -q",
+    "result": "72 passed, 12 warnings",
+    "duration_seconds": 6.16,
+    "warning_scope": "pre-existing Pillow ImageOps deprecation warnings from DRAEM imgaug tests"
+  },
+  "cpu_vendor_forward_smoke": {
+    "weights_loaded": false,
+    "dataset_images_used": false,
+    "device": "cpu",
+    "input_shape": [1, 3, 64, 64],
+    "teacher_feature_shapes": [
+      [1, 256, 16, 16],
+      [1, 512, 8, 8],
+      [1, 1024, 4, 4]
+    ],
+    "student_feature_shapes": [
+      [1, 256, 16, 16],
+      [1, 512, 8, 8],
+      [1, 1024, 4, 4]
+    ],
+    "raw_map_shape": [1, 64, 64],
+    "raw_map_all_finite": true,
+    "parameter_counts": {
+      "encoder": 68883240,
+      "bottleneck": 67277824,
+      "decoder": 24917504
+    }
+  },
+  "not_run": {
+    "weights_downloaded_by_rd4ad_adapter_task": false,
+    "training": false,
+    "mvtec_performance_evaluation": false,
+    "visa_performance_evaluation": false,
+    "gpu_or_eight_gib_resource_smoke": false
+  },
+  "documentation": "docs/rd4ad_adapter.md"
+}

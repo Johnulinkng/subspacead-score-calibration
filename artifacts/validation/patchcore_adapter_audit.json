@@ -1,0 +1,34 @@
+{
+  "actual_commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+  "adapter_image_shape": [
+    3,
+    224,
+    224
+  ],
+  "category": "candle",
+  "checked_at_utc": "2026-09-27T08:15:46.390913+00:00",
+  "commit_matches": true,
+  "dataset": "visa",
+  "dataset_root": "E:\\3k\\data\\visa\\1cls",
+  "evaluation_size": 256,
+  "expected_files": {
+    "LICENSE": true,
+    "src/patchcore/backbones.py": true,
+    "src/patchcore/common.py": true,
+    "src/patchcore/patchcore.py": true,
+    "src/patchcore/sampler.py": true
+  },
+  "frozen_commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+  "import_attempted": false,
+  "normal_train_image_count": 900,
+  "required_runtime_modules": {
+    "faiss": true,
+    "timm": true
+  },
+  "runtime_import_ready": true,
+  "schema_version": 1,
+  "test_split_inspected": false,
+  "training_or_test_evaluation_run": false,
+  "vendor_root": "E:\\3k\\third_party\\PatchCore",
+  "vendor_worktree_clean": true
+}

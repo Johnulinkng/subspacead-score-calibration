@@ -1,0 +1,21 @@
+*.py text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.md text eol=lf
+*.toml text eol=lf
+*.lock text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+.gitignore text eol=lf
+.gitmodules text eol=lf
+*.ps1 text eol=crlf
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.npy binary
+*.pt binary
+*.pth binary
+*.zip binary
+*.tar binary
+*.gz binary
+*.xz binary
