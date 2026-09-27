@@ -1,0 +1,35 @@
+{
+    "project_root":  "E:\\3k",
+    "baseline_commit":  "2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef",
+    "baseline_commit_matches":  true,
+    "free_gib":  230.02,
+    "preparation_space_available":  true,
+    "project_python_file_present":  true,
+    "missing_mvtec_train_category_directories":  [
+                                                     "bottle",
+                                                     "cable",
+                                                     "capsule",
+                                                     "carpet",
+                                                     "grid",
+                                                     "hazelnut",
+                                                     "leather",
+                                                     "metal_nut",
+                                                     "pill",
+                                                     "screw",
+                                                     "tile",
+                                                     "toothbrush",
+                                                     "transistor",
+                                                     "wood",
+                                                     "zipper"
+                                                 ],
+    "missing_visa_train_category_directories":  [
+
+                                                ],
+    "dtd_directory_present":  true,
+    "mvtec_manifest_verified":  false,
+    "visa_manifest_verified":  true,
+    "formal_protocol_frozen":  false,
+    "experiment_started":  false,
+    "gpu_launch_readiness":  "not_assessed_by_this_check",
+    "checked_at_utc":  "2026-09-27T07:54:21.2893711Z"
+}
