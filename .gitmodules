@@ -4,3 +4,9 @@
 [submodule "third_party/spot-diff"]
 	path = third_party/spot-diff
 	url = https://github.com/amazon-science/spot-diff.git
+[submodule "third_party/PatchCore"]
+	path = third_party/PatchCore
+	url = https://github.com/amazon-science/patchcore-inspection.git
+[submodule "third_party/RD4AD"]
+	path = third_party/RD4AD
+	url = https://github.com/hq-deng/RD4AD.git

@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "created_at": "2026-09-27T15:42:00+08:00",
+  "scope": "source_and_protocol_freeze_only",
+  "training_or_evaluation_run": false,
+  "comparators": [
+    {
+      "name": "PatchCore",
+      "role": "feature_memory_strong_control",
+      "repository": "https://github.com/amazon-science/patchcore-inspection.git",
+      "local_path": "third_party/PatchCore",
+      "commit": "fcaa92f124fb1ad74a7acf56726decd4b27cbcad",
+      "commit_date": "2023-03-06T11:20:39+01:00",
+      "license_spdx": "Apache-2.0",
+      "license_path": "third_party/PatchCore/LICENSE",
+      "license_sha256": "88046bf22d5b4f4b8cc85079ae6aae5424a3a1999db952ed152828ff325b2c6d",
+      "git_lfs": {
+        "tracked_file_count": 360,
+        "model_payloads_downloaded": false,
+        "checkout_state": "clean_pointer_files_only"
+      },
+      "native_dataset_adapter": "MVTec AD only",
+      "visa_adapter_required": true
+    },
+    {
+      "name": "RD4AD",
+      "role": "representation_distillation_strong_control",
+      "repository": "https://github.com/hq-deng/RD4AD.git",
+      "local_path": "third_party/RD4AD",
+      "commit": "6554076872c65f8784f6ece8cfb39ce77e1aee12",
+      "commit_date": "2022-06-16T16:53:12-06:00",
+      "license_spdx": "MIT",
+      "license_path": "third_party/RD4AD/LICENSE",
+      "license_sha256": "2b18aaf0726bcfe0eed242ab9248f9ef46ff2fc6ad7beea8692797a8089c5296",
+      "native_dataset_adapter": "MVTec AD only",
+      "visa_adapter_required": true
+    }
+  ],
+  "required_datasets": ["MVTec AD", "VisA 1-class"],
+  "additional_datasets_added": false,
+  "environment_installed": false,
+  "weights_downloaded": false,
+  "eight_gib_gpu_verified": false,
+  "protocol": "docs/comparator_protocol.md"
+}
