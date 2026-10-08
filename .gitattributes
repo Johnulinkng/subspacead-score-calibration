@@ -19,3 +19,12 @@
 *.tar binary
 *.gz binary
 *.xz binary
+
+# Recorded resource evidence uses byte hashes. Keep its original line endings.
+artifacts/preflight/capacity_bootstrap/** -text
+artifacts/preflight/measured_draem_s0/** -text
+artifacts/preflight/resource_fix_final/** -text
+artifacts/resource_profiles/** -text
+artifacts/validation/draem_inputs_candle_resourcefix_20261009.json -text
+artifacts/validation/resource_fix_summary_20261009.json -text
+artifacts/validation/resource_refreeze_20261009/receipt.json -text
