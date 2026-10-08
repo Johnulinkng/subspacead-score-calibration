@@ -3,6 +3,8 @@ param(
     [Parameter(Mandatory = $true)]
     [string]$OutputDirectory,
 
+    [string]$ResourceProfile,
+
     [ValidateRange(10, 3600)]
     [int]$PollIntervalSeconds = 30,
 
@@ -15,6 +17,10 @@ Set-StrictMode -Version Latest
 
 $projectRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot ".."))
 . (Join-Path $PSScriptRoot "Set-ProjectEnvironment.ps1") | Out-Null
+if ([string]::IsNullOrWhiteSpace($ResourceProfile)) {
+    $resourceConfig = Get-Content -LiteralPath (Join-Path $projectRoot "configs/resource_budget.json") -Raw | ConvertFrom-Json
+    $ResourceProfile = $resourceConfig.draem_s0.profile
+}
 
 $waiterRoot = Join-Path $projectRoot "runs/waiters"
 $waiterLock = Join-Path $projectRoot "runs/.draem-s0-waiter.lock.json"
@@ -75,65 +81,31 @@ try {
 
     while ((Get-Date).ToUniversalTime() -lt $deadline) {
         $checkedAt = (Get-Date).ToUniversalTime()
-        $os = Get-CimInstance Win32_OperatingSystem
-        $freeRamGiB = [math]::Round([double]$os.FreePhysicalMemory * 1KB / 1GB, 3)
-        $driveName = ([System.IO.Path]::GetPathRoot($projectRoot)).Substring(0, 1)
-        $freeDiskGiB = [math]::Round([double](Get-PSDrive -Name $driveName).Free / 1GB, 3)
-
-        $computeQueryOk = $false
-        $computePids = @()
-        try {
-            $computeRows = @(& nvidia-smi.exe --query-compute-apps=pid --format=csv,noheader,nounits 2>&1)
-            $computeQueryOk = $LASTEXITCODE -eq 0
-            if ($computeQueryOk) {
-                $computePids = @(
-                    $computeRows |
-                        ForEach-Object { $_.Trim() } |
-                        Where-Object { $_ -match '^\d+$' } |
-                        ForEach-Object { [int]$_ }
-                )
-            }
-        } catch {
-            $computeQueryOk = $false
-        }
-
-        $wslQueryOk = $false
-        $runningWsl = @()
-        try {
-            $wslRows = @(& wsl.exe --list --running --quiet 2>&1)
-            $wslQueryOk = $LASTEXITCODE -eq 0
-            if ($wslQueryOk) {
-                $runningWsl = @(
-                    $wslRows |
-                        ForEach-Object { ($_ -replace "`0", '').Trim() } |
-                        Where-Object { $_ }
-                )
-            }
-        } catch {
-            $wslQueryOk = $false
-        }
-
-        $trainingLockExists = Test-Path -LiteralPath (Join-Path $projectRoot "runs/.training.lock.json")
-        $readyToAttempt = (
-            $freeRamGiB -ge 8.0 -and
-            $freeDiskGiB -ge 40.0 -and
-            $computeQueryOk -and
-            $computePids.Count -eq 0 -and
-            $wslQueryOk -and
-            $runningWsl.Count -eq 0 -and
-            -not $trainingLockExists
-        )
+        # Use the same authoritative budget as the launcher. Never duplicate
+        # a fixed RAM threshold here, which could make waiting permanent.
+        $pollOutput = "runs/waiters/preflight-$waiterId-$($checkedAt.ToString('yyyyMMddTHHmmssfffZ'))"
+        $pollOutputFull = Join-Path $projectRoot $pollOutput
+        $preflightScript = Join-Path $PSScriptRoot "Test-TrainingPreflight.ps1"
+        $hostExecutable = (Get-Process -Id $PID).Path
+        $pollProcess = Start-Process -FilePath $hostExecutable -ArgumentList @(
+            '-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', ('"' + $preflightScript + '"'),
+            '-ResourceProfile', ('"' + $ResourceProfile + '"'), '-OutputDirectory', ('"' + $pollOutput + '"')
+        ) -WorkingDirectory $projectRoot -WindowStyle Hidden -Wait -PassThru
+        $reports = @(Get-ChildItem -LiteralPath $pollOutputFull -Filter 'preflight_*.json' -File)
+        if ($reports.Count -ne 1) { throw "Preflight produced no unambiguous waiter snapshot." }
+        $report = Get-Content -LiteralPath $reports[0].FullName -Raw | ConvertFrom-Json
+        $readyToAttempt = $pollProcess.ExitCode -eq 0 -and $report.ready_for_training_launch
 
         Add-WaiterRecord ([ordered]@{
             event = "poll"
             recorded_at_utc = $checkedAt.ToString("o")
-            free_ram_gib = $freeRamGiB
-            free_disk_gib = $freeDiskGiB
-            compute_query_ok = $computeQueryOk
-            compute_pids = $computePids
-            wsl_query_ok = $wslQueryOk
-            running_wsl = $runningWsl
-            training_lock_exists = $trainingLockExists
+            preflight_report = $reports[0].FullName
+            preflight_exit_code = $pollProcess.ExitCode
+            budget_basis = $report.budget_basis
+            thresholds = $report.thresholds
+            free_ram_gib = $report.host.free_ram_gib
+            free_disk_gib = $report.host.free_disk_gib
+            checks = $report.checks
             ready_to_attempt = $readyToAttempt
         })
 
@@ -142,7 +114,7 @@ try {
                 event = "launching"
                 recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
             })
-            & (Join-Path $PSScriptRoot "Invoke-DraemS0Smoke.ps1") -OutputDirectory $OutputDirectory
+            & (Join-Path $PSScriptRoot "Invoke-DraemS0Smoke.ps1") -OutputDirectory $OutputDirectory -ResourceProfile $ResourceProfile
             $launchExitCode = $LASTEXITCODE
             Add-WaiterRecord ([ordered]@{
                 event = "launcher_finished"

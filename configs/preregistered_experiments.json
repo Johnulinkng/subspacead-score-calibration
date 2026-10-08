@@ -38,6 +38,8 @@
         "batch_size": 8,
         "workers": 0,
         "pin_memory": false,
+        "activation_checkpointing": true,
+        "resource_budget_config": "configs/resource_budget.json",
         "device": "cuda:0",
         "launcher": "scripts/Invoke-DraemS0Smoke.ps1"
       },

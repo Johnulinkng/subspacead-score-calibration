@@ -63,6 +63,7 @@ RENDERER_PROVENANCE_FILES = (
     "src/industrial_anomaly_lab/draem_synthetic_dev.py",
     "src/industrial_anomaly_lab/training_inputs.py",
     "src/industrial_anomaly_lab/draem_runtime.py",
+    "src/industrial_anomaly_lab/draem_checkpointing.py",
     "src/industrial_anomaly_lab/draem_infer.py",
     "src/industrial_anomaly_lab/draem_train.py",
     "src/industrial_anomaly_lab/metrics.py",

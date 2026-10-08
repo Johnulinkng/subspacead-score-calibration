@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "status": "synthetic_capacity_passed_real_s0_pending",
+  "policy": "Replace the unprofiled 8 GiB estimate with measured peaks plus OS, loader and uncertainty reserves. Scientific acceptance is unchanged.",
+  "draem_s0": {
+    "profile": "artifacts/resource_profiles/draem_fp32_256_batch8_checkpointed_20261009.json",
+    "memory_strategy": "activation_checkpointing",
+    "image_size": 256,
+    "batch_size": 8,
+    "workers": 0,
+    "pin_memory": false,
+    "precision": "float32",
+    "host_system_reserve_gib": 2,
+    "loader_and_serialization_allowance_gib": 0.5,
+    "process_peak_multiplier": 1.25,
+    "gpu_reserve_gib": 0.75,
+    "claim_eligible": false
+  },
+  "full_training": {
+    "status": "requires_real_s0_and_registered_runtime_freeze",
+    "policy": "Use the real S0 peak budget after confirmation, rather than reinstating a mandatory 8 GiB host-memory value. Keep the same memory strategy for baseline, improvement and ablations."
+  }
+}

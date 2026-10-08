@@ -16,6 +16,16 @@ param(
     [Parameter(Mandatory = $true, ParameterSetName = "SelfTest")]
     [switch]$SelfTest,
 
+    [Parameter(Mandatory = $true, ParameterSetName = "CapacityDiagnostic")]
+    [switch]$CapacityDiagnostic,
+
+    [Parameter(ParameterSetName = "CapacityDiagnostic")]
+    [ValidateSet("original", "activation_checkpointing")]
+    [string]$DiagnosticMemoryStrategy = "original",
+
+    [Parameter(ParameterSetName = "Experiment")]
+    [string]$ResourceProfile,
+
     [ValidateRange(1, 3600)]
     [int]$SampleIntervalSeconds = 30
 )
@@ -257,22 +267,27 @@ function New-ResourceSample {
     $sampledAt = (Get-Date).ToUniversalTime().ToString("o")
     $processAlive = $false
     $workingSetBytes = $null
+    $peakWorkingSetBytes = $null
+    $peakPrivateCommitBytes = $null
     $processQueryError = $null
     if ($null -ne $Process) {
         try {
             $Process.Refresh()
             $processAlive = -not $Process.HasExited
             if ($processAlive) { $workingSetBytes = [int64]$Process.WorkingSet64 }
+            if ($processAlive) { $peakWorkingSetBytes = [int64]$Process.PeakWorkingSet64; $peakPrivateCommitBytes = [int64]$Process.PeakPagedMemorySize64 }
         } catch {
             $processQueryError = $_.Exception.Message
         }
     }
 
     $freeRamGiB = $null
+    $freeCommitGiB = $null
     $ramQueryError = $null
     try {
         $os = Get-CimInstance Win32_OperatingSystem
         $freeRamGiB = [math]::Round([double]$os.FreePhysicalMemory * 1KB / 1GB, 3)
+        $freeCommitGiB = [math]::Round([double]$os.FreeVirtualMemory * 1KB / 1GB, 3)
     } catch {
         $ramQueryError = $_.Exception.Message
     }
@@ -325,10 +340,13 @@ function New-ResourceSample {
             pid = $childPid
             alive = $processAlive
             working_set_bytes = $workingSetBytes
+            peak_working_set_bytes = $peakWorkingSetBytes
+            peak_private_commit_bytes = $peakPrivateCommitBytes
             query_error = $processQueryError
         }
         host = [ordered]@{
             free_ram_gib = $freeRamGiB
+            free_commit_gib = $freeCommitGiB
             query_error = $ramQueryError
         }
         gpus = $gpuRows
@@ -431,10 +449,10 @@ function Write-RunSummary {
         status = $status
         failure_kind = $failureKind
         failure_message = $failureMessage
-        mode = if ($SelfTest) { "self_test" } else { "experiment" }
-        run_purpose = if ($SelfTest) { "synthetic_self_test" } else { $RunPurpose }
-        claim_eligible = if ($SelfTest) { $false } else { $null }
-        claim_eligibility_reason = if ($SelfTest) { "Synthetic launcher self-test; no dataset, model training, or GPU work is permitted." } else { "Not adjudicated by the resource launcher; use the formal provenance and aggregation gates." }
+        mode = if ($SelfTest) { "self_test" } elseif ($CapacityDiagnostic) { "capacity_diagnostic" } else { "experiment" }
+        run_purpose = if ($SelfTest) { "synthetic_self_test" } elseif ($CapacityDiagnostic) { "synthetic_capacity_diagnostic" } else { $RunPurpose }
+        claim_eligible = if ($SelfTest -or $CapacityDiagnostic) { $false } else { $null }
+        claim_eligibility_reason = if ($CapacityDiagnostic) { "Synthetic, zero-learning-rate allocation diagnostic; no dataset or checkpoint and no performance claim." } elseif ($SelfTest) { "Synthetic launcher self-test; no dataset, model training, or GPU work is permitted." } else { "Not adjudicated by the resource launcher; use the formal provenance and aggregation gates." }
         project_root = $projectRoot
         output_directory = $outputRoot
         command_record = $commandPath
@@ -521,7 +539,13 @@ try {
     $stderrPath = Join-Path $outputRoot "stderr.log"
     $commandPath = Join-Path $outputRoot "command.json"
 
-    if ($SelfTest) {
+    if ($CapacityDiagnostic) {
+        $resolvedScript = Join-Path $projectRoot "scripts/profile_draem_resources.py"
+        Assert-NoReparsePoint -Candidate $resolvedScript -Boundary $projectRoot
+        $effectiveArguments = @("--output-dir", (Join-Path $outputRoot "capacity"))
+        if ($DiagnosticMemoryStrategy -eq "activation_checkpointing") { $effectiveArguments += "--activation-checkpointing" }
+        $effectivePurpose = "synthetic_capacity_diagnostic"
+    } elseif ($SelfTest) {
         if (-not (Test-Path -LiteralPath $selfTestScript -PathType Leaf)) {
             throw "Synthetic self-test child is missing: $selfTestScript"
         }
@@ -550,14 +574,42 @@ try {
         }
         $effectiveArguments = @($ScriptArgument)
         $effectivePurpose = $RunPurpose
+        if (-not [string]::IsNullOrWhiteSpace($ResourceProfile)) {
+            if ($resolvedScript -ne (Join-Path $projectRoot "scripts/train_draem.py")) {
+                throw "A DRAEM resource profile can only authorize the matching DRAEM command."
+            }
+            $profilePath = if ([System.IO.Path]::IsPathRooted($ResourceProfile)) { [System.IO.Path]::GetFullPath($ResourceProfile) } else { [System.IO.Path]::GetFullPath((Join-Path $projectRoot $ResourceProfile)) }
+            if (-not (Test-IsInsidePath -Candidate $profilePath -Root $projectRoot)) { throw "Resource profile must remain inside the project." }
+            Assert-NoReparsePoint -Candidate $profilePath -Boundary $projectRoot
+            $profile = Get-Content -LiteralPath $profilePath -Raw | ConvertFrom-Json
+            if ($RunPurpose -ne "debug_limited" -and $profile.kind -ne "draem_real_s0_capacity_profile") {
+                throw "A synthetic resource profile cannot authorize full experiments; confirm real train-only S0 first."
+            }
+            $expected = @{ "--image-size" = "256"; "--batch-size" = "8"; "--workers" = "0"; "--device" = "cuda:0"; "--run-purpose" = $RunPurpose }
+            if ($RunPurpose -eq "debug_limited") { $expected["--max-steps"] = "2" }
+            foreach ($flag in $expected.Keys) {
+                $indices = @(for ($i = 0; $i -lt $effectiveArguments.Count; $i++) { if ($effectiveArguments[$i] -ceq $flag) { $i } })
+                if ($indices.Count -ne 1 -or $indices[0] + 1 -ge $effectiveArguments.Count -or $effectiveArguments[$indices[0] + 1] -cne $expected[$flag]) {
+                    throw "Measured profile requires one explicit matching argument: $flag"
+                }
+            }
+            if (@($effectiveArguments | Where-Object { $_ -ceq "--no-pin-memory" }).Count -ne 1 -or @($effectiveArguments | Where-Object { $_ -like "--*=*" -or $_ -ceq "--pin-memory" }).Count -gt 0) {
+                throw "Measured S0 requires --no-pin-memory and separate argument tokens."
+            }
+            if ($RunPurpose -ne "debug_limited" -and $effectiveArguments -ccontains "--max-steps") { throw "Full experiment cannot use truncated steps." }
+            $checkpointFlags = @($effectiveArguments | Where-Object { $_ -ceq "--activation-checkpointing" }).Count
+            if ($checkpointFlags -gt 1 -or [bool]$profile.recipe.activation_checkpointing -ne ($checkpointFlags -eq 1)) {
+                throw "Command activation checkpointing does not match the measured profile."
+            }
+        }
     }
 
     $commandRecord = [ordered]@{
         schema_version = 1
         recorded_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-        mode = if ($SelfTest) { "self_test" } else { "experiment" }
+        mode = if ($SelfTest) { "self_test" } elseif ($CapacityDiagnostic) { "capacity_diagnostic" } else { "experiment" }
         run_purpose = $effectivePurpose
-        claim_eligible = if ($SelfTest) { $false } else { $null }
+        claim_eligible = if ($SelfTest -or $CapacityDiagnostic) { $false } else { $null }
         launcher = $launcherPath
         launcher_sha256 = $launcherSha256
         executable = $projectPython
@@ -579,12 +631,15 @@ try {
         $preflightStdout = Join-Path $outputRoot "preflight.stdout.log"
         $preflightStderr = Join-Path $outputRoot "preflight.stderr.log"
         $hostExecutable = (Get-Process -Id $PID).Path
-        $preflightArgumentLine = Join-WindowsCommandLine -Arguments @(
+        $preflightArguments = @(
             "-NoProfile",
             "-ExecutionPolicy", "Bypass",
             "-File", $preflightScript,
             "-OutputDirectory", $preflightEvidenceDirectory
         )
+        if ($CapacityDiagnostic) { $preflightArguments += "-CapacityDiagnostic" }
+        if (-not [string]::IsNullOrWhiteSpace($ResourceProfile)) { $preflightArguments += @("-ResourceProfile", $ResourceProfile) }
+        $preflightArgumentLine = Join-WindowsCommandLine -Arguments $preflightArguments
         $preflightProcess = Start-Process -FilePath $hostExecutable -ArgumentList $preflightArgumentLine -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput $preflightStdout -RedirectStandardError $preflightStderr -PassThru -Wait
         $preflightExitCode = [int]$preflightProcess.ExitCode
         $preflightReports = @(Get-ChildItem -LiteralPath $preflightEvidenceDirectory -Filter "preflight_*.json" -File)
@@ -593,7 +648,7 @@ try {
         }
         $preflightReportPath = $preflightReports[0].FullName
         $preflightReport = Get-Content -LiteralPath $preflightReportPath -Raw | ConvertFrom-Json
-        $preflightReady = [bool]$preflightReport.ready_for_training_launch
+        $preflightReady = if ($CapacityDiagnostic) { [bool]$preflightReport.ready_for_capacity_diagnostic } else { [bool]$preflightReport.ready_for_training_launch }
         if ($preflightExitCode -ne 0 -or -not $preflightReady) {
             $status = "preflight_rejected"
             $failureKind = "preflight_not_ready"
@@ -607,7 +662,7 @@ try {
                 pid = $PID
                 owner_kind = "monitored_experiment_launcher"
                 created_at_utc = (Get-Date).ToUniversalTime().ToString("o")
-                run_purpose = $RunPurpose
+                run_purpose = $effectivePurpose
                 output_directory = $outputRoot
             }
             Write-JsonCreateNew -Path $lockPath -Value $lockRecord
@@ -637,10 +692,17 @@ try {
         $childExecutable = [string]$resolvedChild.executable
         $status = "running"
         Add-ResourceSample -Process $child
+        $childStartedAt = (Get-Date).ToUniversalTime()
         while (-not $processLauncher.HasExited) {
             Start-Sleep -Seconds $SampleIntervalSeconds
             Add-ResourceSample -Process $child
             $processLauncher.Refresh()
+            if ($CapacityDiagnostic -and -not $processLauncher.HasExited -and ((Get-Date).ToUniversalTime() - $childStartedAt).TotalSeconds -gt 180) {
+                # Stop only the exact process handle owned by this launcher.
+                $child.Refresh()
+                if (-not $child.HasExited) { $child.Kill(); $child.WaitForExit(10000) | Out-Null }
+                throw "Bounded capacity diagnostic exceeded 180 seconds."
+            }
         }
         $processLauncher.WaitForExit()
         $childExitCode = [int]$processLauncher.ExitCode

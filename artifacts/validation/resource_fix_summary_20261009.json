@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "scope": "resource_admission_fix_only",
+  "claim_eligible": false,
+  "synthetic_capacity_status": "passed",
+  "real_data_s0_status": "pending",
+  "long_training_started": false,
+  "serial_task_order_preserved": true,
+  "profile": "artifacts/resource_profiles/draem_fp32_256_batch8_checkpointed_20261009.json",
+  "profile_sha256": "e6804c74ec44cdbaad012181f1032c1bd00c8ab5e99a1cb83cd818f0c3fda760",
+  "budget": {
+    "minimum_free_ram_gib": 4.587,
+    "minimum_free_commit_gib": 14.471,
+    "minimum_free_gpu_mib": 6830.0,
+    "minimum_free_disk_gib": 40.0
+  },
+  "latest_preflight": "artifacts/preflight/resource_fix_final/preflight_20261008T192047234Z.json",
+  "latest_preflight_free_ram_gib": 7.814,
+  "latest_preflight_passed_below_eight_gib": true,
+  "runtime": {
+    "image_size": 256,
+    "batch_size": 8,
+    "workers": 0,
+    "pin_memory": false,
+    "precision": "float32",
+    "device": "cuda:0",
+    "activation_checkpointing": true
+  },
+  "measured_peaks": {
+    "gpu_peak_allocated_gib": 5.269933223724365,
+    "gpu_peak_reserved_gib": 5.919921875,
+    "host_peak_working_set_gib": 1.6693840026855469,
+    "host_peak_private_commit_gib": 9.576919555664062
+  },
+  "regression": {
+    "full_suite_passed": 206,
+    "additional_confirmation_tests_passed": 3,
+    "full_log": "artifacts/validation/full_pytest_resource_fix_20261009.txt",
+    "confirmation_log": "artifacts/validation/resource_confirmation_pytest_20261009.txt"
+  },
+  "development_data_and_recipe_child_hashes_unchanged": 14,
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "full_training_path": "After real train-only S0, freeze_draem_resource_profile.py confirms a measured profile; full runs use the same budget with the registered runtime and scientific authority checks, without an unconditional 8 GiB free-RAM requirement."
+}

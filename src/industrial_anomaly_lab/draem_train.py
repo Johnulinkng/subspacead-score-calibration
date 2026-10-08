@@ -18,6 +18,7 @@ from torch import optim
 from torch.utils.data import DataLoader
 
 from .data_protocols import DraemSyntheticTrainDataset
+from .draem_checkpointing import enable_activation_checkpointing
 from .draem_runtime import (
     DeviceSafeSSIM,
     build_focal_loss,
@@ -77,6 +78,7 @@ class TrainSettings:
     learning_rate: float = 1e-4
     workers: int = 0
     pin_memory: bool | None = None
+    activation_checkpointing: bool = False
     device: str = "cpu"
     max_steps: int | None = None
     input_protocol: str = AUTHOR_FULL_TRAIN
@@ -101,6 +103,8 @@ class TrainSettings:
             raise ValueError("workers must be non-negative")
         if self.pin_memory is not None and type(self.pin_memory) is not bool:
             raise ValueError("pin_memory must be true, false or null")
+        if type(self.activation_checkpointing) is not bool:
+            raise ValueError("activation_checkpointing must be true or false")
         if self.max_steps is not None and self.max_steps <= 0:
             raise ValueError("max_steps must be positive when provided")
         classify_run_purpose(self.run_purpose, max_steps=self.max_steps)
@@ -148,6 +152,7 @@ def draem_training_recipe(settings: TrainSettings) -> dict[str, object]:
         "batch_size": settings.batch_size,
         "epochs": settings.epochs,
         "learning_rate": settings.learning_rate,
+        "activation_checkpointing": settings.activation_checkpointing,
         "optimizer": "Adam",
         "scheduler": {
             "name": "MultiStepLR",
@@ -429,6 +434,7 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
             "cuda_version": torch.version.cuda,
             "device": str(device),
             "pin_memory": resolved_pin_memory,
+            "activation_checkpointing": settings.activation_checkpointing,
             "deterministic_algorithms": True,
             "tf32": False,
         },
@@ -440,36 +446,39 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
         {"status": "running", "updated_at_utc": utc_now(), "global_step": 0},
     )
 
-    reconstructive, discriminative = build_models(device)
-    reconstructive.apply(initialize_author_weights)
-    discriminative.apply(initialize_author_weights)
-    reconstructive.train()
-    discriminative.train()
-
-    optimizer = torch.optim.Adam(
-        [
-            {"params": reconstructive.parameters(), "lr": settings.learning_rate},
-            {"params": discriminative.parameters(), "lr": settings.learning_rate},
-        ]
-    )
-    milestones = sorted(
-        {max(1, int(settings.epochs * 0.8)), max(1, int(settings.epochs * 0.9))}
-    )
-    scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones, gamma=0.2)
-    mse_loss = torch.nn.MSELoss()
-    ssim_loss = DeviceSafeSSIM().to(device)
-    focal_loss = build_focal_loss().to(device)
-    trainable_parameters = [
-        parameter
-        for model in (reconstructive, discriminative)
-        for parameter in model.parameters()
-        if parameter.requires_grad
-    ]
-
     global_step = 0
     last_epoch = 0
     active_step: int | None = None
     try:
+        # Resource failures during initialization must also produce a failed
+        # state, rather than leaving an apparently running experiment behind.
+        reconstructive, discriminative = build_models(device)
+        reconstructive.apply(initialize_author_weights)
+        discriminative.apply(initialize_author_weights)
+        if settings.activation_checkpointing:
+            enable_activation_checkpointing(reconstructive)
+            enable_activation_checkpointing(discriminative)
+        reconstructive.train()
+        discriminative.train()
+        optimizer = torch.optim.Adam(
+            [
+                {"params": reconstructive.parameters(), "lr": settings.learning_rate},
+                {"params": discriminative.parameters(), "lr": settings.learning_rate},
+            ]
+        )
+        milestones = sorted(
+            {max(1, int(settings.epochs * 0.8)), max(1, int(settings.epochs * 0.9))}
+        )
+        scheduler = optim.lr_scheduler.MultiStepLR(optimizer, milestones, gamma=0.2)
+        mse_loss = torch.nn.MSELoss()
+        ssim_loss = DeviceSafeSSIM().to(device)
+        focal_loss = build_focal_loss().to(device)
+        trainable_parameters = [
+            parameter
+            for model in (reconstructive, discriminative)
+            for parameter in model.parameters()
+            if parameter.requires_grad
+        ]
         stop = False
         for epoch in range(1, settings.epochs + 1):
             last_epoch = epoch
@@ -519,6 +528,8 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
                         "loss_ssim": float(loss_ssim.detach().cpu()),
                         "loss_segmentation": float(loss_segmentation.detach().cpu()),
                         "gradient_norm": float(gradient_norm.detach().cpu()),
+                        "gpu_peak_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None,
+                        "gpu_peak_reserved_bytes": torch.cuda.max_memory_reserved(device) if device.type == "cuda" else None,
                     },
                 )
                 if settings.max_steps is not None and global_step >= settings.max_steps:
@@ -549,6 +560,7 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
             "epoch": last_epoch,
             "global_step": global_step,
             "training_recipe": draem_training_recipe(settings),
+            "execution_runtime": run_config["runtime"],
             "formal_provenance": authority,
             "formal_source_provenance": source_provenance,
             "formal_training_inputs": (
@@ -570,6 +582,8 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
             "updated_at_utc": utc_now(),
             "epoch": last_epoch,
             "global_step": global_step,
+            "gpu_peak_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None,
+            "gpu_peak_reserved_bytes": torch.cuda.max_memory_reserved(device) if device.type == "cuda" else None,
         }
         write_json(output_dir / "run_state.json", final_state)
         return final_state

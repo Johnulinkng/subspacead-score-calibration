@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "kind": "draem_synthetic_capacity_diagnostic",
+  "claim_eligible": false,
+  "dataset_accessed": false,
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "checkpoint_saved": false,
+  "parameter_update_learning_rate": 0.0,
+  "recipe": {
+    "image_size": 256,
+    "batch_size": 8,
+    "workers": 0,
+    "pin_memory": false,
+    "precision": "float32",
+    "device": "cuda:0"
+  },
+  "baseline_host": {
+    "free_ram_gib": 7.200611114501953,
+    "free_commit_gib": 18.64759063720703,
+    "working_set_gib": 0.01674652099609375,
+    "peak_working_set_gib": 0.01674652099609375,
+    "private_commit_gib": 0.01007843017578125,
+    "peak_private_commit_gib": 0.01007843017578125
+  },
+  "torch_version": "2.7.0+cu128",
+  "cuda_version": "12.8",
+  "gpu_name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+  "gpu_total_gib": 7.99951171875,
+  "allocator_cap_gib": 6.181640625,
+  "source_sha256": {
+    "scripts/profile_draem_resources.py": "d04837c9c7906ba55598284a66c09528de2d455a275bee21aca60f3e74256cf4",
+    "src/industrial_anomaly_lab/draem_runtime.py": "5995426e0fc02ff1863d14a5c37419f0da42cc997d4b87bbfbaf6319f11a6e91",
+    "src/industrial_anomaly_lab/draem_train.py": "365c69fc48fb14bcc8224025fcfb6b29d21110d20d4073bbfd669d5ba01e8eff",
+    "scripts/train_draem.py": "ae376d57d70a63a73a2cf70e1511b5da94c527ef253189310734c7d69b4e87cf",
+    "third_party/DRAEM/model_unet.py": "377d3852c6d9984780efafef448c5dc163bc4d22f7f8f25564a3f6c52edb3b4d",
+    "third_party/DRAEM/loss.py": "acd0189376902bdc7e18aceac3bd73c2d78028fd3d327ec6ee8a04c95e718352"
+  },
+  "status": "failed",
+  "completed_steps": 0,
+  "error": {
+    "type": "OutOfMemoryError",
+    "message": "CUDA out of memory. Tried to allocate 128.00 MiB. GPU 0 has a total capacity of 8.00 GiB of which 806.00 MiB is free. 6.18 GiB allowed; Of the allocated memory 6.09 GiB is allocated by PyTorch, and 24.27 MiB is reserved by PyTorch but unallocated. If reserved but unallocated memory is large try setting PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True to avoid fragmentation.  See documentation for Memory Management  (https://pytorch.org/docs/stable/notes/cuda.html#environment-variables)",
+    "stage": "forward"
+  },
+  "sample_errors": [],
+  "gpu_peak_allocated_gib": 6.093863487243652,
+  "gpu_peak_reserved_gib": 6.119140625,
+  "host_peak_working_set_gib": 1.25799560546875,
+  "host_peak_private_commit_gib": 9.444976806640625,
+  "host_min_free_ram_gib": 5.868465423583984,
+  "host_min_free_commit_gib": 9.113811492919922,
+  "elapsed_seconds": 2.578999999999951,
+  "checked_at_utc": "2026-10-08T18:58:53.407504+00:00",
+  "limitations": "Synthetic allocation probe only; real loader, checkpoint saving and long-run stability still require S0. No performance evidence."
+}

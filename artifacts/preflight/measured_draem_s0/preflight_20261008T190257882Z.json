@@ -1,0 +1,77 @@
+{
+  "schema_version": 2,
+  "checked_at_utc": "2026-10-08T19:02:57.8846954Z",
+  "project_root": "E:\\3k",
+  "ready_for_training_launch": true,
+  "ready_for_capacity_diagnostic": false,
+  "budget_basis": "measured_peak_plus_reserves",
+  "resource_profile": {
+    "path": "E:\\3k\\artifacts\\resource_profiles\\draem_fp32_256_batch8_checkpointed_20261009.json",
+    "sha256": "331534755cf4ab0bcc5682149a9443f90e5876d59fddb37db0b18dd5dafca795",
+    "gpu_name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+    "gpu_total_gib": 7.99951171875,
+    "source_sha256": {
+      "scripts/profile_draem_resources.py": "b2f3ec650f9f144bab900d5b77d0b74671769f3a991d9ec4e40b505457b91440",
+      "src/industrial_anomaly_lab/draem_runtime.py": "5995426e0fc02ff1863d14a5c37419f0da42cc997d4b87bbfbaf6319f11a6e91",
+      "src/industrial_anomaly_lab/draem_train.py": "1cd257ebf7c00311b63fe3db70ca57b921c43af6f6970deb2956fe3fce0c8475",
+      "scripts/train_draem.py": "e62784617ce8ddf6031678b1a24336384c8c6a619f2c6445a0dae9ed3f9ce056",
+      "src/industrial_anomaly_lab/draem_checkpointing.py": "b101c68bb0b142e3fa984a725cf6aa94bc58aee233d993c1e3e6541783265539",
+      "third_party/DRAEM/model_unet.py": "377d3852c6d9984780efafef448c5dc163bc4d22f7f8f25564a3f6c52edb3b4d",
+      "third_party/DRAEM/loss.py": "acd0189376902bdc7e18aceac3bd73c2d78028fd3d327ec6ee8a04c95e718352"
+    },
+    "limitation": "Admission estimate only; S0 and long-run monitoring still required."
+  },
+  "thresholds": {
+    "minimum_free_ram_gib": 4.627,
+    "minimum_free_commit_gib": 14.516,
+    "minimum_free_gpu_mib": 6830.0,
+    "minimum_free_disk_gib": 40.0
+  },
+  "checks": {
+    "free_ram": true,
+    "free_commit": true,
+    "free_disk": true,
+    "gpu_query": true,
+    "no_conflicting_compute_processes": true,
+    "free_dedicated_vram": true,
+    "profile_device_matches": true,
+    "no_project_lock": true
+  },
+  "host": {
+    "total_ram_gib": 15.679,
+    "free_ram_gib": 7.592,
+    "free_commit_gib": 18.574920654296875,
+    "project_drive": "E",
+    "free_disk_gib": 215.766
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+      "uuid": "GPU-9b84c34b-6467-acca-bffc-d03b8d0f7d4a",
+      "memory_total_mib": 8192,
+      "memory_used_mib": 11,
+      "memory_free_mib": 8008,
+      "utilization_percent": 0
+    }
+  ],
+  "gpu_query_error": null,
+  "compute_processes": [
+    {
+      "pid": 13620,
+      "process_name": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.1002.7124.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+      "used_memory_mib": "[N/A]",
+      "verified_desktop_ui": true
+    }
+  ],
+  "compute_query_error": null,
+  "running_wsl_distributions": [],
+  "wsl_query_error": null,
+  "project_lock": {
+    "path": "E:\\3k\\runs\\.training.lock.json",
+    "exists": false,
+    "pid": null,
+    "process_alive": false,
+    "parse_error": null
+  }
+}

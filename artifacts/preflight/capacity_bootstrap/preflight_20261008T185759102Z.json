@@ -1,0 +1,62 @@
+{
+  "schema_version": 2,
+  "checked_at_utc": "2026-10-08T18:57:59.1050763Z",
+  "project_root": "E:\\3k",
+  "ready_for_training_launch": false,
+  "ready_for_capacity_diagnostic": true,
+  "budget_basis": "bounded_synthetic_bootstrap",
+  "resource_profile": null,
+  "thresholds": {
+    "minimum_free_ram_gib": 4.0,
+    "minimum_free_commit_gib": 4,
+    "minimum_free_gpu_mib": 5888,
+    "minimum_free_disk_gib": 40.0
+  },
+  "checks": {
+    "free_ram": true,
+    "free_commit": true,
+    "free_disk": true,
+    "gpu_query": true,
+    "no_conflicting_compute_processes": true,
+    "free_dedicated_vram": true,
+    "profile_device_matches": true,
+    "no_project_lock": true
+  },
+  "host": {
+    "total_ram_gib": 15.679,
+    "free_ram_gib": 7.126,
+    "free_commit_gib": 18.591049194335938,
+    "project_drive": "E",
+    "free_disk_gib": 215.766
+  },
+  "gpus": [
+    {
+      "index": 0,
+      "name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+      "uuid": "GPU-9b84c34b-6467-acca-bffc-d03b8d0f7d4a",
+      "memory_total_mib": 8192,
+      "memory_used_mib": 11,
+      "memory_free_mib": 8008,
+      "utilization_percent": 0
+    }
+  ],
+  "gpu_query_error": null,
+  "compute_processes": [
+    {
+      "pid": 13620,
+      "process_name": "C:\\Program Files\\WindowsApps\\OpenAI.Codex_26.1002.7124.0_x64__2p2nqsd0c76g0\\app\\ChatGPT.exe",
+      "used_memory_mib": "[N/A]",
+      "verified_desktop_ui": true
+    }
+  ],
+  "compute_query_error": null,
+  "running_wsl_distributions": [],
+  "wsl_query_error": null,
+  "project_lock": {
+    "path": "E:\\3k\\runs\\.training.lock.json",
+    "exists": false,
+    "pid": null,
+    "process_alive": false,
+    "parse_error": null
+  }
+}

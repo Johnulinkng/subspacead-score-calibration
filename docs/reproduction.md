@@ -121,9 +121,9 @@ VisA 官方 1-class 布局核验：
 .\scripts\Test-TrainingPreflight.ps1
 ```
 
-只有退出码为 0 的**当前快照**才允许启动对应 GPU 进程。退出码 2 表示 RAM、E 盘、GPU 计算进程、WSL 或训练锁至少一项失败；不得降低阈值，也不得用较早通过的报告替代。当前最近一次检查因可用物理内存低于固定 8 GiB 门槛而失败，所以还没有启动训练。
+只有退出码为 0 的**当前快照**才允许启动对应 GPU 进程。退出码 2 表示当前资源预算或训练锁未满足。8 GiB 是历史未实测的保守主机预算；DRAEM S0 已改为实测峰值加余量，约需 4.59 GiB 空闲主机内存，同时另查提交空间和专用显存。使用 `Invoke-DraemS0Smoke.ps1` 自动携带 profile，并启用保持 BN 状态的激活重计算。合成两步已通过，真实 S0 和长训练仍未运行；详见 `docs/resource_recovery.md`。
 
-实际的长时训练和推理统一通过 `scripts/Invoke-MonitoredExperiment.ps1` 启动。该外层入口会自行执行同一固定 preflight、以原子方式持有 `runs/.training.lock.json`、隐藏启动项目 Python、记录命令/SHA，并周期记录主机 RAM、子进程工作集和 GPU 状态。它不提供门禁绕过。下面各方法章节中的 Python 参数说明的是模型内层 CLI；真正运行时把这些参数逐项放进 `-ScriptArgument`。例如 DRAEM 开发运行的完整启动形状为：
+实际的长时训练和推理统一通过 `scripts/Invoke-MonitoredExperiment.ps1` 启动。该外层入口会自行执行同一 preflight、以原子方式持有 `runs/.training.lock.json`、隐藏启动项目 Python、记录命令/SHA，并周期记录主机 RAM/提交空间、子进程工作集和 GPU 状态。它不提供门禁绕过。下面各方法章节中的 Python 参数说明的是模型内层 CLI；真正运行时把这些参数逐项放进 `-ScriptArgument`。例如 DRAEM 开发运行的完整启动形状为：
 
 ```powershell
 & .\scripts\Invoke-MonitoredExperiment.ps1 `

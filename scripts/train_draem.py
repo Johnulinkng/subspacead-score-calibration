@@ -33,7 +33,8 @@ def _parse_args() -> argparse.Namespace:
     baseline = config["baseline"]
     example = baseline["official_readme_example"]
     parser = argparse.ArgumentParser(
-        description="Train one DRAEM category without modifying the author repository."
+        description="Train one DRAEM category without modifying the author repository.",
+        allow_abbrev=False,
     )
     parser.add_argument("--dataset", choices=("mvtec_ad", "visa"), required=True)
     parser.add_argument("--category", required=True)
@@ -46,6 +47,10 @@ def _parse_args() -> argparse.Namespace:
     parser.add_argument("--epochs", type=int, default=example["epochs"])
     parser.add_argument("--learning-rate", type=float, default=example["learning_rate"])
     parser.add_argument("--workers", type=int, default=0)
+    parser.add_argument(
+        "--activation-checkpointing", action="store_true",
+        help="Recompute author UNet activations while preserving BatchNorm buffers; record this runtime setting.",
+    )
     parser.add_argument(
         "--pin-memory",
         action=argparse.BooleanOptionalAction,
@@ -146,6 +151,7 @@ def main() -> int:
         learning_rate=args.learning_rate,
         workers=args.workers,
         pin_memory=args.pin_memory,
+        activation_checkpointing=args.activation_checkpointing,
         device=args.device,
         max_steps=args.max_steps,
         input_protocol=args.input_protocol,

@@ -233,3 +233,21 @@ def test_explicit_disabled_pin_memory_is_recorded(
     assert state["status"] == "debug_completed"
     assert config["settings"]["pin_memory"] is False
     assert config["runtime"]["pin_memory"] is False
+
+
+def test_model_allocation_failure_records_failed_state(tmp_path: Path, monkeypatch) -> None:
+    settings = _settings(tmp_path, "model-allocation-failure")
+    _patch_memory_training(monkeypatch, focal_loss=_ZeroLoss())
+
+    def fail_allocation(device):
+        raise torch.OutOfMemoryError("synthetic model allocation failure")
+
+    monkeypatch.setattr(draem_train, "build_models", fail_allocation)
+    with pytest.raises(torch.OutOfMemoryError, match="model allocation failure"):
+        run_training(settings)
+    state = json.loads((settings.output_dir / "run_state.json").read_text(encoding="utf-8"))
+    assert state["status"] == "failed"
+    assert state["global_step"] == 0
+    assert state["epoch"] == 0
+    assert state["checkpoint_cleanup_complete"] is True
+    assert not (settings.output_dir / "checkpoints/manifest.json").exists()

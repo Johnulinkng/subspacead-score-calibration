@@ -166,14 +166,16 @@ def test_draem_s0_wrapper_freezes_gpu_resource_smoke_contract() -> None:
 def test_draem_s0_waiter_cannot_bypass_or_preempt_other_gpu_work() -> None:
     source = S0_WAITER.read_text(encoding="utf-8")
     assert "Invoke-DraemS0Smoke.ps1" in source
-    assert "nvidia-smi.exe --query-compute-apps=pid" in source
-    assert "Get-Process" not in source
+    assert "Test-TrainingPreflight.ps1" in source
+    assert "-ResourceProfile" in source
+    assert "-ge 8.0" not in source
     assert "Stop-Process" not in source
     assert "taskkill" not in source.casefold()
     assert "SkipPreflight" not in source
     assert "BypassPreflight" not in source
     assert "[System.IO.FileMode]::CreateNew" in source
-    assert "runs/.training.lock.json" in source
+    preflight = (PROJECT_ROOT / "scripts/Test-TrainingPreflight.ps1").read_text(encoding="utf-8")
+    assert "runs/.training.lock.json" in preflight
 
 
 def test_launcher_rejects_a_non_project_command_before_preflight() -> None:
