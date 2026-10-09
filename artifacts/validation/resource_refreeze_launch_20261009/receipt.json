@@ -1,0 +1,24 @@
+{
+  "old_root_sha256": "e18ef8eaa697d538f229cd94e016475291e73d2f7d29878cd6b4b7d385796d43",
+  "new_root_sha256": "9a6beac34a439d128b268fb13a8b02e9315f9fba9c07a9132bac2f44d3d0c1c1",
+  "data_and_recipe_files_unchanged": true,
+  "child_sha256": {
+    "manifests/development/visa_v1/visa_candle_split.jsonl": "509591ad8f3dc229f13fa35ac4c527495843f212517337d2b754ec0bac1a6c5a",
+    "manifests/development/visa_v1/visa_capsules_split.jsonl": "b64b3aa2cf376dc509647768b614fbfbe203341cbb162a95de3dfe14c422db00",
+    "manifests/development/visa_v1/visa_cashew_split.jsonl": "7edc9037f8720504c17a678b9c7bbdc335b400a4376d9fac3bb35906ae327448",
+    "manifests/development/visa_v1/visa_chewinggum_split.jsonl": "473faab763662abef5098e6c9de4f81abc74b307efaa0532e2994626ae5d43d9",
+    "manifests/development/visa_v1/visa_fryum_split.jsonl": "ce5bae363389d4d60072bca5f7a2eaceef026ce83e249a62bce9ea020d63c1b0",
+    "manifests/development/visa_v1/visa_macaroni1_split.jsonl": "c4d5f773dfe1cc01bccb9bb3990829b2881c94f9d65bd99f4b8f64f353f3e4cf",
+    "manifests/development/visa_v1/visa_macaroni2_split.jsonl": "f044e4b9f7aab998de7857163d0138921cb4993b02580dbfd141acc606a19795",
+    "manifests/development/visa_v1/visa_pcb1_split.jsonl": "7c83f87376740407231ebaee998dffbe1d32117d42498fc3ee6a65de9e11a86b",
+    "manifests/development/visa_v1/visa_pcb2_split.jsonl": "26fbfd74a85199ffc66765687688ab59f4e31d17bf9e3fd13b6201973f1089d3",
+    "manifests/development/visa_v1/visa_pcb3_split.jsonl": "045dfc6376d1f8083c2cbf075dd17be2ec892b31949ad61b163eef2cec7a9bb6",
+    "manifests/development/visa_v1/visa_pcb4_split.jsonl": "ee2d93160e1aab3f495baa70be276cca03613358eaa4672a727348b3d4785648",
+    "manifests/development/visa_v1/visa_pipe_fryum_split.jsonl": "2ef5936b451c725467f7a5598e4ec69f9ab68b0c4f5b04591f98bb5864cbebe2",
+    "manifests/development/visa_v1/dtd_source_split.jsonl": "3b4e64b093cd0aaed066aad4f032db417386a11660abdb8219303d49dca9c6a8",
+    "manifests/development/visa_v1/synthetic_dev_recipes.jsonl": "73bb7060ca1d69a628125a3232d498c15b77a21eb1b5d43594db8576b369ee0f"
+  },
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "reason": "Release completed-batch tensors and bound the checkpointed CUDA cache; preserve every data split and development recipe."
+}

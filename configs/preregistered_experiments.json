@@ -4,11 +4,19 @@
   "status": "development_protocol_frozen_method_definition_pending",
   "development_dataset": "VisA official 1-class train/good only",
   "anomaly_source": "DTD R1.0.1 with frozen content-disjoint train/dev split",
-  "model_seeds": [1887537248, 1337854654, 1609762728],
+  "model_seeds": [
+    1887537248,
+    1337854654,
+    1609762728
+  ],
   "model_seed_registration": {
     "derivation_string": "industrial-anomaly-lab|formal-v1|2026-09-27",
     "sha256": "f08188604fbe0abedff307a881d63b5c32a99bc27c1fdf5a294b9098cbab4055",
-    "hex_chunk_offsets": [0, 8, 16],
+    "hex_chunk_offsets": [
+      0,
+      8,
+      16
+    ],
     "transform": "int(sha256_hex[offset:offset+8], 16) & 0x7fffffff"
   },
   "selection_metric_order": [
@@ -29,9 +37,15 @@
   "matrix": [
     {
       "stage": "S0_integrity_smoke",
-      "methods": ["author_baseline_adapter"],
-      "categories": ["candle"],
-      "seeds": [1887537248],
+      "methods": [
+        "author_baseline_adapter"
+      ],
+      "categories": [
+        "candle"
+      ],
+      "seeds": [
+        1887537248
+      ],
       "budget": "at most 2 optimizer steps",
       "runtime_config": {
         "image_size": 256,
@@ -48,46 +62,99 @@
     },
     {
       "stage": "S1_baseline_development_reference",
-      "methods": ["author_baseline_adapter"],
+      "methods": [
+        "author_baseline_adapter"
+      ],
       "categories": "all_12_visa_categories",
-      "seeds": [1887537248, 1337854654, 1609762728],
+      "seeds": [
+        1887537248,
+        1337854654,
+        1609762728
+      ],
       "budget": "same full development schedule later used by candidates",
       "claim_eligible": false,
-      "purpose": "Freeze the development reference without formal test access."
+      "purpose": "Freeze the development reference without formal test access.",
+      "runtime_config": {
+        "image_size": 256,
+        "batch_size": 8,
+        "epochs": 700,
+        "learning_rate": 0.0001,
+        "workers": 0,
+        "pin_memory": false,
+        "precision": "float32",
+        "activation_checkpointing": true,
+        "cuda_cache_cap_gib_max": 6.5,
+        "device": "cuda:0",
+        "resource_profile": "artifacts/resource_profiles/draem_real_s0_confirmed_20261009.json",
+        "launcher": "scripts/Invoke-DraemS1Queue.ps1"
+      }
     },
     {
       "stage": "S2_candidate_screen",
-      "methods": ["candidate_1", "candidate_2", "candidate_3_maximum"],
+      "methods": [
+        "candidate_1",
+        "candidate_2",
+        "candidate_3_maximum"
+      ],
       "method_definition_rule": "Each candidate config and hypothesis must be frozen before its first run.",
       "categories": "all_12_visa_categories",
-      "seeds": [1887537248],
+      "seeds": [
+        1887537248
+      ],
       "budget": "identical to S1 per category; at most 8 hyperparameter configurations per candidate family",
       "claim_eligible": false,
       "purpose": "Bounded selection on frozen synthetic development data."
     },
     {
       "stage": "S3_candidate_confirmation",
-      "methods": ["author_baseline_adapter", "one_selected_candidate"],
+      "methods": [
+        "author_baseline_adapter",
+        "one_selected_candidate"
+      ],
       "categories": "all_12_visa_categories",
-      "seeds": [1887537248, 1337854654, 1609762728],
+      "seeds": [
+        1887537248,
+        1337854654,
+        1609762728
+      ],
       "budget": "identical schedules and checkpoint rule",
       "claim_eligible": false,
       "purpose": "Confirm development stability before any formal test evaluation."
     },
     {
       "stage": "S4_ablation_confirmation",
-      "methods": ["baseline", "full_candidate", "each_single_component_removed"],
+      "methods": [
+        "baseline",
+        "full_candidate",
+        "each_single_component_removed"
+      ],
       "categories": "all_12_visa_categories",
-      "seeds": [1887537248, 1337854654, 1609762728],
+      "seeds": [
+        1887537248,
+        1337854654,
+        1609762728
+      ],
       "budget": "identical schedules and checkpoint rule",
       "claim_eligible": false,
       "purpose": "Establish component attribution on development data."
     },
     {
       "stage": "F0_formal_evaluation",
-      "methods": ["frozen_baseline", "frozen_full_candidate", "frozen_ablations", "frozen_strong_controls"],
-      "datasets": ["MVTec AD", "VisA"],
-      "seeds": [1887537248, 1337854654, 1609762728],
+      "methods": [
+        "frozen_baseline",
+        "frozen_full_candidate",
+        "frozen_ablations",
+        "frozen_strong_controls"
+      ],
+      "datasets": [
+        "MVTec AD",
+        "VisA"
+      ],
+      "seeds": [
+        1887537248,
+        1337854654,
+        1609762728
+      ],
       "entry_gate": "All implementation, hyperparameters, checkpoints, thresholds, table schemas and visualization selection rules are frozen; the fixed-sample manifest is generated from the complete test inventory before model inference.",
       "claim_eligible": true,
       "purpose": "One formal evaluation pass; no result-driven redesign in the same registered round."

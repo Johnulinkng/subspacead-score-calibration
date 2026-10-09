@@ -11,7 +11,7 @@ import pytest
 
 ROOT = Path(__file__).resolve().parents[1]
 PREFLIGHT = ROOT / "scripts/Test-TrainingPreflight.ps1"
-PROFILE = ROOT / "artifacts/resource_profiles/draem_fp32_256_batch8_checkpointed_20261009.json"
+PROFILE = ROOT / "artifacts/resource_profiles/draem_fp32_256_batch8_bounded_cache_20261009.json"
 LAUNCHER = ROOT / "scripts/Invoke-MonitoredExperiment.ps1"
 
 

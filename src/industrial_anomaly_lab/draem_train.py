@@ -391,6 +391,20 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
     configure_reproducibility(settings.seed, deterministic=True)
     device = _resolve_device(settings.device)
     resolved_pin_memory = _resolve_pin_memory(settings.pin_memory, device)
+    cuda_allocator_cap_bytes: int | None = None
+    if device.type == "cuda" and settings.activation_checkpointing:
+        free_gpu, total_gpu = torch.cuda.mem_get_info(device)
+        # Bound the cache as well as live tensors, leaving dedicated memory
+        # for the desktop and avoiding Windows shared-memory spill.
+        cuda_allocator_cap_bytes = min(
+            int(6.5 * 1024**3), free_gpu - int(0.75 * 1024**3),
+            int(0.90 * total_gpu),
+        )
+        if cuda_allocator_cap_bytes < 5 * 1024**3:
+            raise RuntimeError("Insufficient dedicated VRAM for checkpointed DRAEM")
+        torch.cuda.set_per_process_memory_fraction(
+            cuda_allocator_cap_bytes / total_gpu, device
+        )
     output_dir = prepare_output_directory(settings.output_dir)
     checkpoints_dir = output_dir / "checkpoints"
     logs_path = output_dir / "train_metrics.jsonl"
@@ -435,6 +449,7 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
             "device": str(device),
             "pin_memory": resolved_pin_memory,
             "activation_checkpointing": settings.activation_checkpointing,
+            "cuda_allocator_cap_bytes": cuda_allocator_cap_bytes,
             "deterministic_algorithms": True,
             "tf32": False,
         },
@@ -531,6 +546,14 @@ def run_training(settings: TrainSettings) -> dict[str, Any]:
                         "gpu_peak_allocated_bytes": torch.cuda.max_memory_allocated(device) if device.type == "cuda" else None,
                         "gpu_peak_reserved_bytes": torch.cuda.max_memory_reserved(device) if device.type == "cuda" else None,
                     },
+                )
+                # These tensors are no longer used after logging. Keeping the
+                # previous batch's outputs alive increases the next forward's
+                # peak without changing the training calculation.
+                del (
+                    batch, target, augmented, target_mask, reconstruction,
+                    logits, probabilities, loss_l2, loss_ssim,
+                    loss_segmentation, total_loss, gradient_norm,
                 )
                 if settings.max_steps is not None and global_step >= settings.max_steps:
                     stop = True

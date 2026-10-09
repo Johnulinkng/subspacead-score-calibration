@@ -1,0 +1,60 @@
+{
+  "schema_version": 1,
+  "kind": "draem_synthetic_capacity_diagnostic",
+  "claim_eligible": false,
+  "dataset_accessed": false,
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "checkpoint_saved": false,
+  "parameter_update_learning_rate": 0.0,
+  "recipe": {
+    "image_size": 256,
+    "batch_size": 8,
+    "workers": 0,
+    "pin_memory": false,
+    "precision": "float32",
+    "device": "cuda:0",
+    "activation_checkpointing": true
+  },
+  "baseline_host": {
+    "free_ram_gib": 7.6034698486328125,
+    "free_commit_gib": 18.49581527709961,
+    "working_set_gib": 0.016590118408203125,
+    "peak_working_set_gib": 0.016590118408203125,
+    "private_commit_gib": 0.009891510009765625,
+    "peak_private_commit_gib": 0.009891510009765625
+  },
+  "torch_version": "2.7.0+cu128",
+  "cuda_version": "12.8",
+  "gpu_name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+  "gpu_total_gib": 7.99951171875,
+  "allocator_cap_gib": 6.181640625,
+  "source_sha256": {
+    "pyproject.toml": "8022184a110884449f8a1c98e96ffd42b26d34f916446b10de0b4534b36acbf3",
+    "uv.lock": "a1ea9c057188a3ad3f34f5fc4d8c9bb2d480eca222c3e77f15ec83f1437e190a",
+    "scripts/profile_draem_resources.py": "d90e0c832066f6cc4f9560ea1e673e968cb8a7bfd09e7f57bfdf3b3e8645a822",
+    "src/industrial_anomaly_lab/draem_runtime.py": "5995426e0fc02ff1863d14a5c37419f0da42cc997d4b87bbfbaf6319f11a6e91",
+    "src/industrial_anomaly_lab/draem_train.py": "e0150fcf0138625396c9d67ff888ff0b88b251c1322f1f541797d6f97c509fc0",
+    "scripts/train_draem.py": "86fb407e57d43982907b71562a55dd012db1eb9a7188c020a51907766b7d1b92",
+    "src/industrial_anomaly_lab/draem_checkpointing.py": "b101c68bb0b142e3fa984a725cf6aa94bc58aee233d993c1e3e6541783265539",
+    "third_party/DRAEM/model_unet.py": "377d3852c6d9984780efafef448c5dc163bc4d22f7f8f25564a3f6c52edb3b4d",
+    "third_party/DRAEM/loss.py": "acd0189376902bdc7e18aceac3bd73c2d78028fd3d327ec6ee8a04c95e718352"
+  },
+  "checkpointed_blocks": {
+    "reconstructive": 13,
+    "discriminative": 16
+  },
+  "status": "passed",
+  "completed_steps": 2,
+  "error": null,
+  "sample_errors": [],
+  "gpu_peak_allocated_gib": 5.269933223724365,
+  "gpu_peak_reserved_gib": 5.919921875,
+  "host_peak_working_set_gib": 1.6718368530273438,
+  "host_peak_private_commit_gib": 9.579315185546875,
+  "host_min_free_ram_gib": 5.850444793701172,
+  "host_min_free_commit_gib": 8.887813568115234,
+  "elapsed_seconds": 6.436999999998079,
+  "checked_at_utc": "2026-10-09T01:36:10.048154+00:00",
+  "limitations": "Synthetic allocation probe only; real loader, checkpoint saving and long-run stability still require S0. No performance evidence."
+}

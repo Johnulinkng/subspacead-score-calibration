@@ -156,8 +156,8 @@
       },
       {
         "path": "src/industrial_anomaly_lab/draem_train.py",
-        "sha256": "c01c3b44834692ba69bbfdc6fe2bbad14703875ff53a966359e16311a277755d",
-        "size_bytes": 24086
+        "sha256": "e0150fcf0138625396c9d67ff888ff0b88b251c1322f1f541797d6f97c509fc0",
+        "size_bytes": 25344
       },
       {
         "path": "src/industrial_anomaly_lab/metrics.py",

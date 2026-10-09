@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "kind": "draem_real_s0_capacity_profile",
+  "claim_eligible": false,
+  "dataset_accessed": true,
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "checkpoint_saved": true,
+  "parameter_update_learning_rate": 0.0001,
+  "recipe": {
+    "image_size": 256,
+    "batch_size": 8,
+    "workers": 0,
+    "pin_memory": false,
+    "precision": "float32",
+    "device": "cuda:0",
+    "activation_checkpointing": true
+  },
+  "baseline_host": {
+    "free_ram_gib": 7.5845947265625,
+    "free_commit_gib": 18.5582275390625,
+    "working_set_gib": 0.0164642333984375,
+    "peak_working_set_gib": 0.0164642333984375,
+    "private_commit_gib": 0.0097503662109375,
+    "peak_private_commit_gib": 0.0097503662109375
+  },
+  "torch_version": "2.7.0+cu128",
+  "cuda_version": "12.8",
+  "gpu_name": "NVIDIA GeForce RTX 3070 Ti Laptop GPU",
+  "gpu_total_gib": 7.99951171875,
+  "allocator_cap_gib": 6.181640625,
+  "source_sha256": {
+    "pyproject.toml": "8022184a110884449f8a1c98e96ffd42b26d34f916446b10de0b4534b36acbf3",
+    "uv.lock": "a1ea9c057188a3ad3f34f5fc4d8c9bb2d480eca222c3e77f15ec83f1437e190a",
+    "scripts/profile_draem_resources.py": "aa7d48e337a33749a48457e195dcdf18775c88c73e7fa8208a64962c303b9094",
+    "src/industrial_anomaly_lab/draem_runtime.py": "5995426e0fc02ff1863d14a5c37419f0da42cc997d4b87bbfbaf6319f11a6e91",
+    "src/industrial_anomaly_lab/draem_train.py": "c01c3b44834692ba69bbfdc6fe2bbad14703875ff53a966359e16311a277755d",
+    "scripts/train_draem.py": "86fb407e57d43982907b71562a55dd012db1eb9a7188c020a51907766b7d1b92",
+    "src/industrial_anomaly_lab/draem_checkpointing.py": "b101c68bb0b142e3fa984a725cf6aa94bc58aee233d993c1e3e6541783265539",
+    "third_party/DRAEM/model_unet.py": "377d3852c6d9984780efafef448c5dc163bc4d22f7f8f25564a3f6c52edb3b4d",
+    "third_party/DRAEM/loss.py": "acd0189376902bdc7e18aceac3bd73c2d78028fd3d327ec6ee8a04c95e718352",
+    "scripts/freeze_draem_resource_profile.py": "bc1386241b93997cad3cde7c2f037e382507a20bef31e83f42c592d9979fbec4"
+  },
+  "checkpointed_blocks": {
+    "reconstructive": 13,
+    "discriminative": 16
+  },
+  "status": "passed",
+  "completed_steps": 2,
+  "error": null,
+  "sample_errors": [],
+  "gpu_peak_allocated_gib": 5.8950090408325195,
+  "gpu_peak_reserved_gib": 7.609375,
+  "host_peak_working_set_gib": 1.7825546264648438,
+  "host_peak_private_commit_gib": 11.508346557617188,
+  "host_min_free_ram_gib": 5.867027282714844,
+  "host_min_free_commit_gib": 8.984809875488281,
+  "elapsed_seconds": 5.781000000000176,
+  "checked_at_utc": "2026-10-08T19:04:52.550071+00:00",
+  "limitations": "Real train-only two-step S0 confirms an admission budget, not long-run stability or performance; registered experiment authority still required.",
+  "real_s0": {
+    "path": "runs/monitored/draem-s0-visa-candle-seed1887537248-20261009T093335",
+    "evidence_sha256": {
+      "summary.json": "3dd2a7b5921735584ec601d131eb36d49a2afdc59464f34138fa1fe03432541c",
+      "command.json": "1282b1cc2c5a62dd4385c62f47dab1207d33f550ef3b8edbda59316bea5eb049",
+      "resource_samples.jsonl": "70c2e488b27fd2c7174b10417eb8bf6dc354f1bcd113833f2ecb506dd2a57898",
+      "stdout.log": "b8bed053316d727f047e9fb0506885baf87d62230a66b75af2f20fae02e17441",
+      "stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "model/run_config.json": "505eea8f46808141bafed5fb3f7c69049e2b32e2663a352288a47638c226185c",
+      "model/run_state.json": "ed31d5f433d14fd4032a03420dbdb798abd86124ccd290c2e0e8262113d2d695",
+      "model/checkpoints/manifest.json": "4571b7fe42daa068fcdb876d9c9b3142db0352c7170f5d65b2f6935f4a368050"
+    }
+  }
+}

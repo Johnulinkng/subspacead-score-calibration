@@ -24,7 +24,7 @@
   },
   "frozen_manifest": {
     "path": "manifests/development/visa_v1/manifest.json",
-    "sha256": "e18ef8eaa697d538f229cd94e016475291e73d2f7d29878cd6b4b7d385796d43",
+    "sha256": "9a6beac34a439d128b268fb13a8b02e9315f9fba9c07a9132bac2f44d3d0c1c1",
     "policy": "Any regeneration or edit requires an explicit hash refreeze before a development run."
   },
   "visa": {

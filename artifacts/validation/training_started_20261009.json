@@ -1,0 +1,47 @@
+{
+  "observed_at_utc": "2026-10-09T01:44:33.872610+00:00",
+  "status": "full_development_training_started",
+  "claim_eligible": false,
+  "launch_record": "runs/launchers/draem-s1-20261009T014053Z/launch.json",
+  "queue_state": "runs/queues/draem-s1-20261009T014053Z/state.json",
+  "registered_tasks": 36,
+  "first_run": "runs/monitored/draem-s1-20261009T014053Z-candle-seed1887537248",
+  "settings": {
+    "dataset": "visa",
+    "category": "candle",
+    "seed": 1887537248,
+    "run_purpose": "development_full",
+    "max_steps": null,
+    "epochs": 700,
+    "image_size": 256,
+    "batch_size": 8,
+    "learning_rate": 0.0001,
+    "workers": 0,
+    "pin_memory": false,
+    "activation_checkpointing": true,
+    "device": "cuda:0"
+  },
+  "input_inventory": {
+    "anomaly_source_images": 4512,
+    "normal_training_images": 720
+  },
+  "formal_test_content_accessed": false,
+  "ground_truth_content_accessed": false,
+  "observed_optimizer_steps": 73,
+  "last_observed_epoch": 1,
+  "last_observed_loss": 0.2259388267993927,
+  "gpu_peak_allocated_gib": 5.395251750946045,
+  "gpu_peak_reserved_gib": 5.919921875,
+  "metrics_prefix_length_bytes": 23014,
+  "metrics_prefix_sha256": "a85dd5dde34d918d9793cc031bc5a4b2bd6cc54099427601dbc9718c14d9463b",
+  "real_s0_loss_components_match_before_after_memory_cleanup": true,
+  "checks": {
+    "real_optimizer_steps_beyond_two_step_smoke": true,
+    "700_epoch_recipe": true,
+    "all_logged_losses_and_gradient_norms_finite": true,
+    "fixed_data_splits_and_recipes": true,
+    "no_formal_test_or_gt_access": true,
+    "complete_12_category_3_seed_queue": true
+  },
+  "source_tests": "21 relevant resource, authorization, training and real-S0 confirmation checks passed; 12 earlier targeted checks passed including checkpointed BN/gradient fixtures. Full launcher self-tests requiring an idle project lock were not rerun during genuine training."
+}

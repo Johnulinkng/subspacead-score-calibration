@@ -1,0 +1,290 @@
+{
+  "allowed_roots_read": [
+    "data/visa/1cls/<category>/train/good",
+    "data/dtd/images"
+  ],
+  "artifact_files": [
+    {
+      "path": "manifests/development/visa_v1/visa_candle_split.jsonl",
+      "rows": 900,
+      "sha256": "509591ad8f3dc229f13fa35ac4c527495843f212517337d2b754ec0bac1a6c5a"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_capsules_split.jsonl",
+      "rows": 542,
+      "sha256": "b64b3aa2cf376dc509647768b614fbfbe203341cbb162a95de3dfe14c422db00"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_cashew_split.jsonl",
+      "rows": 450,
+      "sha256": "7edc9037f8720504c17a678b9c7bbdc335b400a4376d9fac3bb35906ae327448"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_chewinggum_split.jsonl",
+      "rows": 453,
+      "sha256": "473faab763662abef5098e6c9de4f81abc74b307efaa0532e2994626ae5d43d9"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_fryum_split.jsonl",
+      "rows": 450,
+      "sha256": "ce5bae363389d4d60072bca5f7a2eaceef026ce83e249a62bce9ea020d63c1b0"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_macaroni1_split.jsonl",
+      "rows": 900,
+      "sha256": "c4d5f773dfe1cc01bccb9bb3990829b2881c94f9d65bd99f4b8f64f353f3e4cf"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_macaroni2_split.jsonl",
+      "rows": 900,
+      "sha256": "f044e4b9f7aab998de7857163d0138921cb4993b02580dbfd141acc606a19795"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_pcb1_split.jsonl",
+      "rows": 904,
+      "sha256": "7c83f87376740407231ebaee998dffbe1d32117d42498fc3ee6a65de9e11a86b"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_pcb2_split.jsonl",
+      "rows": 901,
+      "sha256": "26fbfd74a85199ffc66765687688ab59f4e31d17bf9e3fd13b6201973f1089d3"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_pcb3_split.jsonl",
+      "rows": 905,
+      "sha256": "045dfc6376d1f8083c2cbf075dd17be2ec892b31949ad61b163eef2cec7a9bb6"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_pcb4_split.jsonl",
+      "rows": 904,
+      "sha256": "ee2d93160e1aab3f495baa70be276cca03613358eaa4672a727348b3d4785648"
+    },
+    {
+      "path": "manifests/development/visa_v1/visa_pipe_fryum_split.jsonl",
+      "rows": 450,
+      "sha256": "2ef5936b451c725467f7a5598e4ec69f9ab68b0c4f5b04591f98bb5864cbebe2"
+    },
+    {
+      "path": "manifests/development/visa_v1/dtd_source_split.jsonl",
+      "rows": 5640,
+      "sha256": "3b4e64b093cd0aaed066aad4f032db417386a11660abdb8219303d49dca9c6a8"
+    },
+    {
+      "path": "manifests/development/visa_v1/synthetic_dev_recipes.jsonl",
+      "rows": 3468,
+      "sha256": "73bb7060ca1d69a628125a3232d498c15b77a21eb1b5d43594db8576b369ee0f"
+    }
+  ],
+  "config_path": "configs/development_protocol.json",
+  "dtd": {
+    "categories": 47,
+    "content_hash_overlap": 0,
+    "dev": 1128,
+    "total": 5640,
+    "train": 4512
+  },
+  "formal_test_content_accessed": false,
+  "model_seed_registration": {
+    "derivation_string": "industrial-anomaly-lab|formal-v1|2026-09-27",
+    "derived_seeds": [
+      1887537248,
+      1337854654,
+      1609762728
+    ],
+    "hex_chunk_offsets": [
+      0,
+      8,
+      16
+    ],
+    "sha256": "f08188604fbe0abedff307a881d63b5c32a99bc27c1fdf5a294b9098cbab4055",
+    "transform": "int(sha256_hex[offset:offset+8], 16) & 0x7fffffff"
+  },
+  "model_seeds": [
+    1887537248,
+    1337854654,
+    1609762728
+  ],
+  "path_base": "project_root",
+  "project_root": ".",
+  "protocol_id": "visa_train_dev_dtd_v1",
+  "renderer_provenance": {
+    "files": [
+      {
+        "path": "pyproject.toml",
+        "sha256": "8022184a110884449f8a1c98e96ffd42b26d34f916446b10de0b4534b36acbf3",
+        "size_bytes": 928
+      },
+      {
+        "path": "uv.lock",
+        "sha256": "a1ea9c057188a3ad3f34f5fc4d8c9bb2d480eca222c3e77f15ec83f1437e190a",
+        "size_bytes": 122908
+      },
+      {
+        "path": "src/industrial_anomaly_lab/development_protocol.py",
+        "sha256": "302e7e0169decf2bc8e604a0f71fcf619f26d4a6ead43ee2e3797fd45a8d840c",
+        "size_bytes": 32878
+      },
+      {
+        "path": "src/industrial_anomaly_lab/synthetic_development.py",
+        "sha256": "090194699757480a1c45472171a8cb50386e8aa0557421e6e400411369661bf2",
+        "size_bytes": 36300
+      },
+      {
+        "path": "src/industrial_anomaly_lab/draem_synthetic_dev.py",
+        "sha256": "0751298babbce2ec9101a5e0568b26ab8ffded138250c53875a475c98ec040cf",
+        "size_bytes": 17730
+      },
+      {
+        "path": "src/industrial_anomaly_lab/training_inputs.py",
+        "sha256": "08490a5ff7f38b1ad25fc99060ce63deba58908f3c06b92f653a429c2386799f",
+        "size_bytes": 23933
+      },
+      {
+        "path": "src/industrial_anomaly_lab/draem_runtime.py",
+        "sha256": "5995426e0fc02ff1863d14a5c37419f0da42cc997d4b87bbfbaf6319f11a6e91",
+        "size_bytes": 5977
+      },
+      {
+        "path": "src/industrial_anomaly_lab/draem_checkpointing.py",
+        "sha256": "b101c68bb0b142e3fa984a725cf6aa94bc58aee233d993c1e3e6541783265539",
+        "size_bytes": 2336
+      },
+      {
+        "path": "src/industrial_anomaly_lab/draem_infer.py",
+        "sha256": "68d2fb97c9307366445bc5ca0058e759a56106a23b83324abf309e771f9173c4",
+        "size_bytes": 18352
+      },
+      {
+        "path": "src/industrial_anomaly_lab/draem_train.py",
+        "sha256": "c01c3b44834692ba69bbfdc6fe2bbad14703875ff53a966359e16311a277755d",
+        "size_bytes": 24086
+      },
+      {
+        "path": "src/industrial_anomaly_lab/metrics.py",
+        "sha256": "02fd1f6b9133116053dd01f2c87d4a492b4d8952fd22a401575cdea746b241a4",
+        "size_bytes": 9842
+      },
+      {
+        "path": "src/industrial_anomaly_lab/run_artifacts.py",
+        "sha256": "15f936f1e33d513a988e5289c574c1f882825d351d5322dc80d65743f12df98e",
+        "size_bytes": 2774
+      },
+      {
+        "path": "scripts/train_draem.py",
+        "sha256": "86fb407e57d43982907b71562a55dd012db1eb9a7188c020a51907766b7d1b92",
+        "size_bytes": 6146
+      },
+      {
+        "path": "scripts/evaluate_draem_synthetic_dev.py",
+        "sha256": "d252819258f98dcb0ced17f24e199dd6b068b6371c842ca115fab6fe80b3a9b7",
+        "size_bytes": 4812
+      },
+      {
+        "path": "third_party/DRAEM/data_loader.py",
+        "sha256": "d1a12befbec4a96e021749e3610dfc9628023f2bc720a9efad10793d96899f91",
+        "size_bytes": 7143
+      },
+      {
+        "path": "third_party/DRAEM/perlin.py",
+        "sha256": "e508007371d46cbd1e3c909d9577f138223ed0db437e1c70a40139736ad26a1a",
+        "size_bytes": 4548
+      },
+      {
+        "path": "third_party/DRAEM/model_unet.py",
+        "sha256": "377d3852c6d9984780efafef448c5dc163bc4d22f7f8f25564a3f6c52edb3b4d",
+        "size_bytes": 14299
+      }
+    ],
+    "recipe_schema_version": 3,
+    "renderer_id": "draem_synthetic_dev_renderer_v2",
+    "schema_version": 1,
+    "versions": {
+      "Pillow": "11.1.0",
+      "imgaug": "0.4.0",
+      "numpy": "1.26.4",
+      "opencv-python": "4.11.0.86",
+      "python": "3.11.16",
+      "scikit-learn": "1.6.1",
+      "scipy": "1.15.2",
+      "torch": "2.7.0+cu128"
+    }
+  },
+  "schema_version": 1,
+  "synthetic_development": {
+    "empty_mask_recipes": 0,
+    "images_rendered": 0,
+    "normal_samples": 1734,
+    "recipe_schema_version": 3,
+    "renderer_id": "draem_synthetic_dev_renderer_v2",
+    "synthetic_positive_recipes": 3468
+  },
+  "training_started": false,
+  "visa": {
+    "categories": {
+      "candle": {
+        "dev": 180,
+        "total": 900,
+        "train": 720
+      },
+      "capsules": {
+        "dev": 109,
+        "total": 542,
+        "train": 433
+      },
+      "cashew": {
+        "dev": 90,
+        "total": 450,
+        "train": 360
+      },
+      "chewinggum": {
+        "dev": 91,
+        "total": 453,
+        "train": 362
+      },
+      "fryum": {
+        "dev": 90,
+        "total": 450,
+        "train": 360
+      },
+      "macaroni1": {
+        "dev": 180,
+        "total": 900,
+        "train": 720
+      },
+      "macaroni2": {
+        "dev": 180,
+        "total": 900,
+        "train": 720
+      },
+      "pcb1": {
+        "dev": 181,
+        "total": 904,
+        "train": 723
+      },
+      "pcb2": {
+        "dev": 181,
+        "total": 901,
+        "train": 720
+      },
+      "pcb3": {
+        "dev": 181,
+        "total": 905,
+        "train": 724
+      },
+      "pcb4": {
+        "dev": 181,
+        "total": 904,
+        "train": 723
+      },
+      "pipe_fryum": {
+        "dev": 90,
+        "total": 450,
+        "train": 360
+      }
+    },
+    "content_hash_overlap": 0,
+    "dev": 1734,
+    "total": 8659,
+    "train": 6925
+  }
+}

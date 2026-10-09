@@ -96,8 +96,9 @@ def main() -> int:
     configure_reproducibility(1887537248, deterministic=True)
     free_gpu, total_gpu = torch.cuda.mem_get_info(device)
     # Fail inside the allocator instead of silently spilling to Windows shared
-    # GPU memory. This is a diagnostic cap, not a new training hyperparameter.
-    gpu_cap = min(free_gpu - int(.75 * GIB), int(.90 * total_gpu))
+    # GPU memory. Match the checkpointed training cache bound; this does not
+    # change the model, precision, batch or optimization hyperparameters.
+    gpu_cap = min(int(6.5 * GIB), free_gpu - int(.75 * GIB), int(.90 * total_gpu))
     if gpu_cap < 5 * GIB:
         raise RuntimeError("Insufficient free dedicated VRAM for the bounded diagnostic")
     torch.cuda.set_per_process_memory_fraction(gpu_cap / total_gpu, device)

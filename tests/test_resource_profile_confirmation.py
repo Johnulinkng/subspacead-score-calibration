@@ -25,7 +25,7 @@ def make_s0_fixture(tmp_path):
     spec = importlib.util.spec_from_file_location("fixture_resource_confirmation", script)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    profile = json.loads((PROJECT / "artifacts/resource_profiles/draem_fp32_256_batch8_checkpointed_20261009.json").read_text(encoding="utf-8"))
+    profile = json.loads((PROJECT / "artifacts/resource_profiles/draem_fp32_256_batch8_bounded_cache_20261009.json").read_text(encoding="utf-8"))
     for relative in profile["source_sha256"]:
         target = tmp_path / relative
         target.parent.mkdir(parents=True, exist_ok=True)
