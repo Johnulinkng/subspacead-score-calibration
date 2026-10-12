@@ -30,7 +30,7 @@ if ($taskPythonCommand -and $taskPythonCommand.Source -notlike '*\WindowsApps\py
 $taskSelectedPython = $null
 foreach ($taskCandidate in $taskPythonCandidates) {
     if (-not (Test-Path -LiteralPath $taskCandidate -PathType Leaf)) { continue }
-    $taskVersion = & $taskCandidate -c 'import sys; print(str(sys.version_info.major) + "." + str(sys.version_info.minor))' 2>$null
+    $taskVersion = & $taskCandidate -c 'import sys; print(sys.version_info.major, sys.version_info.minor, sep=chr(46))' 2>$null
     if ($LASTEXITCODE -eq 0 -and $taskVersion -eq '3.11') { $taskSelectedPython = $taskCandidate; break }
 }
 if (-not $taskSelectedPython) { throw 'Python 3.11 was not found. Supply -PythonPath <python.exe>. See report/复现说明.md for the pinned environment.' }
