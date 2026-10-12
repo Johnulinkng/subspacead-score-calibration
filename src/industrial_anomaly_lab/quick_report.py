@@ -342,7 +342,19 @@ def build_report(run_root: str | Path, project_root: str | Path | None = None) -
         if "baseline" in variants and "shrinkage" in variants:
             deltas = {metric: variants["shrinkage"][metric] - variants["baseline"][metric] for metric in METRICS}
             effects.append({"dataset": dataset, "seed": seed, "delta": deltas, "all_primary_metrics_increased": all(value > 0 for value in deltas.values()), "confirmation_status": "single_seed_observation_requires_confirmation"})
-    _write_json(report / "effect_summary.json", {"comparison": "shrinkage_minus_baseline", "dataset_effects": effects, "scientific_improvement_confirmed": False, "selection_of_best_variant_performed": False})
+    primary_deltas = [delta for effect in effects for delta in effect["delta"].values()]
+    if primary_deltas and all(delta < 0 for delta in primary_deltas):
+        observed_outcome = "all_primary_dataset_macro_metrics_decreased"
+        outcome_text = "本轮固定协方差收缩变体在两个数据集的四项宏平均指标均低于基线，没有实现整体提升。逐类结果和下降项均保留。"
+    elif primary_deltas and all(delta > 0 for delta in primary_deltas):
+        observed_outcome = "all_primary_dataset_macro_metrics_increased_in_this_run"
+        outcome_text = "本轮实测中收缩变体的主指标宏平均上升；重复实验稳定性与统计显著性尚未验证。"
+    else:
+        observed_outcome = "mixed_or_unchanged_primary_dataset_macro_metrics"
+        outcome_text = "本轮各指标存在提升、下降或持平，不能作一致提升结论。全部差值保存在对比表中。"
+    seed_count = len({row["seed"] for row in rows})
+    seed_text = f"本轮完成 {seed_count} 个种子。" + ("单个种子结果不能用于确认重复实验稳定性或统计显著性。" if seed_count == 1 else "科研结论还需独立确认。")
+    _write_json(report / "effect_summary.json", {"comparison": "shrinkage_minus_baseline", "dataset_effects": effects, "observed_outcome": observed_outcome, "seed_count": seed_count, "scientific_improvement_confirmed": False, "selection_of_best_variant_performed": False})
     provenance = {
         "schema_version": 1,
         "project_generated_components": ["quick experiment integration", "local implementation", "local results", "comparison report and delivery packaging"],
@@ -352,6 +364,8 @@ def build_report(run_root: str | Path, project_root: str | Path | None = None) -
         "backbone": config.get("backbone", {}),
         "run_sources": config.get("source_provenance", config.get("sources", {})),
         "execution_source_sha256": config.get("source_sha256", {}),
+        "initial_execution": config.get("initial_execution"),
+        "resumed_executions": config.get("resumed_executions", []),
         "protocol_sha256": config.get("protocol_sha256"),
         "protocol": config.get("protocol", {}),
         "run_config_sha256": _sha(root / "run_config.json"),
@@ -359,17 +373,32 @@ def build_report(run_root: str | Path, project_root: str | Path | None = None) -
         "scope": config.get("claim_scope", "completed quick experiment; no publication acceptance or author-exact reproduction claim"),
     }
     _write_json(report / "source_provenance.json", provenance)
+    resources = {"recorded_run_elapsed_seconds": state.get("elapsed_seconds"), "configured_resources": config.get("protocol", {}).get("resources", {}), "measured_summary": None}
+    if (root / "resource_summary.json").is_file():
+        resources["measured_summary"] = _json(root / "resource_summary.json")
+        resources["measured_summary_sha256"] = _sha(root / "resource_summary.json")
+    if (root / "resource_samples.jsonl").is_file():
+        resources["resource_samples_sha256"] = _sha(root / "resource_samples.jsonl")
+    _write_json(report / "resource_evidence.json", resources)
     command = config.get("reproduction_command", "python scripts/run_quick_experiment.py --config configs/quick_reproduction_20261012.json --output-dir runs/quick/reproduction")
     instructions = """# 快速实验复现与核验\n\n本包保存本轮实际完成的代码、模型统计、指标表和可视化证据。它采用公开的预训练骨干和 PaDiM 特征分布思路；项目集成与本轮运行结果由本项目产生，原始方法、骨干权重和数据来源保留在 source_provenance.json。\n\n## 环境与输入\n\n1. 使用 Python 3.11，根据 code/pyproject.toml 与 code/uv.lock 安装固定版本依赖。\n2. 将 MVTec AD、VisA 官方数据置于配置指定目录，相对路径以 code/ 为根；完整数据集不随交付包分发。\n3. 将 assets/weights/ 中的骨干权重复制到 code/ 下配置指定的 weights 路径，并核对 SHA-256；拟合模型统计保存在 models/。\n4. 从包内 code/ 目录运行下面的命令。原机器绝对路径需要改成复现机器路径，其余配置和种子保留。输出目录必须是新的空目录。\n\n```text\n""" + str(command) + "\n```\n\n## 结果口径\n\ncategory_metrics.csv 为已有实际结果的逐类原值；macro_metrics.csv 按同一数据集、变体、种子内各类别等权平均。metric_comparison.csv 的差值按变体减 baseline 计算，不筛除下降项。指标均在 [0,1] 范围。\n\n可视化只改变显示色阶，所有对照变体共享同类别合并原始异常图的 1% 与 99% 分位色阶。选样按显式清单，或每类别每标签字典序第一项；原始异常图与其哈希随精选证据保存。显示归一化不参与指标计算。\n\n## 核验\n\n打开 report.html 查看表格和图片。ZIP 内 DELIVERY-MANIFEST.json 列出每一项的字节数与 SHA-256；外部 ZIP 回执保存压缩包哈希和逐文件验证结果。\n\n该快速实验不保证论文录用；创新性、重复种子确认、更多对照与完整消融需要根据实际结果继续验证。预训练权重与数据使用条款以各来源条款为准。\n"
     instructions += "\n## 独立抽样推理验收\n\n解压后进入包内 code/ 目录执行：\n\n```text\npython scripts/verify_quick_delivery.py --package-root .. --inference-samples 2\n```\n\n先逐文件流式核对 DELIVERY-MANIFEST.json 中的字节数和 SHA-256，再用随包骨干权重与已拟合统计重算前两个精选样本的 baseline/shrinkage 原始异常图，按 atol=1e-5、rtol=1e-6 与保存值逐像素比较。该步骤无需完整数据集、联网或重新拟合。将 --inference-samples 改为 0 可仅执行文件完整性检查。\n"
+    instructions += "\nWindows 也可从解压根目录运行 Verify.ps1。该入口寻找已有 Python 3.11，不安装软件；如果没有可用环境，会给出可复用的 -PythonPath 参数。原机器示例：\n\n```powershell\npowershell -NoProfile -ExecutionPolicy Bypass -File .\\Verify.ps1 -PythonPath E:\\3k\\.venv\\Scripts\\python.exe\n```\n\n所有初始运行、资源中断和恢复记录均保留在 run_config.json 的 initial_execution/resumed_executions、execution_history/ 与 results/resume_audit.json 中。resource_evidence.json 展示实测资源摘要；历史中断不作为完成结果。\n"
+    variants = config.get("protocol", {}).get("variants", {})
+    variant_rows = [{"variant": name, "shrinkage_alpha": settings["shrinkage_alpha"], "sigma": settings["sigma"]} for name, settings in variants.items()]
+    variant_md = "\n## 四个变体与消融\n\n各变体共享正常训练数据、骨干权重、抽取通道与已拟合均值/协方差；仅改变固定收缩系数与平滑参数。\n\n| 变体 | 收缩系数 alpha | 224 像素平面平滑 sigma |\n|---|---:|---:|\n" + "".join(f"| {item['variant']} | {item['shrinkage_alpha']} | {item['sigma']} |\n" for item in variant_rows)
+    instructions = instructions.replace("## 环境与输入", "## 本轮实际结论\n\n" + outcome_text + "\n\n" + seed_text + "\n\n## 环境与输入")
+    instructions += variant_md
     (report / "复现说明.md").write_text(instructions, encoding="utf-8")
     backbone_name = str(config.get("backbone", {}).get("architecture", "configuration-defined backbone"))
     source_md = "# 来源与产出边界\n\n本项目产生本轮集成代码、运行结果、报告和打包流程。\n\n方法基础：" + PAPER["authors"] + ". " + PAPER["title"] + f" ({PAPER['year']})，{PAPER['url']}。\n\n骨干与预训练权重：torchvision " + backbone_name + " ImageNet，https://github.com/pytorch/vision/tree/v0.22.0 。BSD 3-Clause 许可证保存在 licenses/torchvision-LICENSE.txt。\n\n本轮具体模型配置、源码哈希和权重信息见 source_provenance.json 与 run_config.json。本报告没有把公开方法或公开权重声明为本项目原创。\n"
     (report / "来源说明.md").write_text(source_md, encoding="utf-8")
     sections = "".join(f"<figure><figcaption>{html.escape(str(item['dataset']) + '/' + str(item['category']) + '/' + str(item['sample_id']))}</figcaption><img src='{html.escape(item['figure'], quote=True)}' alt='Anomaly map comparison'></figure>" for item in figures)
     page = "<!doctype html><html lang='zh-CN'><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>工业异常检测快速实验</title><style>body{font:16px system-ui,sans-serif;max-width:1400px;margin:32px auto;padding:0 24px;background:#fafafa;color:#222}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid #ccc;padding:8px;text-align:right}th{background:#eee}img{max-width:100%;height:auto}figure{margin:30px 0}a{color:#0754a0}pre{white-space:pre-wrap}</style><h1>工业异常检测快速实验</h1><p>登记结果矩阵已完整完成。表格保存实际指标；差值和下降项均保留。可视化使用同类别共享色阶。</p>"
+    page += "<p>" + html.escape(outcome_text) + "</p><p>" + html.escape(seed_text) + "</p><h2>变体与消融定义</h2>" + _html_table(variant_rows, ["variant", "shrinkage_alpha", "sigma"])
     page += "<p><a href='category_metrics.csv'>逐类指标</a> · <a href='metric_comparison.csv'>对比表</a> · <a href='macro_metrics.csv'>宏平均表</a> · <a href='复现说明.md'>复现说明</a> · <a href='来源说明.md'>来源说明</a></p><h2>数据集宏平均</h2>" + _html_table(macro, ["dataset", "variant", "seed", "category_count"] + list(METRICS))
     page += "<h2>逐类结果</h2>" + _html_table(rows, list(IDENTITY) + list(METRICS)) + "<h2>可视化对比</h2>" + sections + "<p>这是一轮快速实验交付。科研创新性和论文录用结论需进一步验证。</p></html>"
+    page = page.replace("</html>", "<details><summary>运行时间与资源记录</summary><pre>" + html.escape(json.dumps(resources, ensure_ascii=False, indent=2)) + "</pre></details></html>")
     (report / "report.html").write_text(page, encoding="utf-8")
     result = {"schema_version": 1, "status": "completed", "report_root": str(report), "result_count": len(rows), "figure_count": len(figures), "macro_rows": macro, "run_state": state, "project_root": str(project)}
     _write_json(report / "report_summary.json", result)
@@ -393,6 +422,12 @@ def _project_files(project: Path, config: Mapping[str, Any]) -> list[Path]:
         if len(protocols) != 1:
             raise ValueError("Frozen quick protocol file is missing or changed")
         files += protocols
+    for helper in ("Invoke-QuickExperiment.ps1", "Set-ProjectEnvironment.ps1", "audit_quick_run.py"):
+        if (project / "scripts" / helper).is_file():
+            files.append(project / "scripts" / helper)
+    for test_name in ("test_quick_features.py", "test_quick_metrics.py", "test_quick_report.py"):
+        if (project / "tests" / test_name).is_file():
+            files.append(project / "tests" / test_name)
     files += [project / "pyproject.toml", project / "uv.lock", project / "scripts" / "package_quick_delivery.py", project / "scripts" / "verify_quick_delivery.py", project / "src" / "industrial_anomaly_lab" / "quick_report.py"]
     unique = sorted(set(path.resolve() for path in files))
     for path in unique:
@@ -417,6 +452,18 @@ def package_delivery(run_root: str | Path, output_zip: str | Path, project_root:
     if summary.get("status") != "completed" or provenance.get("run_config_sha256") != _sha(root / "run_config.json") or provenance.get("category_metrics_sha256") != _sha(root / "results" / "category_metrics.jsonl"):
         raise ValueError("Report no longer matches completed run inputs")
     payload: dict[str, Path] = {"run_config.json": root / "run_config.json", "run_state.json": root / "run_state.json", "results/category_metrics.jsonl": root / "results" / "category_metrics.jsonl"}
+    if (project / "scripts" / "Verify-QuickDelivery.ps1").is_file():
+        payload["Verify.ps1"] = project / "scripts" / "Verify-QuickDelivery.ps1"
+    for path in sorted((root / "execution_history").rglob("*")):
+        if path.is_file() and path.suffix.lower() in {".json", ".jsonl"}:
+            if not path.resolve().is_relative_to(root):
+                raise ValueError("Execution history escapes run root")
+            payload[path.relative_to(root).as_posix()] = path
+    for path in sorted((root / "monitoring").rglob("*")):
+        if path.is_file() and path.suffix.lower() in {".json", ".jsonl", ".log"}:
+            if not path.resolve().is_relative_to(root):
+                raise ValueError("Monitoring evidence escapes run root")
+            payload[path.relative_to(root).as_posix()] = path
     for path in sorted((root / "results").glob("*.json*")):
         if path.is_file():
             payload["results/" + path.name] = path
@@ -429,12 +476,20 @@ def package_delivery(run_root: str | Path, output_zip: str | Path, project_root:
     for path in _project_files(project, config):
         payload["code/" + path.relative_to(project).as_posix()] = path
     for path in sorted((root / "models").rglob("*")):
-        if path.is_file() and path.suffix.lower() in {".npz", ".npy", ".json"}:
+        if path.is_file() and path.suffix.lower() in {".npz", ".npy", ".json", ".jsonl"}:
             if not path.resolve().is_relative_to(root):
                 raise ValueError("Model artifact escapes run root")
             payload["models/" + path.relative_to(root / "models").as_posix()] = path
     if not any(name.startswith("models/") and name.endswith((".npz", ".npy")) for name in payload):
         raise ValueError("No fitted model statistics available for delivery")
+    expected_models = {f"models/{dataset}/{category}/statistics.npz" for dataset, category, _, _ in _expected_keys(config)}
+    if not expected_models.issubset(payload):
+        raise ValueError(f"Missing fitted models for registered categories: {sorted(expected_models - set(payload))}")
+    sealed_models = {}
+    for name in expected_models:
+        seal = payload[name].with_name("statistics_integrity.json")
+        if seal.is_file():
+            sealed_models[name] = _json(seal)["sha256"]
     backbone = config.get("backbone", {})
     if backbone.get("weight_path"):
         weight = _source_path(project, backbone["weight_path"], backbone.get("sha256"))
@@ -463,15 +518,19 @@ def package_delivery(run_root: str | Path, output_zip: str | Path, project_root:
         if Path(name).name != name or ":" in name:
             raise ValueError("Invalid additional license name")
         payload["licenses/" + name] = path
+    manifest_files = [{"path": name, "size_bytes": path.stat().st_size, "sha256": _sha(path)} for name, path in sorted(payload.items())]
+    for entry in manifest_files:
+        if entry["path"] in sealed_models and entry["sha256"] != sealed_models[entry["path"]]:
+            raise ValueError(f"Fitted model differs from its execution seal: {entry['path']}")
     manifest = {
         "schema_version": 1, "status": "completed", "created_at": datetime.now(timezone.utc).isoformat(),
         "source_run": str(root), "result_count": summary["result_count"], "figure_count": summary["figure_count"],
         "full_dataset_included": False, "selected_dataset_samples_included": True, "all_prediction_maps_included": False, "selected_raw_evidence_included": True,
-        "files": [{"path": name, "size_bytes": path.stat().st_size, "sha256": _sha(path)} for name, path in sorted(payload.items())],
+        "files": manifest_files,
     }
     manifest_bytes = (json.dumps(manifest, ensure_ascii=False, indent=2, sort_keys=True, allow_nan=False) + "\n").encode("utf-8")
     output.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED, compresslevel=4) as archive:
+    with zipfile.ZipFile(output, "x", compression=zipfile.ZIP_DEFLATED, compresslevel=1) as archive:
         for name, path in sorted(payload.items()):
             archive.write(path, name)
         archive.writestr("DELIVERY-MANIFEST.json", manifest_bytes)

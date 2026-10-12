@@ -157,3 +157,11 @@ def test_nonfinite_metrics_are_never_packaged(experiment, tmp_path):
     with pytest.raises(ValueError, match="Metric must be finite"):
         package_delivery(run, tmp_path / "delivery.zip", project)
     assert not (tmp_path / "delivery.zip").exists()
+
+
+def test_fitted_model_must_match_its_execution_seal(experiment, tmp_path):
+    project, run, _, _ = experiment
+    _write(run / "models/visa/candle/statistics_integrity.json", {"sha256": "0" * 64})
+    with pytest.raises(ValueError, match="Fitted model differs from its execution seal"):
+        package_delivery(run, tmp_path / "delivery.zip", project)
+    assert not (tmp_path / "delivery.zip").exists()
