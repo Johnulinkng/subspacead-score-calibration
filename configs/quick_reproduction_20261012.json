@@ -1,0 +1,59 @@
+{
+  "schema_version": 1,
+  "protocol_id": "quick_padim_r18_100_20261012_v1",
+  "status": "frozen_before_quick_test_access",
+  "scope": "one_day_low_resource_exploratory_reproduction",
+  "scientific_claim_eligible": false,
+  "prior_round": {
+    "registration": "configs/preregistered_experiments.json",
+    "status": "DRAEM_training_remains_paused",
+    "test_access_notice": "This new round will access the two real test datasets. The earlier untouched-test development registration cannot subsequently be represented as still blind to these tests."
+  },
+  "datasets": {
+    "mvtec_ad": {"root": "data/mvtec_ad", "categories": ["bottle", "cable", "capsule", "carpet", "grid", "hazelnut", "leather", "metal_nut", "pill", "screw", "tile", "toothbrush", "transistor", "wood", "zipper"]},
+    "visa": {"root": "data/visa/1cls", "categories": ["candle", "capsules", "cashew", "chewinggum", "fryum", "macaroni1", "macaroni2", "pcb1", "pcb2", "pcb3", "pcb4", "pipe_fryum"]}
+  },
+  "training_inputs": "all train/good images, no abnormal training images, no gradient optimization",
+  "model": {
+    "backbone": "torchvision ResNet18 ImageNet1K V1",
+    "weights": "artifacts/weights/resnet18-f37072fd.pth",
+    "weights_url": "https://download.pytorch.org/models/resnet18-f37072fd.pth",
+    "weights_sha256": "f37072fd47e89c5e827621c5baffa7500819f7896bbacec160b1a16c560e07ec",
+    "layers": ["layer1", "layer2", "layer3"],
+    "dimensions": 100,
+    "native_feature_grid": [56, 56],
+    "image_geometry": "RGB full-frame resize 224x224, ImageNet normalization; no center crop",
+    "covariance": "unbiased sample covariance at each spatial location, plus 0.01 I",
+    "statistical_estimation": "streaming float64 sufficient statistics; persist float64 statistics",
+    "distance": "Mahalanobis square-root, full covariance",
+    "geometry_note": "PaDiM-style reproduction with explicit resize geometry; do not assert exact reproduction of all author preprocessing or published scores."
+  },
+  "seeds": [1887537248],
+  "variants": {
+    "baseline": {"shrinkage_alpha": 0.0, "sigma": 4.0},
+    "shrinkage": {"shrinkage_alpha": 0.1, "sigma": 4.0},
+    "baseline_unsmoothed": {"shrinkage_alpha": 0.0, "sigma": 0.0},
+    "shrinkage_unsmoothed": {"shrinkage_alpha": 0.1, "sigma": 0.0}
+  },
+  "candidate_hypothesis": "Fixed trace-scaled covariance shrinkage may stabilize local Gaussian scores. The result may improve or regress; report every category and all four variants.",
+  "hyperparameter_policy": "All variant parameters fixed before the first real test inference; no result-driven parameter selection, category dropping or sample substitution in this round.",
+  "metrics": {
+    "evaluation_size": [256, 256],
+    "raw_map": "distance 56 -> bilinear 224 -> Gaussian native sigma -> bilinear 256; no per-image score normalization",
+    "mask": "nearest-neighbor 256x256, values greater than zero are abnormal",
+    "image_auroc": "maximum of the saved float32 raw map",
+    "pixel_auroc": "exact rank-based AUROC with tied-score averaging",
+    "pixel_ap": "exact grouped-threshold average precision",
+    "aupro_0_30": "exact equal-region AUPRO, 8-connectivity, all background pixels, tie grouping and linear interpolation at FPR 0.30"
+  },
+  "visualization_selection": "first normal and first anomalous sample by frozen lexical sample_id for every category; same scale for all variants",
+  "resources": {"device": "cpu", "cpu_threads": 2, "batch_size": 1, "workers": 0, "no_background_training": true, "target_process_working_set_gib_max": 2.5},
+  "delivery": {"items": ["code and fitted model package", "complete baseline/candidate/ablation metric table", "raw-map-traceable comparison figures", "reproduction instructions and file checksums"], "expected_category_count": 27, "expected_metric_rows": 108},
+  "sources": [
+    {"title": "PaDiM paper", "url": "https://arxiv.org/abs/2011.08785", "role": "established baseline algorithm"},
+    {"title": "Anomalib PaDiM reference", "url": "https://github.com/open-edge-platform/anomalib/tree/main/src/anomalib/models/image/padim", "role": "public implementation reference for layer, dimension and map conventions", "license": "Apache-2.0"},
+    {"title": "torchvision ResNet18", "url": "https://github.com/pytorch/vision/blob/v0.22.0/torchvision/models/resnet.py", "role": "backbone implementation and public ImageNet checkpoint", "license": "BSD-3-Clause"}
+  ],
+  "new_work": ["bounded-memory orchestration and statistics", "exact lower-memory evaluation", "fixed shrinkage comparison and ablations", "traceable visualization and reproducible package integration"],
+  "acceptance_note": "Completing this quick package demonstrates a reproducible integration. It does not establish originality, guaranteed improvement, SCI Q3 acceptance, multi-seed robustness or best-overall performance."
+}
