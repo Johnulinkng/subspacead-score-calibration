@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "protocol_id": "cached_padim_image_score_top1p_20261012_v1",
+  "scope": "fixed_low_resource_exploratory_image_score_ablation",
+  "scientific_claim_eligible": false,
+  "prior_test_access": "All original MVTec AD and VisA test predictions and metrics were already inspected. This follow-up is exploratory and does not restore blind-test status.",
+  "input_variant": "baseline",
+  "input_map": "Previously sealed, saved float32 256x256 PaDiM-R18 baseline maps, after the original sigma=4 smoothing and resizing. No per-image normalization.",
+  "methods": {
+    "baseline_max": "maximum of the unchanged saved baseline map",
+    "baseline_top1p_mean": "float64 arithmetic mean of the largest floor(0.01*65536)=655 saved baseline pixels"
+  },
+  "top_fraction": 0.01,
+  "top_count": 655,
+  "map_shape": [256, 256],
+  "expected_categories": 27,
+  "expected_test_images": 3887,
+  "expected_dataset_test_images": {"mvtec_ad": 1725, "visa": 2162},
+  "selection_policy": "One fixed public score-aggregation recipe, applied to every category. No parameter search, category filtering, test-label-driven choice, candidate selection or changes to the baseline anomaly maps.",
+  "metrics": {
+    "image_auroc": "sklearn.metrics.roc_auc_score, complete per-category test images; macro mean across categories within each dataset",
+    "control_acceptance": "Recomputed maximum-score category AUROC must equal the original baseline AUROC within 1e-12.",
+    "pixel_metrics": "Unchanged. This script does not recompute, improve or replace P-AUROC, P-AP or AUPRO."
+  },
+  "resources": {"cpu_threads": 2, "gpu": false, "training": false, "model_imports": false, "map_reading": "one map at a time"},
+  "source": {
+    "title": "Anomalib AnomalyDINO mean_top1p aggregation",
+    "commit": "dc087d5c998d960ed739ae9276a5c051b8be4d9e",
+    "url": "https://github.com/open-edge-platform/anomalib/blob/dc087d5c998d960ed739ae9276a5c051b8be4d9e/src/anomalib/models/image/anomaly_dino/torch_model.py",
+    "license": "Apache-2.0",
+    "adaptation": "Reimplementation of only the fixed top-1-percent mean idea with NumPy, applied to saved smoothed 256x256 PaDiM pixel scores. The reference operates on native patch distances. This is not the complete AnomalyDINO model or an original scoring invention."
+  }
+}
