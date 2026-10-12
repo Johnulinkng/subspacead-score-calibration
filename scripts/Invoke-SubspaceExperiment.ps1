@@ -57,9 +57,22 @@ try {
     $subspaceOutcome.status = 'running'
     while (-not $subspaceLauncher.HasExited) {
         $subspaceChild.Refresh()
+        if ($subspaceChild.HasExited) { break }
         $subspaceOs = Get-CimInstance Win32_OperatingSystem
         $subspaceGpu = Get-SubspaceGpuSample
-        $subspaceSample = [ordered]@{time=(Get-Date).ToUniversalTime().ToString('o');pid=$subspaceChild.Id;working_set_gib=$subspaceChild.WorkingSet64/1GB;peak_working_set_gib=$subspaceChild.PeakWorkingSet64/1GB;free_ram_gib=$subspaceOs.FreePhysicalMemory*1KB/1GB;free_commit_gib=$subspaceOs.FreeVirtualMemory*1KB/1GB;cpu_seconds=$subspaceChild.TotalProcessorTime.TotalSeconds}
+        try {
+            $subspaceCpuTime = $subspaceChild.TotalProcessorTime
+            if ($null -eq $subspaceCpuTime) {
+                $subspaceChild.Refresh()
+                if ($subspaceChild.HasExited) { break }
+                throw 'Owned process CPU counter unavailable while the child remains active.'
+            }
+            $subspaceSample = [ordered]@{time=(Get-Date).ToUniversalTime().ToString('o');pid=$subspaceChild.Id;working_set_gib=$subspaceChild.WorkingSet64/1GB;peak_working_set_gib=$subspaceChild.PeakWorkingSet64/1GB;free_ram_gib=$subspaceOs.FreePhysicalMemory*1KB/1GB;free_commit_gib=$subspaceOs.FreeVirtualMemory*1KB/1GB;cpu_seconds=$subspaceCpuTime.TotalSeconds}
+        } catch {
+            $subspaceChild.Refresh()
+            if ($subspaceChild.HasExited) { break }
+            throw
+        }
         $subspaceSample['gpu_used_gib'] = $subspaceGpu.used_gib
         $subspaceSample['gpu_free_gib'] = $subspaceGpu.free_gib
         $subspaceSample['gpu_utilization'] = $subspaceGpu.utilization

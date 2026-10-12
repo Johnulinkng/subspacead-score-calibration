@@ -6,6 +6,7 @@ data/
 runs/
 artifacts/weights/
 artifacts/deliveries/
+artifacts/audits/
 __pycache__/
 .pytest_cache/
 vendor/SubspaceAD/
