@@ -1,5 +1,5 @@
 [CmdletBinding()]
-param([Parameter(Mandatory=$true)][string]$OutputDirectory)
+param([Parameter(Mandatory=$true)][string]$OutputDirectory, [switch]$Resume)
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 $projectRoot = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..'))
@@ -12,8 +12,8 @@ $env:NUMEXPR_NUM_THREADS = '2'
 $env:PYTHONUNBUFFERED = '1'
 $outputRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $OutputDirectory))
 if (-not $outputRoot.StartsWith((Join-Path $projectRoot 'runs\quick').TrimEnd('\') + '\', [System.StringComparison]::OrdinalIgnoreCase)) { throw 'Quick output outside its run directory.' }
-if (Test-Path -LiteralPath $outputRoot) { throw 'Refusing to overwrite a quick run.' }
-$monitorRoot = $outputRoot + '-monitor'
+if ((Test-Path -LiteralPath $outputRoot) -and -not $Resume) { throw 'Refusing to overwrite a quick run.' }
+$monitorRoot = if ($Resume) { $outputRoot + '-monitor-resume-' + (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ') } else { $outputRoot + '-monitor' }
 New-Item -ItemType Directory -Path $monitorRoot -ErrorAction Stop | Out-Null
 $os = Get-CimInstance Win32_OperatingSystem
 if ($os.FreePhysicalMemory * 1KB / 1GB -lt 3.5) { throw 'Quick experiment needs 3.5 GiB initial free RAM.' }
@@ -27,7 +27,9 @@ $processLauncher = $null
 $child = $null
 $outcome = [ordered]@{status='initializing';started_at_utc=(Get-Date).ToUniversalTime().ToString('o');output=$outputRoot;monitor=$monitorRoot;launcher_pid=$PID;child_pid=$null;error=$null;claim_eligible=$false}
 try {
-    $processLauncher = Start-Process -FilePath (Join-Path $projectRoot '.venv\Scripts\python.exe') -ArgumentList @('scripts/run_quick_experiment.py','--output-dir',$OutputDirectory) -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $monitorRoot 'stdout.log') -RedirectStandardError (Join-Path $monitorRoot 'stderr.log') -PassThru
+    $arguments = @('scripts/run_quick_experiment.py','--output-dir',$OutputDirectory)
+    if ($Resume) { $arguments += '--resume' }
+    $processLauncher = Start-Process -FilePath (Join-Path $projectRoot '.venv\Scripts\python.exe') -ArgumentList $arguments -WorkingDirectory $projectRoot -WindowStyle Hidden -RedirectStandardOutput (Join-Path $monitorRoot 'stdout.log') -RedirectStandardError (Join-Path $monitorRoot 'stderr.log') -PassThru
     $child = $processLauncher
     Start-Sleep -Milliseconds 300
     $descendants = @(Get-CimInstance Win32_Process -Filter ("ParentProcessId = {0}" -f $processLauncher.Id) | Where-Object { $_.ExecutablePath -like "$projectRoot\*" -and $_.Name -eq 'python.exe' })

@@ -5,6 +5,7 @@ import argparse
 import hashlib
 import json
 import os
+import shutil
 import sys
 import time
 from datetime import datetime, timezone
@@ -43,21 +44,23 @@ def main() -> int:
     parser.add_argument("--output-dir", type=Path, required=True)
     parser.add_argument("--benchmark-train-only", action="store_true")
     parser.add_argument("--benchmark-images", type=int, default=16)
+    parser.add_argument("--resume", action="store_true", help="Continue an interrupted quick run, preserving completed categories and its previous execution evidence.")
     args = parser.parse_args()
     config_path = args.config.resolve()
     protocol = json.loads(config_path.read_text(encoding="utf-8"))
     run = args.output_dir.resolve()
     if not run.is_relative_to(ROOT / "runs/quick"):
         raise ValueError("Quick runs must stay below runs/quick")
-    if run.exists():
+    if run.exists() and not args.resume:
         raise ValueError("Refusing to replace an existing quick run")
-    run.mkdir(parents=True)
-    (run / "results").mkdir()
+    if args.resume and not run.exists():
+        raise ValueError("Resume requires an existing interrupted run")
+    run.mkdir(parents=True, exist_ok=args.resume)
+    (run / "results").mkdir(exist_ok=args.resume)
     state_path = run / "run_state.json"
     state = {"status": "initializing", "started_at_utc": now(), "pid": os.getpid(), "completed_categories": 0,
              "scientific_claim_eligible": False, "test_content_accessed": False, "current_task": None}
-    write_json(state_path, state)
-    from industrial_anomaly_lab.quick_features import FeatureExtractor, fit_statistics, prepare_scorer, render_maps, save_statistics
+    from industrial_anomaly_lab.quick_features import FeatureExtractor, fit_statistics, load_statistics, prepare_scorer, render_maps, save_statistics
     from industrial_anomaly_lab.quick_metrics import evaluate_from_files
     from industrial_anomaly_lab.data_protocols import build_test_manifest, validate_train_layout
     import numpy as np
@@ -77,8 +80,58 @@ def main() -> int:
                                   "variants": variant_names, "seeds": protocol["seeds"]},
               "samples_index": "results/samples.jsonl", "benchmark_train_only": args.benchmark_train_only,
               "sources": protocol["sources"], "new_work": protocol["new_work"]}
+    completed_categories: set[tuple[str, str]] = set()
+    prior_elapsed = 0.0
+    if args.resume:
+        previous = json.loads((run / "run_config.json").read_text(encoding="utf-8"))
+        previous_state = json.loads(state_path.read_text(encoding="utf-8"))
+        if previous_state["status"] == "completed":
+            raise ValueError("A completed run must not be resumed")
+        if previous["protocol_sha256"] != frozen_config_hash or previous["protocol"] != protocol:
+            raise ValueError("Resume cannot change the frozen method or experiment protocol")
+        for relative, expected_hash in previous["source_sha256"].items():
+            if relative != Path(__file__).relative_to(ROOT).as_posix() and digest(ROOT / relative) != expected_hash:
+                raise ValueError(f"Resume method/evaluator source drift: {relative}")
+        history = run / "execution_history" / datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+        history.mkdir(parents=True, exist_ok=False)
+        for path in (run / "run_config.json", state_path, run / "results/category_metrics.jsonl", run / "results/samples.jsonl"):
+            if path.exists():
+                shutil.copy2(path, history / path.name)
+        grouped: dict[tuple[str, str], list[dict]] = {}
+        metric_path = run / "results/category_metrics.jsonl"
+        rows = [json.loads(line) for line in metric_path.read_text(encoding="utf-8").splitlines()] if metric_path.exists() else []
+        for row in rows:
+            grouped.setdefault((row["dataset"], row["category"]), []).append(row)
+        for key, category_rows in grouped.items():
+            if len(category_rows) == len(variant_names) and {r["variant"] for r in category_rows} == set(variant_names) and all(r["status"] == "completed" for r in category_rows):
+                model_root = run / "models" / key[0] / key[1]
+                stats_path = model_root / "statistics.npz"
+                checked = load_statistics(stats_path)
+                if checked.count != category_rows[0]["train_images"] or checked.metadata["train_manifest_sha256"] != digest(model_root / "train_manifest.json"):
+                    raise ValueError("Completed model statistics do not match their training evidence")
+                if checked.metadata["checkpoint_sha256"] != protocol["model"]["weights_sha256"] or checked.metadata["seed"] != protocol["seeds"][0]:
+                    raise ValueError("Completed model weight or seed identity drift")
+                write_json(model_root / "statistics_integrity.json", {"sha256": digest(stats_path), "size_bytes": stats_path.stat().st_size,
+                           "sealed_at_utc": now(), "seal_scope": "verified at resume; no earlier model-content seal is asserted"})
+                del checked
+                completed_categories.add(key)
+        for filename, existing_rows in (("category_metrics.jsonl", rows), ("samples.jsonl", None)):
+            path = run / "results" / filename
+            if not path.exists():
+                continue
+            if existing_rows is None:
+                existing_rows = [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines()]
+            kept = [row for row in existing_rows if (row["dataset"], row["category"]) in completed_categories]
+            path.write_text("".join(json.dumps(row, ensure_ascii=False) + "\n" for row in kept), encoding="utf-8")
+        prior_elapsed = float(previous_state.get("elapsed_seconds", 0))
+        state.update(completed_categories=len(completed_categories), test_content_accessed=previous_state.get("test_content_accessed", False))
+        config["initial_execution"] = previous.get("initial_execution", {"source_sha256": previous["source_sha256"], "started_at_utc": previous["started_at_utc"]})
+        config["resumed_executions"] = previous.get("resumed_executions", []) + [{"time": now(), "preserved_evidence": history.relative_to(run).as_posix(), "source_sha256": frozen_sources, "reason": "resource interruption; same frozen method, weights and evaluation"}]
+        state["resumed_at_utc"] = now()
+        state["started_at_utc"] = previous_state["started_at_utc"]
     write_json(run / "run_config.json", config)
-    started = time.monotonic()
+    write_json(state_path, state)
+    started = time.monotonic() - prior_elapsed
     try:
         extractor = FeatureExtractor(ROOT / protocol["model"]["weights"],
             expected_sha256=protocol["model"]["weights_sha256"], seed=protocol["seeds"][0],
@@ -88,6 +141,8 @@ def main() -> int:
         for dataset_name, dataset_config in protocol["datasets"].items():
             dataset_root = ROOT / dataset_config["root"]
             for category in dataset_config["categories"]:
+                if (dataset_name, category) in completed_categories:
+                    continue
                 if digest(config_path) != frozen_config_hash or any(digest(ROOT / rel) != h for rel, h in frozen_sources.items()):
                     raise RuntimeError("Frozen quick configuration or execution source changed")
                 state.update(status="running", current_task={"dataset": dataset_name, "category": category, "phase": "fit"}, updated_at_utc=now())
@@ -97,6 +152,14 @@ def main() -> int:
                     training_paths = training_paths[:args.benchmark_images]
                 category_started = time.monotonic()
                 model_root = run / "models" / dataset_name / category
+                if args.resume:
+                    for partial in (model_root, run / "predictions" / dataset_name / category):
+                        if partial.exists():
+                            if not partial.resolve().is_relative_to(run):
+                                raise ValueError("Interrupted artifact escapes the quick run")
+                            archived = history / partial.relative_to(run)
+                            archived.parent.mkdir(parents=True, exist_ok=True)
+                            partial.rename(archived)
                 model_root.mkdir(parents=True)
                 append(run / "results/events.jsonl", {"event": "fit_started", "dataset": dataset_name, "category": category, "train_images": len(training_paths), "time": now()})
                 train_rows = [{"path": p.relative_to(ROOT).as_posix(), "sha256": digest(p), "size_bytes": p.stat().st_size} for p in training_paths]
@@ -110,6 +173,8 @@ def main() -> int:
                 stats = fit_statistics(train_features(), channel_indices=extractor.channel_indices,
                     metadata={**extractor.metadata, "dataset": dataset_name, "category": category, "train_manifest_sha256": digest(model_root / "train_manifest.json")})
                 save_statistics(stats, model_root / "statistics.npz")
+                write_json(model_root / "statistics_integrity.json", {"sha256": digest(model_root / "statistics.npz"),
+                           "size_bytes": (model_root / "statistics.npz").stat().st_size, "sealed_at_utc": now(), "seal_scope": "immediately after fitting"})
                 fit_seconds = time.monotonic() - category_started
                 scorers = {alpha: prepare_scorer(stats, shrinkage_alpha=alpha) for alpha in (0.0, 0.1)}
                 if args.benchmark_train_only:
