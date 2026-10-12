@@ -1,11 +1,14 @@
 [CmdletBinding()]
 param(
-    [string]$PackageRoot = $PSScriptRoot,
+    [string]$PackageRoot,
     [string]$PythonPath,
     [ValidateRange(0, 54)][int]$InferenceSamples = 2
 )
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
+if ([string]::IsNullOrWhiteSpace($PackageRoot)) {
+    $PackageRoot = Split-Path -Parent $MyInvocation.MyCommand.Path
+}
 $taskPackageRoot = [System.IO.Path]::GetFullPath($PackageRoot)
 $taskManifestPath = Join-Path $taskPackageRoot 'DELIVERY-MANIFEST.json'
 if (-not (Test-Path -LiteralPath $taskManifestPath -PathType Leaf)) {
