@@ -8,3 +8,4 @@ artifacts/weights/
 artifacts/deliveries/
 __pycache__/
 .pytest_cache/
+vendor/SubspaceAD/

@@ -1,0 +1,67 @@
+{
+  "schema_version": 1,
+  "status": "verified",
+  "repo": "https://github.com/CLendering/SubspaceAD",
+  "commit": "ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7",
+  "license": "Apache-2.0",
+  "checked_at_utc": "2026-10-12T09:33:51.936086+00:00",
+  "source_files_sha256": {
+    "LICENSE": "1eb85fc97224598dad1852b5d6483bbcf0aa8608790dcc657a5a2a761ae9c8c6",
+    "README.md": "e3f18122c15e94c0c3bf116f2c04b0ba662d80501cc4c1a1d5dcdd17574433bb",
+    "main.py": "600d41250866fd4c7e03e1527efa8735c44a5896ccb99d54e2fbca73f87f55ec",
+    "scripts/backbone_ablation.sh": "5145515a616b60f7703a844c04cce8889debf271edce6c0f4c57e120ab4380c6",
+    "scripts/benchmark_full_shot.sh": "af9ecc62c0af36e695e0c0b8635d9564ff033f631d056bba6f3558cd6ad02053",
+    "src/subspacead/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/subspacead/config.py": "30c6a8a2c47268cd556b8f736cadb009d7de54d361772858838d17bc1107f9a3",
+    "src/subspacead/core/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/subspacead/core/extractor.py": "dc8c045737ff31b21276e4e014aeb126c2cee0f37c61ed41a47fdc4b0f91bde2",
+    "src/subspacead/core/patching.py": "a0b2123286220084e76de4148a6444d7e1fe9997252394e9a901f9a191b89c1d",
+    "src/subspacead/core/pca.py": "cb81701be6ba2f32d629dca821862a5d83f7ffedd071522ed683ddf990ff1fcd",
+    "src/subspacead/data/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/subspacead/data/datasets.py": "73e833dcd240189aa4a67cd46f23e80e4d000abeceebc27352222b8f38bbbe16",
+    "src/subspacead/data/transforms.py": "b3c1ae1d612cb0078a8fb84eac6db482b0888dc8f59ad75f8bb6477a03dd8f69",
+    "src/subspacead/post_process/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/subspacead/post_process/scoring.py": "8445e47c2ebbbb9c44de6ebde2f947749bbd2cfe52b2b94bcb20470f4ad1bc45",
+    "src/subspacead/post_process/specular.py": "61917430a4e333d40b7d4ceee0cb2dfabd20161ce8c89826f3626af41657e050",
+    "src/subspacead/utils/__init__.py": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "src/subspacead/utils/common.py": "7eefb7ef79b0e52573f53dd1f61e32e103cd942ced28e3a4d1942ab56038de11",
+    "src/subspacead/utils/viz.py": "aedff69e100cf5ae1bc23dae96c69ed0a0f53f09e27579703207dfbd8b3ebd54"
+  },
+  "weight_manifest": {
+    "schema_version": 1,
+    "status": "verified",
+    "repo": "facebook/dinov2-small",
+    "revision": "ed25f3a31f01632728cabb09d1542f84ab7b0056",
+    "source": "https://huggingface.co/facebook/dinov2-small/tree/ed25f3a31f01632728cabb09d1542f84ab7b0056",
+    "license": "Apache-2.0",
+    "published_checkpoint_sha256": "ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1",
+    "tensor_only_safetensors": true,
+    "files": [
+      {
+        "path": "config.json",
+        "size_bytes": 547,
+        "sha256": "1809f83e3bdb1609a501a610ad4a742f4fd8ae44d72ca4aa0df52d1f2ac8628d"
+      },
+      {
+        "path": "LICENSE",
+        "size_bytes": 11359,
+        "sha256": "600cc67cc4cb2f5ea317dcfc687ad1c74dc4bec8782bbe9db0afd83513b935b7"
+      },
+      {
+        "path": "model.safetensors",
+        "size_bytes": 88249960,
+        "sha256": "ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1"
+      },
+      {
+        "path": "preprocessor_config.json",
+        "size_bytes": 436,
+        "sha256": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828"
+      },
+      {
+        "path": "README.md",
+        "size_bytes": 3033,
+        "sha256": "4c20dca454a8e5c670e8de5c7e6040f512aeca5438516f7623eedc4e3b00599c"
+      }
+    ]
+  }
+}
