@@ -46,6 +46,8 @@ def main() -> int:
     parser.add_argument("--benchmark-images", type=int, default=16)
     parser.add_argument("--resume", action="store_true", help="Continue an interrupted quick run, preserving completed categories and its previous execution evidence.")
     args = parser.parse_args()
+    if args.resume and args.benchmark_train_only:
+        raise ValueError("Train-only benchmarks cannot resume a complete-matrix experiment")
     config_path = args.config.resolve()
     protocol = json.loads(config_path.read_text(encoding="utf-8"))
     run = args.output_dir.resolve()
@@ -89,6 +91,8 @@ def main() -> int:
             raise ValueError("A completed run must not be resumed")
         if previous["protocol_sha256"] != frozen_config_hash or previous["protocol"] != protocol:
             raise ValueError("Resume cannot change the frozen method or experiment protocol")
+        if previous.get("benchmark_train_only", False):
+            raise ValueError("A train-only benchmark cannot become a full experiment through resume")
         for relative, expected_hash in previous["source_sha256"].items():
             if relative != Path(__file__).relative_to(ROOT).as_posix() and digest(ROOT / relative) != expected_hash:
                 raise ValueError(f"Resume method/evaluator source drift: {relative}")
@@ -104,15 +108,26 @@ def main() -> int:
             grouped.setdefault((row["dataset"], row["category"]), []).append(row)
         for key, category_rows in grouped.items():
             if len(category_rows) == len(variant_names) and {r["variant"] for r in category_rows} == set(variant_names) and all(r["status"] == "completed" for r in category_rows):
+                if key[0] not in protocol["datasets"] or key[1] not in protocol["datasets"][key[0]]["categories"] or any(row["seed"] not in protocol["seeds"] for row in category_rows):
+                    raise ValueError("Completed result identity is not registered")
                 model_root = run / "models" / key[0] / key[1]
                 stats_path = model_root / "statistics.npz"
+                seal_path = model_root / "statistics_integrity.json"
+                if seal_path.exists() and json.loads(seal_path.read_text(encoding="utf-8"))["sha256"] != digest(stats_path):
+                    raise ValueError("Previously sealed model statistics changed")
                 checked = load_statistics(stats_path)
                 if checked.count != category_rows[0]["train_images"] or checked.metadata["train_manifest_sha256"] != digest(model_root / "train_manifest.json"):
                     raise ValueError("Completed model statistics do not match their training evidence")
                 if checked.metadata["checkpoint_sha256"] != protocol["model"]["weights_sha256"] or checked.metadata["seed"] != protocol["seeds"][0]:
                     raise ValueError("Completed model weight or seed identity drift")
-                write_json(model_root / "statistics_integrity.json", {"sha256": digest(stats_path), "size_bytes": stats_path.stat().st_size,
-                           "sealed_at_utc": now(), "seal_scope": "verified at resume; no earlier model-content seal is asserted"})
+                from industrial_anomaly_lab.quick_features import select_channels
+                if checked.feature_shape != (protocol["model"]["dimensions"],56,56) or not np.array_equal(checked.channel_indices,select_channels(protocol["seeds"][0],protocol["model"]["dimensions"])):
+                    raise ValueError("Completed model geometry or selected channels changed")
+                if checked.metadata["dataset"] != key[0] or checked.metadata["category"] != key[1] or checked.metadata["sample_count"] != checked.count:
+                    raise ValueError("Completed model metadata identity mismatch")
+                if not seal_path.exists():
+                    write_json(seal_path, {"sha256": digest(stats_path), "size_bytes": stats_path.stat().st_size,
+                               "sealed_at_utc": now(), "seal_scope": "verified at resume; no earlier model-content seal is asserted"})
                 del checked
                 completed_categories.add(key)
         for filename, existing_rows in (("category_metrics.jsonl", rows), ("samples.jsonl", None)):

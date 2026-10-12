@@ -10,13 +10,21 @@ $env:MKL_NUM_THREADS = '2'
 $env:OPENBLAS_NUM_THREADS = '2'
 $env:NUMEXPR_NUM_THREADS = '2'
 $env:PYTHONUNBUFFERED = '1'
+Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+public static class QuickOwnedProcessMemory {
+    [DllImport("psapi.dll", SetLastError=true)]
+    public static extern bool EmptyWorkingSet(IntPtr process);
+}
+'@
 $outputRoot = [System.IO.Path]::GetFullPath((Join-Path $projectRoot $OutputDirectory))
 if (-not $outputRoot.StartsWith((Join-Path $projectRoot 'runs\quick').TrimEnd('\') + '\', [System.StringComparison]::OrdinalIgnoreCase)) { throw 'Quick output outside its run directory.' }
 if ((Test-Path -LiteralPath $outputRoot) -and -not $Resume) { throw 'Refusing to overwrite a quick run.' }
 $monitorRoot = if ($Resume) { $outputRoot + '-monitor-resume-' + (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssZ') } else { $outputRoot + '-monitor' }
 New-Item -ItemType Directory -Path $monitorRoot -ErrorAction Stop | Out-Null
 $os = Get-CimInstance Win32_OperatingSystem
-if ($os.FreePhysicalMemory * 1KB / 1GB -lt 3.5) { throw 'Quick experiment needs 3.5 GiB initial free RAM.' }
+if ($os.FreePhysicalMemory * 1KB / 1GB -lt 3.25) { throw 'Quick experiment needs measured 1.5 GiB process peak, 1.5 GiB system reserve and 0.25 GiB uncertainty.' }
 if ((Get-PSDrive E).Free / 1GB -lt 20) { throw 'Quick experiment needs 20 GiB available disk space.' }
 $lockPath = Join-Path $projectRoot 'runs\.quick-padim.lock.json'
 $token = [guid]::NewGuid().ToString('N')
@@ -42,6 +50,17 @@ try {
         $os = Get-CimInstance Win32_OperatingSystem
         $sample = [ordered]@{time=(Get-Date).ToUniversalTime().ToString('o');pid=$child.Id;alive=(-not $child.HasExited);working_set_gib=$child.WorkingSet64/1GB;peak_working_set_gib=$child.PeakWorkingSet64/1GB;free_ram_gib=$os.FreePhysicalMemory*1KB/1GB;free_commit_gib=$os.FreeVirtualMemory*1KB/1GB;cpu_seconds=$child.TotalProcessorTime.TotalSeconds}
         [System.IO.File]::AppendAllText((Join-Path $monitorRoot 'resources.jsonl'), ($sample | ConvertTo-Json -Compress) + [Environment]::NewLine,[System.Text.UTF8Encoding]::new($false))
+        if (-not $child.HasExited -and $sample.free_ram_gib -lt 2.0 -and $sample.free_commit_gib -ge 2) {
+            # Only trim the resident pages of the exact child owned by this
+            # launcher. All model/state bytes remain allocated and recoverable;
+            # other tasks and the scientific recipe are untouched.
+            $trimmed = [QuickOwnedProcessMemory]::EmptyWorkingSet($child.Handle)
+            Start-Sleep -Seconds 1
+            $child.Refresh()
+            $os = Get-CimInstance Win32_OperatingSystem
+            $sample = [ordered]@{time=(Get-Date).ToUniversalTime().ToString('o');event='owned_working_set_trim';pid=$child.Id;trim_succeeded=$trimmed;alive=(-not $child.HasExited);working_set_gib=$child.WorkingSet64/1GB;peak_working_set_gib=$child.PeakWorkingSet64/1GB;free_ram_gib=$os.FreePhysicalMemory*1KB/1GB;free_commit_gib=$os.FreeVirtualMemory*1KB/1GB;cpu_seconds=$child.TotalProcessorTime.TotalSeconds}
+            [System.IO.File]::AppendAllText((Join-Path $monitorRoot 'resources.jsonl'), ($sample | ConvertTo-Json -Compress) + [Environment]::NewLine,[System.Text.UTF8Encoding]::new($false))
+        }
         if (-not $child.HasExited -and ($sample.working_set_gib -gt 2.5 -or $sample.free_ram_gib -lt 1.5 -or $sample.free_commit_gib -lt 2)) {
             $child.Kill()
             $child.WaitForExit(10000) | Out-Null
