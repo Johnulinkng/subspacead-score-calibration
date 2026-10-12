@@ -90,6 +90,42 @@ def _source_path(root: Path, value: str, expected_sha: str | None = None) -> Pat
     return path
 
 
+def _dataset_sources(project: Path, config: Mapping[str, Any]) -> tuple[dict[str, Any], dict[str, Path]]:
+    """Retain dataset attribution and terms when redistributing selected pixels."""
+    declared = config.get("protocol", {}).get("datasets", {})
+    records, files = {}, {}
+    for dataset in declared:
+        if dataset == "mvtec_ad":
+            source = _source_path(project, "manifests/mvtec_source_manifest.json")
+            metadata = _json(source)
+            license_file = _source_path(project, "data/mvtec_ad/license.txt")
+            attribution = _source_path(project, "data/mvtec_ad/readme.txt")
+            if "Attribution-NonCommercial-ShareAlike 4.0" not in license_file.read_text(encoding="utf-8"):
+                raise ValueError("MVTec dataset license differs from the recorded CC-BY-NC-SA-4.0 terms")
+            retained = {"data_sources/MVTec-AD-source.json": source, "licenses/MVTec-AD-LICENSE.txt": license_file, "licenses/MVTec-AD-ATTRIBUTION.txt": attribution}
+            records[dataset] = {"name": "MVTec AD", "official_url": metadata["official_dataset_page"], "license": "CC-BY-NC-SA-4.0", "license_url": "https://creativecommons.org/licenses/by-nc-sa/4.0/", "copyright": "Copyright 2019 MVTec Software GmbH", "attribution": "Paul Bergmann, Michael Fauser, David Sattlegger, Carsten Steger. A Comprehensive Real-World Dataset for Unsupervised Anomaly Detection. CVPR 2019.", "source_manifest": "data_sources/MVTec-AD-source.json", "license_file": "licenses/MVTec-AD-LICENSE.txt", "attribution_file": "licenses/MVTec-AD-ATTRIBUTION.txt", "commercial_use_allowed": False}
+        elif dataset == "visa":
+            source = _source_path(project, "manifests/visa_source_manifest.json")
+            metadata = _json(source)
+            license_file = _source_path(project, "data/visa/raw/VisA/LICENSE-DATASET")
+            notice = _source_path(project, "third_party/spot-diff/NOTICE", metadata["licenses"]["notice"]["sha256"])
+            code_license = _source_path(project, "third_party/spot-diff/LICENSE", metadata["licenses"]["code"]["sha256"])
+            readme = _source_path(project, "third_party/spot-diff/README.md")
+            split = _source_path(project, metadata["official_one_class_protocol"]["split_file"], metadata["official_one_class_protocol"]["split_sha256"])
+            preparation = _source_path(project, metadata["official_one_class_protocol"]["preparation_script"], metadata["official_one_class_protocol"]["preparation_script_sha256"])
+            if "Attribution 4.0 International" not in license_file.read_text(encoding="utf-8"):
+                raise ValueError("VisA dataset license differs from the recorded CC-BY-4.0 terms")
+            retained = {"data_sources/VisA-source.json": source, "assets/data-protocols/visa_1cls.csv": split, "licenses/VisA-DATASET-LICENSE.txt": license_file, "licenses/VisA-NOTICE.txt": notice, "licenses/VisA-preparation-Apache2.txt": code_license, "data_sources/VisA-official-README.md": readme, "assets/data-protocols/visa_prepare_data.py": preparation}
+            records[dataset] = {"name": "VisA", "official_url": metadata["official_repository"], "dataset_download_url": metadata["dataset_download_url"], "source_commit": metadata["commit"], "license": "CC-BY-4.0", "license_url": "https://creativecommons.org/licenses/by/4.0/", "copyright": "Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.", "attribution": "Yang Zou, Jongheon Jeong, Latha Pemula, Dongqing Zhang, Onkar Dabeer. SPot-the-Difference Self-Supervised Pre-training for Anomaly Detection and Segmentation. ECCV 2022. https://arxiv.org/abs/2207.14315", "source_manifest": "data_sources/VisA-source.json", "license_file": "licenses/VisA-DATASET-LICENSE.txt", "notice_file": "licenses/VisA-NOTICE.txt", "split_file": "assets/data-protocols/visa_1cls.csv", "split_sha256": _sha(split), "preparation_script": "assets/data-protocols/visa_prepare_data.py", "preparation_script_sha256": _sha(preparation)}
+        else:
+            raise ValueError(f"Dataset provenance is not configured: {dataset}")
+        files.update(retained)
+        records[dataset]["original_selected_images"] = "Exact source file bytes copied without modification"
+        records[dataset]["derived_visualizations"] = "RGB/bilinear-resized input display, nearest-resized binary evaluation masks, heatmap overlays and comparison panels; dataset attribution and terms retained for these derived image contents"
+        records[dataset]["retained_files"] = {name: {"sha256": _sha(path), "size_bytes": path.stat().st_size} for name, path in retained.items()}
+    return records, files
+
+
 def _expected_keys(config: Mapping[str, Any]) -> set[tuple[Any, ...]]:
     expected = config.get("expected_results")
     if isinstance(expected, list) and expected:
@@ -328,6 +364,7 @@ def build_report(run_root: str | Path, project_root: str | Path | None = None) -
     root = Path(run_root).resolve()
     project = Path(project_root).resolve() if project_root else Path(__file__).resolve().parents[2]
     config, state, rows = _completed_inputs(root)
+    dataset_sources, _ = _dataset_sources(project, config)
     report = root / "report"
     if report.exists():
         raise FileExistsError(f"Report already exists; preserve it and choose a new run: {report}")
@@ -368,6 +405,7 @@ def build_report(run_root: str | Path, project_root: str | Path | None = None) -
         "resumed_executions": config.get("resumed_executions", []),
         "protocol_sha256": config.get("protocol_sha256"),
         "protocol": config.get("protocol", {}),
+        "datasets": dataset_sources,
         "run_config_sha256": _sha(root / "run_config.json"),
         "category_metrics_sha256": _sha(root / "results" / "category_metrics.jsonl"),
         "scope": config.get("claim_scope", "completed quick experiment; no publication acceptance or author-exact reproduction claim"),
@@ -389,9 +427,13 @@ def build_report(run_root: str | Path, project_root: str | Path | None = None) -
     variant_md = "\n## 四个变体与消融\n\n各变体共享正常训练数据、骨干权重、抽取通道与已拟合均值/协方差；仅改变固定收缩系数与平滑参数。\n\n| 变体 | 收缩系数 alpha | 224 像素平面平滑 sigma |\n|---|---:|---:|\n" + "".join(f"| {item['variant']} | {item['shrinkage_alpha']} | {item['sigma']} |\n" for item in variant_rows)
     instructions = instructions.replace("## 环境与输入", "## 本轮实际结论\n\n" + outcome_text + "\n\n" + seed_text + "\n\n## 环境与输入")
     instructions += variant_md
+    if dataset_sources:
+        instructions += "\n## 数据来源与精选图片许可\n\nMVTec AD：MVTec Software GmbH，CC BY-NC-SA 4.0；VisA：Amazon.com, Inc. 或其关联公司，CC BY 4.0。许可证、版权与论文信息位于包根目录 licenses/、data_sources/ 以及本报告 source_provenance.json。随包 source_image 文件逐字节保留原图；input.png、二值 GT 显示、异常热图叠加和对比图是明确标记的派生显示内容，并保留对应数据许可。\n\nMVTec AD 完整数据按官方页面获取并解压到 code/data/mvtec_ad。VisA 完整原始数据按 data_sources/VisA-source.json 的官方 URL 获取，解压到 code/data/visa/raw/VisA；从 code/ 目录使用随包官方脚本和固定 1cls 划分准备：\n\n```text\npython ../assets/data-protocols/visa_prepare_data.py --split-type 1cls --data-folder data/visa/raw/VisA --save-folder data/visa --split-file ../assets/data-protocols/visa_1cls.csv\n```\n\nVisA CSV 的 SHA-256 固定为 " + str(dataset_sources.get("visa", {}).get("split_sha256", "not applicable")) + "。该命令生成配置使用的 data/visa/1cls 目录，保留官方正常训练/测试分配；不会使用测试异常图拟合模型。\n"
     (report / "复现说明.md").write_text(instructions, encoding="utf-8")
     backbone_name = str(config.get("backbone", {}).get("architecture", "configuration-defined backbone"))
     source_md = "# 来源与产出边界\n\n本项目产生本轮集成代码、运行结果、报告和打包流程。\n\n方法基础：" + PAPER["authors"] + ". " + PAPER["title"] + f" ({PAPER['year']})，{PAPER['url']}。\n\n骨干与预训练权重：torchvision " + backbone_name + " ImageNet，https://github.com/pytorch/vision/tree/v0.22.0 。BSD 3-Clause 许可证保存在 licenses/torchvision-LICENSE.txt。\n\n本轮具体模型配置、源码哈希和权重信息见 source_provenance.json 与 run_config.json。本报告没有把公开方法或公开权重声明为本项目原创。\n"
+    for dataset, record in dataset_sources.items():
+        source_md += "\n## " + record["name"] + "\n\n" + record["copyright"] + "\n\n" + record["attribution"] + "\n\n官方来源：" + record["official_url"] + "\n\n数据许可：" + record["license"] + "，" + record["license_url"] + "。完整原文：包根目录 " + record["license_file"] + "。\n\n原始精选图片复制未作修改；RGB 缩放显示、二值掩码显示、热图叠加和对比图是派生显示内容，保留本数据许可。来源清单及其哈希见 source_provenance.json 的 datasets 字段。\n"
     (report / "来源说明.md").write_text(source_md, encoding="utf-8")
     sections = "".join(f"<figure><figcaption>{html.escape(str(item['dataset']) + '/' + str(item['category']) + '/' + str(item['sample_id']))}</figcaption><img src='{html.escape(item['figure'], quote=True)}' alt='Anomaly map comparison'></figure>" for item in figures)
     page = "<!doctype html><html lang='zh-CN'><meta charset='utf-8'><meta name='viewport' content='width=device-width'><title>工业异常检测快速实验</title><style>body{font:16px system-ui,sans-serif;max-width:1400px;margin:32px auto;padding:0 24px;background:#fafafa;color:#222}table{border-collapse:collapse;width:100%;font-size:14px}th,td{border:1px solid #ccc;padding:8px;text-align:right}th{background:#eee}img{max-width:100%;height:auto}figure{margin:30px 0}a{color:#0754a0}pre{white-space:pre-wrap}</style><h1>工业异常检测快速实验</h1><p>登记结果矩阵已完整完成。表格保存实际指标；差值和下降项均保留。可视化使用同类别共享色阶。</p>"
@@ -449,9 +491,13 @@ def package_delivery(run_root: str | Path, output_zip: str | Path, project_root:
     report = root / "report"
     summary = _json(report / "report_summary.json")
     provenance = _json(report / "source_provenance.json")
+    dataset_sources, dataset_files = _dataset_sources(project, config)
     if summary.get("status") != "completed" or provenance.get("run_config_sha256") != _sha(root / "run_config.json") or provenance.get("category_metrics_sha256") != _sha(root / "results" / "category_metrics.jsonl"):
         raise ValueError("Report no longer matches completed run inputs")
+    if provenance.get("datasets", {}) != dataset_sources:
+        raise ValueError("Report dataset attribution is missing or stale; regenerate the report")
     payload: dict[str, Path] = {"run_config.json": root / "run_config.json", "run_state.json": root / "run_state.json", "results/category_metrics.jsonl": root / "results" / "category_metrics.jsonl"}
+    payload.update(dataset_files)
     if (project / "scripts" / "Verify-QuickDelivery.ps1").is_file():
         payload["Verify.ps1"] = project / "scripts" / "Verify-QuickDelivery.ps1"
     for path in sorted((root / "execution_history").rglob("*")):

@@ -165,3 +165,13 @@ def test_fitted_model_must_match_its_execution_seal(experiment, tmp_path):
     with pytest.raises(ValueError, match="Fitted model differs from its execution seal"):
         package_delivery(run, tmp_path / "delivery.zip", project)
     assert not (tmp_path / "delivery.zip").exists()
+
+
+def test_real_dataset_configuration_requires_source_and_license_files(experiment):
+    project, run, _, _ = experiment
+    config = json.loads((run / "run_config.json").read_text(encoding="utf-8"))
+    config["protocol"] = {"datasets": {"visa": {"root": "data/visa/1cls"}}}
+    _write(run / "run_config.json", config)
+    with pytest.raises(FileNotFoundError, match="visa_source_manifest.json"):
+        build_report(run, project)
+    assert not (run / "report").exists()
