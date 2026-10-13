@@ -81,7 +81,8 @@ def main():
                 state.update(status='needs_attention',attention=needs_attention);write(out/'state.json',state)
                 print(json.dumps(state),flush=True);return 2
             if precision['status']=='completed' and resource['status']=='completed':
-                state.update(status='completed',finished_at_utc=datetime.now(timezone.utc).isoformat());write(out/'state.json',state)
+                state.update(status='completed',finished_at_utc=datetime.now(timezone.utc).isoformat(),
+                             precision_completed=precision['completed_categories'],resource_completed=resource['completed_trials']);write(out/'state.json',state)
                 print(json.dumps(state),flush=True);return 0
             sample=memory()
             external_active={
