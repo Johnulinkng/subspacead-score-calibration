@@ -593,6 +593,16 @@ def verify_resources(extension: Path) -> dict[str, Any]:
     return {"status": "verified", "trials": len(trials), "failed_or_blocked_final_trials": sum(r["status"] not in ("completed", "passed", "ok", "verified") for r in trials), "failed_retry_attempts_retained": len(failed_files), "full_category_fit_timings_authenticated": len(fit_rows), "successful_registered_trials_protocol_authenticated": successful_registered, "incomplete_failed_receipts_retained_without_comparison": incomplete_failed_records, "all_resource_matrix_failures_preserved": True, "source_measurement_scopes_retained": True}
 
 
+def verification_identity(package: Path, extension: Path, run: Path, args: argparse.Namespace) -> dict[str, Any]:
+    """Bind successful acceptance to its actual files, source, and call scope."""
+    return {"package_root": str(package), "extension_manifest_sha256": digest(member(extension, "extension_manifest.json")),
+            "run_config_sha256": digest(member(run, "run_config.json")), "run_state_sha256": digest(member(run, "run_state.json")),
+            "category_metrics_sha256": digest(member(run, "results/category_metrics.jsonl")), "samples_sha256": digest(member(run, "results/samples.jsonl")),
+            "verifier_source_sha256": digest(Path(__file__).resolve()), "requested_metrics_categories": args.metrics_categories,
+            "requested_inference_samples": args.inference_samples, "requested_inference_atol": args.inference_atol,
+            "requested_inference_rtol": args.inference_rtol, "requested_verify_master": args.verify_master}
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__, allow_abbrev=False)
     parser.add_argument("--package-root", type=Path, required=True)
@@ -615,13 +625,16 @@ def main() -> int:
     sys.path[:0] = [str(extension / "code/src"), str(extension / "code/scripts")]
     started = time.monotonic()
     try:
+        identity = verification_identity(package, extension, run, args)
         integrity = verify_integrity(package, extension, args.verify_master)
         sources = verify_sources(package, extension, run)
         cache, tasks = verify_cache(package, extension, run)
         resources = verify_resources(extension)
         inference = verify_inference(package, extension, run, args.inference_samples, args.inference_atol, args.inference_rtol)
         metrics = verify_metrics(run, tasks, args.metrics_categories, work)
-        result = {"status": "verified", "integrity": integrity, "sources": sources, "cache": cache, "resources": resources, "fresh_cpu_inference": inference, "metric_replay": metrics, "elapsed_seconds": time.monotonic() - started, "network_access_required": False, "gradient_training_performed": False, "normal_training_fit_performed": False, "gpu_used": False, "cpu_threads": 4}
+        if verification_identity(package, extension, run, args) != identity:
+            raise ValueError("Package/header/verifier identity drifted during acceptance")
+        result = {"status": "verified", "verification_identity": identity, "integrity": integrity, "sources": sources, "cache": cache, "resources": resources, "fresh_cpu_inference": inference, "metric_replay": metrics, "elapsed_seconds": time.monotonic() - started, "network_access_required": False, "gradient_training_performed": False, "normal_training_fit_performed": False, "gpu_used": False, "cpu_threads": 4}
         if args.receipt:
             args.receipt.parent.mkdir(parents=True, exist_ok=True)
             args.receipt.write_text(json.dumps(result, ensure_ascii=False, indent=2, allow_nan=False) + "\n", encoding="utf-8")
