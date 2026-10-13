@@ -87,7 +87,7 @@ def main():
     resources=ROOT/'runs/quick/route1-resources-20261014'
     state={'status':'waiting_resources','pid':os.getpid(),'started_at_utc':datetime.now(timezone.utc).isoformat(),
            'scope':'finite registered route1 matrix only; no training restart and no foreign process changes'}
-    jobs={};handles=[];stable=0;attempt={'precision':0,'resources':0};job_logs={};needs_attention=None
+    jobs={};handles=[];stable=0;overlap_stable=0;attempt={'precision':0,'resources':0};job_logs={};needs_attention=None
     try:
         while True:
             precision=read(full/'run_state.json');resource=read(resources/'matrix_state.json')
@@ -112,13 +112,17 @@ def main():
             }
             occupied=bool(jobs) or any(external_active.values())
             stable=stable+1 if sample['free_ram_gib']>=3.5 and sample['free_commit_gib']>=3.5 else 0
+            overlap_stable=overlap_stable+1 if sample['free_ram_gib']>=4.5 and sample['free_commit_gib']>=5.25 else 0
             pending=None
             if stable>=3:
-                if precision['status']!='completed' and 'precision' not in jobs and not external_active['precision'] and not occupied:pending='precision'
+                if precision['status']!='completed' and 'precision' not in jobs and not external_active['precision']:
+                    if not occupied or overlap_stable>=3:pending='precision'
                 elif resource['status']!='completed' and 'resources' not in jobs and not external_active['resources']:
-                    # Measured workers each peak near one GiB. Allow overlap
-                    # only with additional real headroom, not a relaxed gate.
-                    if not occupied or sample['free_ram_gib']>=5.25 and sample['free_commit_gib']>=5.25:pending='resources'
+                    # The measured resource workers peak near one GiB.
+                    # 4.5 GiB covers even the frozen 2.5 GiB worker WS cap,
+                    # the 1.5 GiB system reserve and 0.5 GiB extra headroom.
+                    # Require a minute of real headroom before overlapping.
+                    if not occupied or overlap_stable>=6:pending='resources'
             if pending:
                 attempt[pending]+=1
                 log=out/f'{pending}-attempt-{attempt[pending]:03d}-{datetime.now(timezone.utc).strftime("%H%M%S")}.log'
@@ -133,11 +137,13 @@ def main():
                 env=os.environ.copy();env['PYTHONIOENCODING']='utf-8';env['PYTHONUNBUFFERED']='1';env['PYTHONDONTWRITEBYTECODE']='1'
                 jobs[pending]=subprocess.Popen(command,cwd=ROOT,stdout=handle,stderr=subprocess.STDOUT,env=env,
                                                 creationflags=0x08000000 if os.name=='nt' else 0)
-                stable=0
+                stable=0;overlap_stable=0
                 print(json.dumps({'event':'launched','phase':pending,'pid':jobs[pending].pid,'free_ram_gib':sample['free_ram_gib']}),flush=True)
             state.update(status='running' if jobs or any(external_active.values()) else 'waiting_resources',updated_at_utc=datetime.now(timezone.utc).isoformat(),
                          precision_completed=precision.get('completed_categories',0),resource_completed=resource.get('completed_trials',0),
-                         owned_children={name:job.pid for name,job in jobs.items()},existing_owned_runs_active=external_active,launch_attempts=attempt,**sample)
+                         owned_children={name:job.pid for name,job in jobs.items()},existing_owned_runs_active=external_active,launch_attempts=attempt,
+                         overlap_admission={'minimum_ram_gib':4.5,'minimum_commit_gib':5.25,'resource_stable_samples_required':6,'precision_stable_samples_required':3,'stable_samples':overlap_stable,
+                                            'frozen_worker_resource_gates_changed':False},**sample)
             write(out/'state.json',state)
             time.sleep(10)
     finally:
