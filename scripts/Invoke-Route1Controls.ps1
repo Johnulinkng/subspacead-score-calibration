@@ -28,7 +28,7 @@ try{
  $routeWriter=[System.IO.StreamWriter]::new($routeStream,[System.Text.UTF8Encoding]::new($false))
  try{$routeWriter.Write(([ordered]@{pid=$PID;token=$routeToken;output=$routeOut}|ConvertTo-Json))}finally{$routeWriter.Dispose()}
  $routeOwned=$true
- $routeEntry=if($Resume){'scripts/resume_route1_controls.py'}else{'scripts/run_route1_controls.py'}
+ $routeEntry=if($Resume){'scripts/checkpoint_resume_route1_controls.py'}else{'scripts/run_route1_controls.py'}
  $routeArgs=@('-B',$routeEntry,'--output-dir',$OutputDirectory)
  if($Pilot){$routeArgs+='--pilot'}
  if($Resume){$routeArgs+='--resume'}

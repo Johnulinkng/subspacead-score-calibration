@@ -29,6 +29,27 @@ def retryable_resource_failure(log_text):
     return any(marker in lowered for marker in evidence)
 
 
+def failure_evidence(log_path, phase, full_output):
+    """Include the owned precision monitor's redirected error stream."""
+    evidence=log_path.read_text(encoding='utf-8',errors='replace')
+    if phase!='precision':return evidence
+    decoder=json.JSONDecoder();position=0
+    while True:
+        start=evidence.find('{',position)
+        if start<0:break
+        try:value,end=decoder.raw_decode(evidence[start:]);position=start+end
+        except json.JSONDecodeError:position=start+1;continue
+        if not isinstance(value,dict) or not value.get('monitor'):continue
+        monitor=Path(value['monitor']).resolve()
+        if not monitor.is_relative_to(ROOT/'runs/quick') or not monitor.name.startswith(full_output.name+'-monitor-'):
+            raise ValueError('Precision failure monitor escapes its registered output')
+        for name in ('summary.json','stderr.log'):
+            path=monitor/name
+            if path.is_file():evidence+='\n'+path.read_text(encoding='utf-8',errors='replace')
+        break
+    return evidence
+
+
 def process_info(pid):
     command="[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false); Get-CimInstance Win32_Process -Filter 'ProcessId = %d' | Select-Object ProcessId,ExecutablePath,CommandLine | ConvertTo-Json -Compress" % int(pid)
     output=subprocess.check_output(['powershell.exe','-NoProfile','-Command',command],creationflags=0x08000000)
@@ -74,7 +95,7 @@ def main():
                 if job.poll() is not None:
                     state[name+'_last_exit_code']=job.returncode;del jobs[name]
                     if job.returncode:
-                        text=job_logs[name].read_text(encoding='utf-8',errors='replace')
+                        text=failure_evidence(job_logs[name],name,full)
                         if not retryable_resource_failure(text):
                             needs_attention={'phase':name,'log':str(job_logs[name]),'reason':'non-resource failure requires inspection'}
             if needs_attention:
