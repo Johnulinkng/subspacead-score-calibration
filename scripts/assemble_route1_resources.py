@@ -35,7 +35,7 @@ def main():
                 'diagnostics_sha256':sha(diagnostics),'measurement_scope':'shared_process_not_per_method',
                 'timing_scope':fit['timing_scope'],'timing_includes_content_digest':True,
                 'timing_excludes_feature_extraction':True,'process_peak_working_set_bytes':None,'process_peak_commit_bytes':None,
-                'cuda_peak_allocated_bytes':0,'cuda_peak_reserved_bytes':0})
+                'gpu_memory':'not_used','cuda_peak_allocated_bytes':None,'cuda_peak_reserved_bytes':None})
     if len(rows)!=117:raise ValueError('Full timing coverage missing')
     backup=resource/'resource_trials_independent_only.jsonl'
     if backup.exists():raise ValueError('Assembly already performed')

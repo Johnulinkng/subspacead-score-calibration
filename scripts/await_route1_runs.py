@@ -15,6 +15,20 @@ sys.path.insert(0,str(ROOT/'scripts'))
 from run_route1_controls import read, write, memory
 
 
+def retryable_resource_failure(log_text):
+    """Retry only an explicit resource failure without an integrity error."""
+    lowered=str(log_text).casefold()
+    if 'drift' in lowered or 'valueerror' in lowered:
+        return False
+    evidence=(
+        'resourceviolation', 'resource reserve boundary', 'below reserve',
+        'ram fell below reserve', 'commit fell below reserve',
+        'cpu admission needs', 'initial free ram below admission',
+        'initial free commit below admission', 'initial disk free space below admission',
+    )
+    return any(marker in lowered for marker in evidence)
+
+
 def process_info(pid):
     command="[Console]::OutputEncoding=[System.Text.UTF8Encoding]::new($false); Get-CimInstance Win32_Process -Filter 'ProcessId = %d' | Select-Object ProcessId,ExecutablePath,CommandLine | ConvertTo-Json -Compress" % int(pid)
     output=subprocess.check_output(['powershell.exe','-NoProfile','-Command',command],creationflags=0x08000000)
@@ -35,9 +49,10 @@ def state_process_active(saved,phase,output):
 
 def main():
     ap=argparse.ArgumentParser(description=__doc__,allow_abbrev=False)
-    ap.add_argument('--output-dir',type=Path,default=ROOT/'runs/waiters/route1-completion-20261014')
+    fixed_output=(ROOT/'runs/waiters/route1-completion-20261014').resolve()
+    ap.add_argument('--output-dir',type=Path,default=fixed_output)
     args=ap.parse_args();out=args.output_dir.resolve()
-    if not out.is_relative_to(ROOT/'runs/waiters'):raise ValueError('Owned workspace waiter output required')
+    if out!=fixed_output:raise ValueError('Only the fixed route1 waiter output directory is allowed')
     out.mkdir(parents=True,exist_ok=True)
     lock=out/'waiter.lock.json';token=uuid.uuid4().hex
     if lock.exists():
@@ -60,7 +75,7 @@ def main():
                     state[name+'_last_exit_code']=job.returncode;del jobs[name]
                     if job.returncode:
                         text=job_logs[name].read_text(encoding='utf-8',errors='replace')
-                        if any(word in text.casefold() for word in ('drift','traceback','valueerror')) and not any(word in text.casefold() for word in ('resource reserve','resourceviolation','below reserve','free ram','admission')):
+                        if not retryable_resource_failure(text):
                             needs_attention={'phase':name,'log':str(job_logs[name]),'reason':'non-resource failure requires inspection'}
             if needs_attention:
                 state.update(status='needs_attention',attention=needs_attention);write(out/'state.json',state)
