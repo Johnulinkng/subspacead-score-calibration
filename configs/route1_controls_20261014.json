@@ -1,0 +1,116 @@
+{
+  "schema_version": 1,
+  "protocol_id": "route1_same_dino_controls_20261014_v1",
+  "scope": "paired public-method precision and execution-resource attribution; no new detection algorithm",
+  "scientific_claim_eligible": false,
+  "test_notice": "Previous Test results are already known. No settings, categories, sample selection or PCA dimensions are selected from new Test results.",
+  "baseline_run": "runs/quick/padim-r18-20261012T022650Z",
+  "seed": 1887537248,
+  "weights_dir": "artifacts/weights/dinov2-small-ed25f3a",
+  "weight_revision": "ed25f3a31f01632728cabb09d1542f84ab7b0056",
+  "checkpoint_sha256": "ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1",
+  "weight_files_sha256": {
+    "config.json": "1809f83e3bdb1609a501a610ad4a742f4fd8ae44d72ca4aa0df52d1f2ac8628d",
+    "preprocessor_config.json": "14e780d86fa1861f8751f868d7f45425b5feb55c38ca26f152ca5097ab30f828",
+    "model.safetensors": "ae1e99fcefd534ed978cdeb8326f08030c96e28b7a81ffcbc98a857c84d14be1"
+  },
+  "vendor_root": "vendor/SubspaceAD",
+  "vendor_commit": "ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7",
+  "image_res": 448,
+  "output_size": 256,
+  "layers": [
+    -4,
+    -5
+  ],
+  "feature_dim": 384,
+  "layer_aggregation": "mean of raw intermediate hidden_states, excluding CLS; no L2 normalization",
+  "preprocess": "HF slow BitImageProcessor, RGB, full-frame bicubic448, ImageNet mean/std, no center crop",
+  "explained_variance": 0.99,
+  "eps": 1e-06,
+  "training": "all 12288 normal train images; no gradients, augmentations, Test PCA, masks or whitening",
+  "pca_estimation": "Three paired CPU float64 full-covariance fits: pinned author Torch two-pass, NumPy two-pass backend control, NumPy Chan one-pass; same input/order/N-1/rank target",
+  "score": "sum squared float32 reconstruction residual; PCA parameters cast to float32 to match public implementation",
+  "render": "OpenCV INTER_LINEAR32->448, GaussianBlur3x3 sigma4 BORDER_DEFAULT reflect101, OpenCV INTER_LINEAR448->256; persist raw float32, no imagewise normalization",
+  "score_definitions": {
+    "max": "maximum of saved float32 256x256 raw anomaly map",
+    "top1p": "float64 mean of largest floor(0.01*65536)=655 saved pixels"
+  },
+  "metrics": "same source-sealed exact common256 evaluator; GT nearest256; all normal background; AUPRO@0.30 equal regions/8-connectivity",
+  "selection": "original frozen first normal and first anomaly in every category; include all categories and regressions",
+  "visualization": "same palette and fixed per-panel 1%/99% display percentile rule, with each panel raw range shown; different score units are not calibrated across methods; raw persisted/evaluated maps unchanged",
+  "expected_categories": 27,
+  "expected_training_images": 12288,
+  "expected_test_images": 3887,
+  "device": "cpu",
+  "cpu_threads": 4,
+  "batch_size": 1,
+  "workers": 0,
+  "max_cuda_memory_gib": null,
+  "resource_policy": {
+    "initial_free_ram_gib": 3.25,
+    "initial_free_commit_gib": 3.25,
+    "reserve_free_ram_gib": 1.5,
+    "reserve_free_commit_gib": 2,
+    "max_working_set_gib": 2.5,
+    "minimum_disk_gib": 10
+  },
+  "sources": [
+    {
+      "title": "SubspaceAD official repository",
+      "url": "https://github.com/CLendering/SubspaceAD/tree/ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7",
+      "license": "Apache-2.0"
+    },
+    {
+      "title": "DINOv2-S public weights",
+      "url": "https://huggingface.co/facebook/dinov2-small/tree/ed25f3a31f01632728cabb09d1542f84ab7b0056",
+      "license": "Apache-2.0"
+    }
+  ],
+  "adaptations": [
+    "combine official small/448 mean-layer ablation backbone with full-normal, no-augmentation training",
+    "one-pass centered sufficient statistics replacing repeated feature extraction and eager PIL lists; identical PCA objective up to float64 rounding",
+    "no returned attention tensors because optional saliency masks are disabled; keep eager attention",
+    "use common256 exact evaluator rather than native448/300-threshold approximate evaluation"
+  ],
+  "claim_boundary": "Validate precision equivalence and measured execution savings against same-backbone public method. Original already uses two-pass streaming PCA. Full fit/device normalized to CPU; backend isolated. No new detector or independent blind Test claim.",
+  "source_run": "runs/quick/subspace-dinos-20261012",
+  "methods": [
+    "official_cpu_two_pass",
+    "numpy_cpu_two_pass",
+    "current_cpu_one_pass"
+  ],
+  "map_atol": 0.0001,
+  "map_rtol": 3e-05,
+  "metric_atol": 1e-05,
+  "resource_sample_count": 64,
+  "resource_categories": [
+    [
+      "mvtec_ad",
+      "bottle"
+    ],
+    [
+      "visa",
+      "cashew"
+    ]
+  ],
+  "resource_repeats": 3,
+  "resource_modes": [
+    "one_lazy",
+    "two_lazy",
+    "one_eager",
+    "two_eager",
+    "attention_on",
+    "attention_off"
+  ],
+  "model_tolerances": {
+    "mean_atol": 1e-09,
+    "mean_rtol": 1e-10,
+    "eigenvalue_atol": 1e-09,
+    "eigenvalue_rtol": 1e-09,
+    "projector_atol": 1e-09,
+    "projector_rtol": 1e-09,
+    "score_atol": 0.0001,
+    "score_rtol": 3e-05
+  },
+  "resource_order_seed": 1887537248
+}
