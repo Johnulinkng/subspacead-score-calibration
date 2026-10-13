@@ -18,12 +18,17 @@ from finish_route1_delivery import EXTENSION, METHODS, METRICS, ROOT_DOCS, copy_
 
 
 PENDING = "审计核验模型、全部raw map、GT和图像AUROC；本入口整合时，完整像素指标复算和新的CPU原图推理验收尚待执行，最终状态与回执随后保存到验收记录。"
-COMPLETED = "独立语义审计核验模型、全部raw map、GT和图像AUROC；新增离线验收已完整复算27类162行四项指标，并对固定2张原图的三种方法完成6张CPU分数图核对。完整指标与CPU推理回执已保存在同骨干对照目录的验收记录中；原整合pending回执保留较早阶段状态。"
+TIMING_SCOPE = "计时口径：资源worker的total_process_seconds从main完成参数解析及输出目录准备后的wall_start起计，到结束监控后、最终receipt写入和print及OS退出之前止计，包含区间内实际执行的依赖导入、模型加载、预热、实验操作和结束监控；不等于操作系统创建进程至退出的完整生命周期。"
+REPORT_TIMING_OLD = "total_process_seconds 另包含完整进程初始化、加载、预热及结束监控。"
+COMPLETED = "独立语义审计核验模型、全部raw map、GT和图像AUROC；新增离线验收已完整复算27类162行四项指标，并对固定2张原图的三种方法完成6张CPU分数图核对。完整指标与CPU推理回执已保存在同骨干对照目录的验收记录中；原整合pending回执保留较早阶段状态。" + TIMING_SCOPE
 REPRO_PENDING = "独立完整运行审计只复核保存的像素指标一致性，完整像素重算与新CPU前向需要上述验收回执单独证明。"
-REPRO_COMPLETED = "独立语义审计保留其原有范围：未重算像素指标，也未执行新前向。新增离线验收已复算27类162行四项指标，并核对固定2张原图×3方法的6张CPU分数图；实际回执见验收记录/完整指标与CPU推理验收.json。再次验收仍使用上述命令，输出置于交付文件夹外。"
+REPRO_COMPLETED = "独立语义审计保留其原有范围：未重算像素指标，也未执行新前向。新增离线验收已复算27类162行四项指标，并核对固定2张原图×3方法的6张CPU分数图；实际回执见验收记录/完整指标与CPU推理验收.json。再次验收仍使用上述命令，输出置于交付文件夹外。" + TIMING_SCOPE
 FULL_RECEIPT = "验收记录/完整指标与CPU推理验收.json"
 AUDIT_RECEIPT = "验收记录/独立完整运行审计.json"
 FINAL_SUMMARY = "验收记录/最终验收摘要.json"
+PRE_ACCEPTANCE_MANIFEST = "验收记录/验收前extension_manifest.json"
+PRE_ACCEPTANCE_UTILITY = "验收记录/验收前finalize_route1_acceptance.py"
+PRE_ACCEPTANCE_UTILITY_SHA = "780d0cfd8f13c149b175374741f30ab14fd17a4d012635dfacba50efc6ba41b4"
 
 
 def replace_once(raw: bytes, old: str, new: str) -> bytes:
@@ -128,20 +133,29 @@ def prepare(project: Path, package: Path, verifier_path: Path, auditor_path: Pat
     require(verifier["integrity"]["historical_members_preserved"] == len(read(member(extension, "history/DELIVERY-MANIFEST.json"))["files"]), "Verifier historical preservation scope differs")
     full_destination = extension / FULL_RECEIPT
     require(not full_destination.exists(), "Refusing to replace a prior full acceptance receipt")
+    archived_manifest = member(extension, "extension_manifest.json").read_bytes()
+    archived_utility = member(extension, "code/scripts/finalize_route1_acceptance.py").read_bytes()
+    require(hashlib.sha256(archived_manifest).hexdigest() == identity["extension_manifest_sha256"] and hashlib.sha256(archived_utility).hexdigest() == PRE_ACCEPTANCE_UTILITY_SHA, "Accepted manifest or originally delivered finalizer source differs")
+    require(not (extension / PRE_ACCEPTANCE_MANIFEST).exists() and not (extension / PRE_ACCEPTANCE_UTILITY).exists(), "Refusing to replace pre-acceptance proof archives")
     completed_html = html.escape(COMPLETED) + f" <a href='{EXTENSION}/{FULL_RECEIPT}'>完整指标与CPU推理回执</a>。"
     modifications = []
     for name in ROOT_DOCS:
         path = member(package, name)
         raw = path.read_bytes()
         updated = replace_once(raw, PENDING, completed_html if name.endswith(".html") else COMPLETED)
-        modifications.append((path, raw, updated))
+        modifications.append((path, raw, updated, ["acceptance_status_sentence", "resource_worker_timing_interval_note"]))
     colleague = member(extension, "给同事的说明.txt")
     raw = colleague.read_bytes()
-    modifications.append((colleague, raw, replace_once(raw, PENDING, COMPLETED)))
+    modifications.append((colleague, raw, replace_once(raw, PENDING, COMPLETED), ["acceptance_status_sentence", "resource_worker_timing_interval_note"]))
     reproduction = member(extension, "复现说明.txt")
     raw = reproduction.read_bytes()
-    modifications.append((reproduction, raw, replace_once(raw, REPRO_PENDING, REPRO_COMPLETED)))
-    return {"extension": extension, "info": info, "scope": scope, "modifications": modifications, "verifier_sha256": digest(verifier_path), "auditor_sha256": auditor_sha, "integration_receipt_sha256": digest(member(extension, "整合回执.json")), "accepted_extension_manifest_sha256": digest(member(extension, "extension_manifest.json")), "historical_manifest_sha256": info["previous_delivery_manifest_sha256"], "verifier_source_sha256": digest(member(extension, "code/scripts/verify_route1_delivery.py"))}
+    modifications.append((reproduction, raw, replace_once(raw, REPRO_PENDING, REPRO_COMPLETED), ["acceptance_replay_scope_sentence", "resource_worker_timing_interval_note"]))
+    for relative in ("report.html", "同骨干对照报告.txt"):
+        path = member(extension, relative)
+        raw = path.read_bytes()
+        replacement = html.escape(TIMING_SCOPE) if relative.endswith(".html") else TIMING_SCOPE
+        modifications.append((path, raw, replace_once(raw, REPORT_TIMING_OLD, replacement), ["resource_worker_timing_interval_sentence"]))
+    return {"extension": extension, "info": info, "scope": scope, "modifications": modifications, "verifier_sha256": digest(verifier_path), "auditor_sha256": auditor_sha, "integration_receipt_sha256": digest(member(extension, "整合回执.json")), "accepted_extension_manifest_sha256": identity["extension_manifest_sha256"], "archived_manifest_bytes": archived_manifest, "archived_utility_bytes": archived_utility, "historical_manifest_sha256": info["previous_delivery_manifest_sha256"], "verifier_source_sha256": digest(member(extension, "code/scripts/verify_route1_delivery.py"))}
 
 
 def main() -> int:
@@ -156,18 +170,25 @@ def main() -> int:
         project, package, verifier, auditor = (path.resolve(strict=True) for path in (args.project_root, args.package_root, args.verifier_receipt, args.audit_receipt))
         prepared = prepare(project, package, verifier, auditor)
         if args.check_only:
-            print(json.dumps({"status": "ready_to_finalize_acceptance", "delivery_modified": False, "scope": prepared["scope"], "documentation_files": [path.relative_to(package).as_posix() for path, _, _ in prepared["modifications"]]}, ensure_ascii=False, indent=2))
+            print(json.dumps({"status": "ready_to_finalize_acceptance", "delivery_modified": False, "scope": prepared["scope"], "documentation_files": [path.relative_to(package).as_posix() for path, _, _, _ in prepared["modifications"]]}, ensure_ascii=False, indent=2))
             return 0
         extension = prepared["extension"]
+        proof_archives = []
+        for relative, raw in ((PRE_ACCEPTANCE_MANIFEST, prepared["archived_manifest_bytes"]), (PRE_ACCEPTANCE_UTILITY, prepared["archived_utility_bytes"])):
+            destination = extension / relative
+            with destination.open("xb") as stream:
+                stream.write(raw)
+            require(destination.read_bytes() == raw, "Pre-acceptance archive differs from original bytes")
+            proof_archives.append({"path": relative, "sha256": hashlib.sha256(raw).hexdigest(), "original_bytes_preserved": True})
         copied = [copy_checked(verifier, extension / FULL_RECEIPT, prepared["verifier_sha256"]), copy_checked(auditor, extension / AUDIT_RECEIPT, prepared["auditor_sha256"])]
-        for path, original, _ in prepared["modifications"]:
+        for path, original, _, _ in prepared["modifications"]:
             require(path.read_bytes() == original, "Acceptance documentation changed during evidence copy")
         updated_documents = []
-        for path, original, updated in prepared["modifications"]:
+        for path, original, updated, change_types in prepared["modifications"]:
             path.write_bytes(updated)
-            updated_documents.append({"path": path.relative_to(package).as_posix(), "before_sha256": hashlib.sha256(original).hexdigest(), "after_sha256": digest(path), "only_the_unique_pending_sentence_replaced": True})
+            updated_documents.append({"path": path.relative_to(package).as_posix(), "before_sha256": hashlib.sha256(original).hexdigest(), "after_sha256": digest(path), "only_the_unique_pending_sentence_replaced": False, "change_types": change_types, "only_permitted_unique_sentences_changed": True})
         require(digest(member(extension, "整合回执.json")) == prepared["integration_receipt_sha256"], "Historical pending integration receipt was changed")
-        summary = {"schema_version": 1, "status": "completed", "scope": "complete cached metrics and fixed two-input CPU inference acceptance; file seals follow this write", "accepted_at_utc": datetime.now(timezone.utc).isoformat(), **prepared["scope"], "scientific_claim_eligible": False, "primary_image_score": "max", "auxiliary_image_score": "top1p", "algorithm_component_added": False, "source_verifier_sha256": prepared["verifier_source_sha256"], "acceptance_utility_sha256": digest(Path(__file__).resolve()), "full_acceptance_receipt": FULL_RECEIPT, "full_acceptance_receipt_sha256": prepared["verifier_sha256"], "independent_auditor_receipt": AUDIT_RECEIPT, "independent_auditor_receipt_sha256": prepared["auditor_sha256"], "accepted_pre_update_extension_manifest_sha256": prepared["accepted_extension_manifest_sha256"], "historical_delivery_manifest_sha256": prepared["historical_manifest_sha256"], "pending_integration_receipt_preserved_as_history": True, "pending_integration_receipt_sha256": prepared["integration_receipt_sha256"], "updated_documents": updated_documents, "copied_receipts": copied, "metrics_or_inference_computed_by_this_utility": False, "extension_manifest_updated_by_this_utility": False, "master_manifest_updated_by_this_utility": False, "sealing_required_after_this_write": True, "final_master_hash_check_performed_by_this_utility": False, "next_steps": ["copy this utility source into extension/code if not already present", "refresh extension manifest with builder --seal-only", "refresh master DELIVERY-MANIFEST.json", "perform final master and historical/current hash verification with receipt outside the delivery"], "self_hash_scope": "this summary and the final manifests are not assigned their own hashes; recorded extension SHA identifies the pre-update acceptance seal"}
+        summary = {"schema_version": 1, "status": "completed", "scope": "complete cached metrics and fixed two-input CPU inference acceptance; file seals follow this write", "accepted_at_utc": datetime.now(timezone.utc).isoformat(), **prepared["scope"], "scientific_claim_eligible": False, "primary_image_score": "max", "auxiliary_image_score": "top1p", "algorithm_component_added": False, "source_verifier_sha256": prepared["verifier_source_sha256"], "acceptance_utility_sha256": digest(Path(__file__).resolve()), "full_acceptance_receipt": FULL_RECEIPT, "full_acceptance_receipt_sha256": prepared["verifier_sha256"], "independent_auditor_receipt": AUDIT_RECEIPT, "independent_auditor_receipt_sha256": prepared["auditor_sha256"], "accepted_pre_update_extension_manifest_sha256": prepared["accepted_extension_manifest_sha256"], "pre_acceptance_proof_archives": proof_archives, "historical_delivery_manifest_sha256": prepared["historical_manifest_sha256"], "pending_integration_receipt_preserved_as_history": True, "pending_integration_receipt_sha256": prepared["integration_receipt_sha256"], "updated_documents": updated_documents, "resource_worker_total_process_seconds_scope": TIMING_SCOPE, "numeric_metrics_and_raw_map_files_modified": False, "copied_receipts": copied, "metrics_or_inference_computed_by_this_utility": False, "extension_manifest_updated_by_this_utility": False, "master_manifest_updated_by_this_utility": False, "sealing_required_after_this_write": True, "final_master_hash_check_performed_by_this_utility": False, "next_steps": ["copy this executed utility source into extension/code after preserving its pre-acceptance version", "refresh extension manifest with builder --seal-only", "refresh master DELIVERY-MANIFEST.json", "perform final master and historical/current hash verification with receipt outside the delivery"], "self_hash_scope": "this summary and the final manifests are not assigned their own hashes; archived pre-update seal excludes its new proof archives and this summary"}
         path = extension / FINAL_SUMMARY
         with path.open("x", encoding="utf-8") as stream:
             json.dump(summary, stream, ensure_ascii=False, indent=2, allow_nan=False)
