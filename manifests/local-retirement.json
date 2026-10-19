@@ -1,5 +1,5 @@
 {
-  "status": "project_files_removed_empty_legacy_directory_pending",
+  "status": "project_files_removed_empty_legacy_directory_queued_for_reboot_deletion",
   "completed_at": "2026-10-19T20:57:50.7065981+08:00",
   "source_commit_verified_before_deletion": "7252bbcdbb17e7b58814cfc5e4f3a965db52c66b",
   "release_url": "https://github.com/Johnulinkng/subspacead-score-calibration/releases/tag/archive-20261019",
@@ -54,8 +54,8 @@
       "path": "D:\\3k",
       "status": "empty_directory_locked_by_current_session",
       "remaining_files": 0,
-      "delete_on_next_reboot_registered": false,
-      "registration_error": 3,
+      "delete_on_next_reboot_registered": true,
+      "registration_error": 0,
       "reparse_links_removed": 0
     },
     {
