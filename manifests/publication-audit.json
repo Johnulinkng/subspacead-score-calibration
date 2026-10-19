@@ -10,6 +10,6 @@
   "upstream_subspacead_head_checked": "ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7",
   "upstream_pull_request_created": false,
   "research_claim": "Optional score adaptation and bounded-memory tooling; no demonstrated paper-level novelty or universal improvement.",
-  "bulk_archive_policy": "See docs/ARCHIVE.md and manifests/archive-inventory.json.",
-  "local_deletion_status": "Pending verified remote publication; see local-retirement.json for the actual final receipt."
+  "bulk_archive_policy": "Owner selected source, reports and final portable delivery only; other old models and caches deleted directly. See docs/ARCHIVE.md and manifests/archive-inventory.json.",
+  "local_deletion_status": "Project files removed; locked empty D:\\3k directory registered for deletion on next reboot. See manifests/local-retirement.json."
 }
