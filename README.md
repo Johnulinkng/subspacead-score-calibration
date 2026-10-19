@@ -25,7 +25,7 @@ Full normal-training data, DINOv2-S, 448-pixel backbone input, 256-pixel evaluat
 
 Conditioning adds approximately 0.1426 percentage points of pixel AP over the global-tail ablation on MVTec AD and only 0.0063 on VisA. False-positive rates do not improve consistently. Test data had been inspected in earlier experiments; the original delivery's PCA had seen both normal calibration partitions. Treat these results as exploratory comparisons, not independent blind validation or conformal guarantees.
 
-Later retrospective refits, independent normal partitions, development controls and partial stronger-baseline runs are retained in the research-records release. A completed experimental artifact is not evidence that the broader paper-level research objective was achieved. Missing and partial runs must remain missing and partial.
+Scalar reports from later retrospective refits, independent normal partitions, development controls and partial stronger-baseline runs are retained in the research-results release asset. A completed experimental artifact is not evidence that the broader paper-level research objective was achieved. Missing and partial runs must remain missing and partial.
 
 ## Code and dependencies
 
@@ -42,7 +42,7 @@ The scoring module is `src/industrial_anomaly_lab/context_calibration.py`. PCA/e
 
 ## Download and replay the recorded experiment
 
-The [archive release](https://github.com/Johnulinkng/subspacead-score-calibration/releases/tag/archive-20261019) contains the complete portable delivery, archived research records, fitted models and available self-trained checkpoints. See `docs/ARCHIVE.md` for coverage and checksums.
+The [archive release](https://github.com/Johnulinkng/subspacead-score-calibration/releases/tag/archive-20261019) contains the complete portable final delivery and historical scalar result reports. The final delivery includes its fitted PCA/calibration models; other old models and checkpoints are not retained as binaries, following the owner's explicit archive choice. See `docs/ARCHIVE.md` for coverage and checksums.
 
 ```bash
 gh release download archive-20261019 --repo Johnulinkng/subspacead-score-calibration --pattern context-calibration-delivery.zip
