@@ -1,75 +1,74 @@
-# 工业异常检测实验项目
+# Normal-Content Score Calibration for Industrial Anomaly Detection
 
-项目目录：`E:\3k`。本项目从公开实现和真实公开数据集开始，此前个人研究不进入本项目的方法、代码或结果。
+An experimental score-calibration adapter built on frozen DINOv2-S features and SubspaceAD-style PCA residuals. It includes matched baseline comparisons, ablations, numerical checks, and evaluation on MVTec AD and VisA.
 
-当前阶段（2026-10-12）：按用户新的约一天、低资源整合要求，已完成独立的 PaDiM 风格 ResNet18 快速复现轮次，配置见 `configs/quick_reproduction_20261012.json`。这轮完整读取 MVTec AD 15 类与 VisA 12 类共 12,288 张正常训练图，对 3,887 张真实测试图固定一个种子、四组收缩/平滑组合，得到 108 行逐类结果及 15,548 张原始异常图。仅使用两个 CPU 线程，不进行反向训练。2026-10-09 的 DRAEM 700 轮训练仍按用户要求暂停，暂停记录见 `docs/training_paused_20261009.md`。
+This is an independent reproduction and adaptation project, not the official SubspaceAD implementation. Its main contribution is an optional scoring adjustment and bounded-memory execution tooling. The experiments do not establish a new state-of-the-art detector or publication-level novelty.
 
-本轮固定协方差收缩候选在两个数据集的四项宏平均指标均低于基线；AUPRO 在 MVTec AD 下降 0.407 个百分点，在 VisA 下降 1.416 个百分点。完整实验矩阵及模型/预测完整性审计通过，定位改进与论文级研究目标尚未达成。
+## What changes
 
-随后按用户的开源方法调查要求，固定一次最高 1% 分数均值的图像评分消融，复用全量 3,887 张已封存的 baseline 图。MVTec AD 的 I-AUROC 从 89.9465% 到 93.1983%，VisA 从 82.2514% 到 84.3934%；24 类上升、3 类下降，全部保留。像素指标和异常图完全不变。运行约 5.45 秒，两个 CPU 线程、峰值工作集约 108.4 MiB，没有训练、模型导入或 GPU。它是公开方法的工程适配，且历史 Test 已知，不能作为独立盲测或论文创新结论。
+The backbone and PCA residual detector stay fixed. Normal training features define eight content prototypes and per-prototype residual quantiles. A residual `r` with assigned normal upper bound `T` is calibrated as:
 
-用户批准的 OAS 候选已完成完整配对验证，运行见 `runs/quick/oas-r18-20261012`，冻结配置见 `configs/oas_comparison_20261012.json`。逐位置系数完全来自正常训练统计，加入协方差分母改为 n 的 ML 对照，并分别报告 max 与 top1% 评分；共 108 行新指标、7,774 张异常图、3,887 张封存掩膜。18 项数值测试与全量独立图像评分/模型/掩膜审计通过。两个 CPU 线程、不使用 GPU，整轮墙钟约 23.005 分钟、监控峰值约 1.559 GiB；包含一次系统空闲内存骤降后的同配置恢复，完整历史保留。
-
-OAS 未超过原基线：MVTec AD 的 AUPRO 从 90.8825% 降至 90.6221%，P-AP 从 44.9582% 降至 44.1193%；VisA 的 AUPRO 从 80.8447% 降至 80.5855%，P-AP 从 22.7757% 降至 22.6176%。同口径 I-AUROC 与 P-AUROC 也下降，ML 分母对照几乎不变。因此不采用 OAS 作为已达标的改进，也不把 top1% 的图像评分收益当成定位收益。全部类别、负结果和既定选样保留。
-
-小型 DINOv2-S + SubspaceAD 已完成 MVTec AD 15 类与 VisA 12 类的全量验证，运行见 `runs/quick/subspace-dinos-20261012`。采用公开小型骨干/448 设置和全量正常训练 PCA，使用精确流式均值/散布合并，保留解释方差首次达到 0.99 的维数，不进行反向训练。读取同一批 12,288 张正常训练图和 3,887 张 Test，输出 27 个 PCA 模型、3,887 张新 raw map/GT 和 54 行 max/top1% 指标。两方法共用 256 评测平面及相同 GT，全部类别与下降项保留。
-
-| 数据集 | PaDiM top1% I-AUROC | DINO/SubspaceAD top1% I-AUROC | PaDiM AUPRO | DINO/SubspaceAD AUPRO |
-|---|---:|---:|---:|---:|
-| MVTec AD | 93.1983% | 97.3258% | 90.8825% | 94.2839% |
-| VisA | 84.3934% | 93.1362% | 80.8447% | 94.1617% |
-
-DINO/SubspaceAD 的 max 图像 AUROC 为 94.9592% / 90.4735%，P-AUROC 为 97.6686% / 98.5190%，P-AP 为 58.9369% / 35.4937%（MVTec AD / VisA）。这是公开强基线的资源适配与本地测量，不作为原创改进或论文录用结论。四个 CPU 线程、batch=1，本进程峰值工作集约 1.036 GiB、PyTorch CUDA allocated 168.418 MiB / reserved 192 MiB（不含驱动与上下文）。完整流程墙钟约 31.19 分钟，包含一次真实资源边界中断与等待；全部完成后另有一次监控退出计数错误，实验结果与独立验收均完成。监控竞态修复后，以仅 16 张正常图的预检验证正常退出，未重跑或改变 Test 指标。
-
-当前仅以 `artifacts/deliveries/quick-padim-20261012/交付文件夹/` 交付，旧压缩包和重复解压目录已按用户要求删除。入口为 `项目总览.html` 与 `先读我.txt`，最新结果位于 `优化实验/DINO小型SubspaceAD验证/`，历史 OAS 验证、baseline 与 top1% 结果保留。文件夹含完整分数图/GT 缓存、新旧模型、本地权重、代码与复算脚本；原始照片只随附固定的 54 张选样。缓存复算与选样 CPU 推理支持迁移，全量重新拟合仍需完整数据集及认证输入清单所对应的目录或另行冻结的新输入协议；论文级原创研究目标仍未完成。
-
-快速轮次已在新配置冻结后读取真实 test/GT，旧 DRAEM 开发注册此后不能继续宣称这些测试数据仍未接触。快速轮次的本地集成、评测与材料由本项目产生，PaDiM 方法、torchvision 骨干与公开权重保留其实际来源；完整运行与效果提升是分别核验的事项。
-
-DRAEM 作者发布的 5.43 GB 权重归档已完成 SHA-256、ZIP CRC 与路径安全检查；解出的 15 类 30 个 checkpoint 均使用 `torch.load(weights_only=True)` 审计，并严格加载进当前作者网络结构。它们只用于作者发布权重核对，不能替代本项目多种子训练结果。
-
-## 原 DRAEM 研究路线（暂停）
-
-- 主基线：作者官方 DRAEM，提交 `2dbf67397ab5c10a1494e5ae70ab59a25d7c35ef`，MIT。
-- 工程参考：Anomalib。库内实现与作者实现必须逐项核对，暂不替代官方基线。
-- 强对照：PatchCore 与 RD4AD。不得因为测试成绩不利而替换基线或对照。
-- 正式数据范围：MVTec AD 全 15 类和 VisA 全 12 类；DRAEM 的训练异常源为 DTD 纹理。目标是形成达到 SCI 三区研究完整度的双数据集证据，不能将其表述为录用保证。
-- 可检查的论文级实验门槛见 `docs/research_acceptance.md`；主基线采用 DRAEM 作者实现，同时冻结 PatchCore 与 RD4AD 为两类更强参照，避免只与较老基线比较。具体公平协议见 `docs/comparator_protocol.md`。
-- 增加第三个数据集前，先说明要解决的审稿风险、预计成本和是否影响现有实验矩阵。
-- 开发阶段只使用 VisA `train/good` 与内容隔离的 DTD 划分；正式测试集不参与模块、超参数、checkpoint 或样本选择。固定划分、三组派生种子、候选预算和停止规则见 `docs/development_protocol.md`。
-
-## 已有文件
-
-- `docs/baseline_selection.md`：社区、来源、方法匹配与工程风险。
-- `docs/experiment_protocol.md`：开发/正式隔离、统一评测和交付协议。
-- `docs/formal_training_inputs.md`：MVTec AD、VisA 与 DTD 的冻结 train-only 输入及重验链。
-- `docs/formal_test_inventory.md`：仅在 F0 冻结后创建的完整 test/GT 身份清单。
-- `docs/formal_source_provenance.md`：正式运行的项目/vendor Git HEAD、tree 与干净状态门禁。
-- `docs/visualization_delivery.md`：固定样本、机械失败案例和异常图可追溯渲染。
-- `docs/monitored_experiments.md`：训练前预检、原子锁和运行中资源证据。
-- `configs/project.json`：路径、候选配置、阶段状态。
-- `manifests/repository_snapshot.json`：GitHub API 社区状态快照；热度不是性能证据。
-- `manifests/migration.json`：D 盘到 E 盘的迁移记录。
-- `third_party/DRAEM`：未改动的作者代码，保留 Git 历史和许可证。
-- `scripts/Set-ProjectEnvironment.ps1`：将本次 shell 的缓存、临时文件和后续运行路径设在项目内。
-- `scripts/Test-ProjectReadiness.ps1`：只读检查源代码、数据目录、项目环境和空间；不启动训练。
-- `scripts/Invoke-MonitoredExperiment.ps1`：先执行固定资源门禁，再以原子锁启动并监控项目 Python 子进程。
-- `scripts/build_formal_test_inventory.py`：正式方法冻结后构建或重验逐文件哈希的完整测试清单。
-- `artifacts/validation/draem_manifest_inputs_candle.json`：冻结 train 清单的 candle 只读核验；未启动训练。
-- `artifacts/validation/synthetic_dev_candle_validate/validation.json`：VisA-dev/DTD-dev 全部登记文件的大小与 SHA-256 核验；渲染数和模型加载数均为 0。
-- `artifacts/validation/synthetic_dev_render_candle_v3`：两个固定 recipe 的重复渲染完整性审计；保存 `float32` 输入与布尔 mask，不计算性能。
-
-```powershell
-Set-Location E:\3k
-. .\scripts\Set-ProjectEnvironment.ps1
-.\scripts\Sync-Environment.ps1
-.\scripts\Test-Environment.ps1
-.\scripts\Test-ProjectReadiness.ps1
+```text
+score(r, T) = r * min(1, r / T)
 ```
 
-## 后续研究
+The implementation includes a global-tail ablation, normal-only parameter fitting, PCA coordinate alignment, and bounded-memory prototype assignment. Single-pass mean/scatter accumulation and lazy feature loading are implementation optimizations; streaming PCA itself is established prior work, and upstream SubspaceAD already implements two-pass streaming PCA.
 
-1. 本轮交付用于验证低资源流程与真实效果，不据测试成绩再次挑选收缩系数，也不删除下降类别。
-2. 原 DRAEM 训练保持暂停；恢复需要用户新的启动指令。
-3. 新的改进研究需要另行冻结开发协议，以独立验证、多种子结果与强对照检验改进；已有真实测试访问记录必须保留。
+## Measured results
 
-本轮快速交付包括实验包、完整指标/消融表、54 组可视化对照和复现核验说明。它不代表原论文级研究目标已经完成。
+Full normal-training data, DINOv2-S, 448-pixel backbone input, 256-pixel evaluation, equal category weighting. These are this project's settings, not the official paper's few-shot configuration. Image scores use each variant's own maximum anomaly score.
+
+| Dataset | Baseline pixel AP (%) | Calibrated pixel AP (%) | AP gain (percentage points) | AUPRO change (percentage points) |
+| --- | ---: | ---: | ---: | ---: |
+| MVTec AD | 58.9369 | 59.2524 | +0.3155 | +0.0761 |
+| VisA | 35.4937 | 35.7976 | +0.3039 | -0.1624 |
+
+Conditioning adds approximately 0.1426 percentage points of pixel AP over the global-tail ablation on MVTec AD and only 0.0063 on VisA. False-positive rates do not improve consistently. Test data had been inspected in earlier experiments; the original delivery's PCA had seen both normal calibration partitions. Treat these results as exploratory comparisons, not independent blind validation or conformal guarantees.
+
+Later retrospective refits, independent normal partitions, development controls and partial stronger-baseline runs are retained in the research-records release. A completed experimental artifact is not evidence that the broader paper-level research objective was achieved. Missing and partial runs must remain missing and partial.
+
+## Code and dependencies
+
+```bash
+git clone --recurse-submodules https://github.com/Johnulinkng/subspacead-score-calibration.git
+cd subspacead-score-calibration
+uv sync --frozen
+uv run pytest tests/test_context_calibration.py tests/test_tail_calibration.py tests/test_subspace_features.py tests/test_subspace_controls.py
+```
+
+Python 3.11 and the pinned environment are specified in `pyproject.toml` and `uv.lock`. The historical lock uses the PyTorch CUDA 12.8 index. Use a suitable PyTorch build for other hardware and document environment differences. Historical experiment configurations contain original Windows paths; update paths before a new run and do not alter archived experiment records.
+
+The scoring module is `src/industrial_anomaly_lab/context_calibration.py`. PCA/extraction and numerical controls are in `subspace_features.py` and `subspace_controls.py`. Full scoring and audit entry points are `scripts/run_context_single_pass.py` and `scripts/audit_context_single_pass.py`; their historical inputs include normal-context and PCA-control artifacts.
+
+## Download and replay the recorded experiment
+
+The [archive release](https://github.com/Johnulinkng/subspacead-score-calibration/releases/tag/archive-20261019) contains the complete portable delivery, archived research records, fitted models and available self-trained checkpoints. See `docs/ARCHIVE.md` for coverage and checksums.
+
+```bash
+gh release download archive-20261019 --repo Johnulinkng/subspacead-score-calibration --pattern context-calibration-delivery.zip
+unzip context-calibration-delivery.zip
+cd context-calibration-delivery
+python -m pip install -r requirements-offline.txt
+python -B 复算指标.py
+```
+
+Offline replay checks cached residuals, assignments, masks, per-map hashes and exact metrics without DINO weights or a GPU. It requires temporary disk space and preserves the recorded 8 GiB free-space reserve. It is not a fresh backbone evaluation.
+
+For inference on an original image, install the full dependencies and obtain the pinned public DINOv2-S weights identified by `backbone.json`:
+
+```bash
+python -B 原图推理.py --dataset mvtec_ad --category bottle --image /path/to/image.png --weights /path/to/dinov2-small --output ../prediction.npz --device cpu
+```
+
+Raw datasets, downloaded upstream pretrained checkpoints, package environments and large regenerable feature/map caches are not distributed as repository content. Download identities and hashes are retained in `manifests/` and the archive inventory. The release does retain the fitted models and exact compact replay data for the final delivery.
+
+## Sources and licenses
+
+- [SubspaceAD](https://github.com/CLendering/SubspaceAD), pinned reference commit `ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7`, Apache-2.0.
+- [DINOv2](https://github.com/facebookresearch/dinov2); the pinned Hugging Face checkpoint revision is recorded in the delivery.
+- [MVTec AD](https://www.mvtec.com/research-teaching/datasets/mvtec-ad), MVTec Software GmbH, CC BY-NC-SA 4.0. Dataset-derived masks and illustrations retain these restrictions.
+- [VisA](https://github.com/amazon-science/spot-diff), Yang Zou, Jongheon Jeong, Latha Pemula, Dongqing Zhang and Onkar Dabeer, CC BY 4.0.
+- scikit-learn MiniBatchKMeans and established normal-score calibration ideas are used; see `docs/q3_novelty_check_20261018.txt` and release provenance for related work and limitations.
+- Historical DRAEM, PatchCore, RD4AD and Anomalib integrations retain their upstream references and licenses. The MVTec evaluation implementation retains its BSD-style license.
+
+See `NOTICE` and the individual third-party license files. The root code license does not replace upstream software, model or dataset licenses.

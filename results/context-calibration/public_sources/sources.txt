@@ -1,0 +1,7 @@
+SubspaceAD：https://github.com/CLendering/SubspaceAD
+DINOv2：https://github.com/facebookresearch/dinov2
+MiniBatchKMeans：https://scikit-learn.org/1.6/modules/generated/sklearn.cluster.MiniBatchKMeans.html
+正常分数校准资料：https://www.mdpi.com/2079-9292/15/16/3654
+原型校准资料：https://www.sciencedirect.com/science/article/abs/pii/S0957417426002447
+
+我们完成的工作是评分适配、单遍 PCA 组合、四组配对实验和复算工具。方法与工具资料保留在这里，固定配置和源码摘要见 frozen_protocol.json，SubspaceAD 许可原文见本目录 SubspaceAD-LICENSE。

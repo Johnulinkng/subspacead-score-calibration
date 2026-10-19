@@ -1,0 +1,67 @@
+{
+  "protocol_id": "content_conditioned_tail_single_pass_20261015_v1",
+  "source_run": "runs/quick/route1-controls-20261014",
+  "paired_original_run": "runs/quick/route1-controls-20261014",
+  "normal_context_run": "runs/quick/normal-context-pilot-20261015",
+  "variants": [
+    "baseline",
+    "global",
+    "conditional_tail",
+    "conditioning_removed"
+  ],
+  "image_res": 448,
+  "output_size": 256,
+  "feature_dim": 384,
+  "layers": [
+    -4,
+    -5
+  ],
+  "context_dim": 16,
+  "clusters": 8,
+  "latent_precision": "float16 before float64 nearest-center distances; no quantization of original feature reconstruction residuals",
+  "tail_quantile": 0.95,
+  "minimum_group_tokens": 256,
+  "normal_tail_floor": "global raw-grid normal Q95",
+  "calibration": "r*min(1,r/T(content)) before unchanged rendering; ablation replaces T(content) with global normal tail; global affine after baseline rendering",
+  "baseline": "Unmodified SubspaceAD mechanism, existing official PCA and DINOv2-S, refreshed GPU forward for all four groups; compare every refreshed baseline map against earlier CPU maps with atol1e-4/rtol3e-5, then evaluate baseline on the same fresh maps as calibrated groups",
+  "image_score": "maximum of actual output map for every variant",
+  "normal_partition": "reuse previous normal training statistics/threshold split, PCA has seen both; no coverage guarantee",
+  "test_notice": "Previously accessed benchmarks; settings frozen before this new evaluation; not independent blind validation",
+  "prediction_storage": "persist compact lossless NPZ with original float32 residual grid plus explicitly quantized float16 context descriptors; regenerate 256 maps per-category for exact evaluation, clear only generated staging maps",
+  "resource_policy": {
+    "initial_free_ram_gib": 3.25,
+    "initial_free_commit_gib": 3.25,
+    "reserve_free_ram_gib": 1.5,
+    "reserve_free_commit_gib": 2.0,
+    "max_working_set_gib": 2.5,
+    "minimum_disk_gib": 8
+  },
+  "acceptance": {
+    "image_auroc_maximum_drop": 0.005,
+    "localization_gain_minimum": 0.001,
+    "false_positive_relative_reduction_minimum": 0.1,
+    "pixel_recall_maximum_drop": 0.01,
+    "image_tpr_maximum_drop": 0.02,
+    "category_improvement_fraction_minimum": 0.6,
+    "paired_median_gain_minimum": 0.0,
+    "normal_alignment_minimum_spearman": 0.2,
+    "normal_error_concentration_minimum": 1.1,
+    "calibration_parameter_max_mib": 2.0,
+    "apply_overhead_fraction_of_measured_cpu_forward_maximum": 0.1,
+    "acceptance_notice": "Both dataset macros must satisfy image noninferiority and the same gain branch; category improvement and median consistency apply. These are exploratory engineering gates, not journal acceptance criteria."
+  },
+  "normal_only_support": "27/27 categories passed normal-data feasibility gate; not an anomaly detection result",
+  "source_sha256": {
+    "src/industrial_anomaly_lab/context_calibration.py": "e94f2023d00aabbbf7ded6d8b1ebb450e304c186b26a414534f079303de42f9b",
+    "normal_pilot_protocol": "3f77152626fce6814c105f2dfb76e1cb01d154e4f8de8a7f589f98b76e332375",
+    "normal_pilot_audit": "ad820d94a8496277ba13eae5cf5d476ff7fc2b5e998ee01f842d8e88088d2f27",
+    "normal_pilot_decision": "b158336210cbbb9a453b2cd298d1bf0e7b1a2df5659ed6217de22e67be7470c8"
+  },
+  "novelty_notice": "Prototype conditioning, quantile calibration and bounded suppression are established ideas. Own implementation/experiments do not establish an original publishable algorithm.",
+  "dataset_inventory_run": "runs/quick/padim-r18-20261012T022650Z",
+  "method_config_frozen_at": "2026-10-14T17:28:16+00:00",
+  "actual_pca_variant": "current_cpu_one_pass",
+  "pca_orientation": "Resolve arbitrary PCA column signs against the frozen content-prototype frame. No change to reconstruction objective, covariance, rank, residual score, image choice or calibration parameters.",
+  "reference_trial": "runs/quick/context-calibration-20261015",
+  "integration_notice": "Use the previously fitted one-pass Chan PCA models for every baseline/calibration group, with canonical column signs for frozen prototype coordinates. No new PCA fit or hyperparameter selection; actual combined inference is fully evaluated."
+}

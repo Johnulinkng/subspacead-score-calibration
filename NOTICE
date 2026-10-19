@@ -1,0 +1,23 @@
+subspacead-score-calibration
+Independent reproduction, score adaptation and evaluation tooling.
+
+SubspaceAD: https://github.com/CLendering/SubspaceAD
+Reference commit: ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7
+Upstream license: Apache License 2.0 (also retained in licenses/SubspaceAD-LICENSE).
+DINOv2: https://github.com/facebookresearch/dinov2
+
+Original project code is distributed under Apache License 2.0. This does not
+relicense third-party code, dataset-derived content, or pretrained models.
+Retain upstream notices and consult each corresponding license.
+
+third_party/mvtec_ad_evaluation: Copyright 2022 MVTec Software GmbH.
+Its own LICENSE.txt applies to that evaluation implementation.
+Git submodules retain their respective licenses and commit identities.
+
+MVTec AD images, masks and derived illustrations: MVTec Software GmbH,
+CC BY-NC-SA 4.0; https://creativecommons.org/licenses/by-nc-sa/4.0/
+VisA images, masks and derived illustrations: Yang Zou, Jongheon Jeong,
+Latha Pemula, Dongqing Zhang, Onkar Dabeer / Amazon Science,
+CC BY 4.0; https://creativecommons.org/licenses/by/4.0/
+
+This repository is not an official release of any upstream detector.

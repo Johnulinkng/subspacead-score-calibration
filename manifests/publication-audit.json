@@ -1,0 +1,15 @@
+{
+  "date": "2026-10-19",
+  "repository": "https://github.com/Johnulinkng/subspacead-score-calibration",
+  "source_tests": {
+    "command": "python -m pytest tests/test_context_calibration.py tests/test_tail_calibration.py tests/test_subspace_controls.py tests/test_subspace_features.py tests/test_patchcore_bounded_fit.py -q -p no:cacheprovider",
+    "passed": 38,
+    "failed": 0,
+    "elapsed_seconds": 51.02
+  },
+  "upstream_subspacead_head_checked": "ef56d5c8ab2f1feb7dda1c93b25cc3f73f0960d7",
+  "upstream_pull_request_created": false,
+  "research_claim": "Optional score adaptation and bounded-memory tooling; no demonstrated paper-level novelty or universal improvement.",
+  "bulk_archive_policy": "See docs/ARCHIVE.md and manifests/archive-inventory.json.",
+  "local_deletion_status": "Pending verified remote publication; see local-retirement.json for the actual final receipt."
+}

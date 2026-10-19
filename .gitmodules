@@ -13,3 +13,6 @@
 [submodule "third_party/anomalib"]
 	path = third_party/anomalib
 	url = https://github.com/open-edge-platform/anomalib.git
+[submodule "vendor/SubspaceAD"]
+	path = vendor/SubspaceAD
+	url = https://github.com/CLendering/SubspaceAD.git

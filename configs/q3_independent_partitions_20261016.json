@@ -1,0 +1,23 @@
+{
+  "registration_id": "q3_independent_normal_partitions_20261016_v1",
+  "scope": "Three separately fitted PCA and calibrator models per category, with disjoint normal fit/statistics/threshold/development partitions",
+  "historical_test_access": true,
+  "feature_cache": "runs/research-q3-20261016/features",
+  "seeds": [1887537248, 1337854654, 1609762728],
+  "primary_metric": "aupro_0_30",
+  "explained_variance": 0.99,
+  "partition": {"statistics_fraction": 0.1, "statistics_minimum": 8, "statistics_maximum": 64, "threshold_same_count_as_statistics": true, "development_fraction": 0.1, "development_minimum": 8, "development_maximum": 32},
+  "variants": ["baseline", "global_tail", "conditional_tail", "random_group_tail", "spatial_tail", "conditional_shrunk", "prototype_density", "combined_density_tail", "cadet_linear_control"],
+  "clusters": 8,
+  "quantile": 0.95,
+  "minimum_group_tokens": 256,
+  "kmeans": {"batch_size": 1024, "n_init": 1, "max_iter": 30, "reassignment_ratio": 0.01},
+  "spatial_sigma_grid": 1.0,
+  "tail_shrinkage_token_prior": 2048,
+  "density_weight": 0.1,
+  "cadet": {"normal_patch_sample_maximum": 4096, "quantiles": [0.05, 0.95], "alpha": 0.0001, "denominator_offset": 0.01, "hardness_prior_weight": 0.1, "hardness": "mean absolute RGB local-neighbour residual, averaged into feature-grid cells", "scope": "Domain adaptation of published conditional-quantile score calibration; not official image-level CADET reproduction", "reference": "https://www.ijcai.org/proceedings/2022/278", "author_code": "https://github.com/d-ailin/CADET"},
+  "selection": "All registered variants are diagnostic controls. No hyperparameter selection from real test results; later candidate selection uses train-only synthetic development.",
+  "statistics": {"bootstrap_samples": 10000, "bootstrap_seed": 20260927, "paired_unit": "category mean over seeds", "exact_sign_flip": true},
+  "original_goal_reference": "docs/research_acceptance.md",
+  "resource_policy": {"initial_free_ram_gib": 3.25, "reserve_free_ram_gib": 1.5, "reserve_free_commit_gib": 2.0, "max_working_set_gib": 2.5, "minimum_disk_gib": 8.0}
+}

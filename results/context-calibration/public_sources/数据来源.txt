@@ -1,0 +1,9 @@
+MVTec AD，提供方 MVTec Software GmbH：
+https://www.mvtec.com/research-teaching/datasets/mvtec-ad
+许可：CC BY-NC-SA 4.0；https://creativecommons.org/licenses/by-nc-sa/4.0/
+
+VisA，作者 Yang Zou、Jongheon Jeong、Latha Pemula、Dongqing Zhang、Onkar Dabeer（Amazon Science）：
+https://github.com/amazon-science/spot-diff
+许可：CC BY 4.0；https://creativecommons.org/licenses/by/4.0/
+
+本包的真实标注掩码合并为二值并以最近邻缩放到 256，正常图使用全零掩码。对比图中的输入缩放到 256，异常分数只换算显示颜色。数据、标注和派生图示继续适用上述许可与署名要求；方法、模型及软件记录见 sources.txt 和对应许可文件。

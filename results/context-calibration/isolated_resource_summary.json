@@ -1,0 +1,21 @@
+{
+  "baseline": {
+    "calibration_fit_seconds": 3.029999788850546e-05,
+    "descriptor_median_ms": 0.00019999788491986692,
+    "apply_median_ms": 0.19235000036132988,
+    "apply_p95_ms": 0.3445450029175845,
+    "peak_working_set_bytes": 789917696.0,
+    "peak_commit_bytes": 1461755904.0
+  },
+  "conditional_tail": {
+    "calibration_fit_seconds": 0.09545559999969555,
+    "descriptor_median_ms": 0.8260499998868909,
+    "apply_median_ms": 1.045650000378373,
+    "apply_p95_ms": 1.2890000025436166,
+    "peak_working_set_bytes": 794677248.0,
+    "peak_commit_bytes": 1465618432.0
+  },
+  "extra_peak_working_set_mib": 4.5390625,
+  "extra_peak_commit_mib": 3.68359375,
+  "scope": "Differences of three independent-process medians, fixed bottle image, full CPU backbone; paired worker scheduling may introduce contention. Whole-matrix GPU timings are reported separately."
+}

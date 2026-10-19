@@ -1,0 +1,20 @@
+运行与复算说明
+
+离线核对使用 Python 3.11，安装 requirements-offline.txt 中的依赖，再从本目录运行下面的命令。它会检查文件哈希、正常校准参数、阈值、操作点和 27 类四组指标，并写入复算结果.json；不需要 GPU、原图或 DINO 权重。
+
+python -B 复算指标.py
+
+普通全局正仿射校准保持严格排序，因此其排序指标复用重新计算的基线值，每张全局图及操作点计数仍逐图重建核对。预计需数分钟和临时磁盘空间，复算器保留 8 GiB 磁盘余量要求。临时文件写入 .verify_tmp。
+
+原图完整重跑使用 E:\3k 项目和 pyproject.toml、uv.lock 的固定环境，准备 MVTec AD、VisA 及固定 DINOv2-S 权重。完整前向入口为 scripts/run_context_single_pass.py，审核入口为 scripts/audit_context_single_pass.py，配置见 code/configs/context_calibration_single_pass_20261015.json。它们还依赖 route1-controls 和 normal-context-pilot 的既有输入；code/ 是本轮源码快照，完整重跑需同时准备这些上游产物。
+
+本轮执行记录：E:\3k\runs\quick\context-single-pass-20261015
+此前单遍 PCA 对照：E:\3k\artifacts\deliveries\quick-padim-20261012\交付文件夹\优化实验\同骨干Subspace对照-20261014
+
+指标与显示口径见 实验报告.txt。可视化只换算颜色，指标复算与原图前向的结果分别记录。
+
+单张原图推理使用完整 pyproject.toml 环境，并准备本地 DINOv2-S 权重目录。替换下面的原图、权重路径后运行，输出放到交付目录外。
+
+python -B 原图推理.py --dataset mvtec_ad --category bottle --image "原图路径" --weights "本地权重目录" --output "../单图预测.npz" --device cpu
+
+也可使用 --device cuda:0。程序加载包内单遍 PCA 和评分校准，生成四组原始异常图，不读取测试标注。固定权重版本和文件摘要见 backbone.json，获取信息见 public_sources/。

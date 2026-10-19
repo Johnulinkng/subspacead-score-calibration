@@ -1,0 +1,18 @@
+{
+  "verified_at": "2026-10-14T18:02:48.702055+00:00",
+  "all_27_categories": true,
+  "normal_images": 1724,
+  "test_images": 3887,
+  "four_group_maps_regenerated": 15548,
+  "exact_metric_rows_recomputed": 108,
+  "max_metric_replay_error": 0.0,
+  "max_cpu_gpu_baseline_map_error": 2.3871660232543945e-05,
+  "fresh_original_images": 4,
+  "fresh_calibrated_maps": 16,
+  "fresh_image_map_error": 0,
+  "normal_only_fit_and_threshold_input_authentication": "passed",
+  "normal_parameters_and_thresholds": "passed",
+  "all_frame_and_source_hashes": "passed",
+  "operating_point_counts": "passed",
+  "isolated_resource_trials": 6
+}

@@ -1,0 +1,28 @@
+{
+  "registration_id": "q3_contribution_followup_20261016_v1",
+  "scope": "Three independent calibration refits on fixed historical features; not three backbone trainings or a blind test",
+  "historical_test_access": true,
+  "primary_metric": "aupro_0_30",
+  "seeds": [1887537248, 1337854654, 1609762728],
+  "normal_source": "runs/quick/normal-context-pilot-20261015",
+  "test_source": "runs/quick/context-single-pass-20261015",
+  "inventory_source": "runs/quick/route1-controls-20261014",
+  "variants": ["global_tail", "conditional_tail", "random_group_tail", "spatial_tail", "conditional_no_floor", "conditional_no_guard", "prototype_quantile_control"],
+  "sensitivity_first_seed": [
+    {"name": "conditional_k4", "clusters": 4, "quantile": 0.95},
+    {"name": "conditional_k16", "clusters": 16, "quantile": 0.95},
+    {"name": "conditional_q90", "clusters": 8, "quantile": 0.90},
+    {"name": "conditional_q99", "clusters": 8, "quantile": 0.99}
+  ],
+  "clusters": 8,
+  "quantile": 0.95,
+  "statistics_fraction": 0.6875,
+  "minimum_group_tokens": 256,
+  "kmeans": {"batch_size": 1024, "n_init": 1, "max_iter": 30, "reassignment_ratio": 0.01},
+  "spatial_sigma_grid": 1.0,
+  "statistics": {"bootstrap_samples": 10000, "bootstrap_seed": 20260927, "confidence": 0.95, "paired_unit": "category mean over seeds", "test": "exact two-sided category sign-flip", "multiplicity": "Holm across all comparisons and all four metrics"},
+  "claim_gate": {"both_dataset_aupro_positive": true, "equal_dataset_average_aupro_gain_pp": 1.0, "nonnegative_category_fraction": 0.6, "ci_lower_positive_at_least_one_dataset": true, "content_vs_global_tail_positive_both_datasets": true},
+  "selection": "No selection from this retrospective matrix. Adjusted candidates are selected on newly frozen train-only synthetic development data in a separate round.",
+  "normal_partition_notice": "PCA has already seen these normal images; these refits investigate calibrator uncertainty, not independent PCA calibration coverage",
+  "resource_policy": {"initial_free_ram_gib": 3.25, "initial_free_commit_gib": 3.25, "reserve_free_ram_gib": 1.5, "reserve_free_commit_gib": 2.0, "max_working_set_gib": 2.5, "minimum_disk_gib": 8.0}
+}

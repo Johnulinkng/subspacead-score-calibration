@@ -1,0 +1,12 @@
+{
+  "goal_achieved": true,
+  "effectiveness_gate_passed": true,
+  "same_gain_branch_both_datasets": true,
+  "image_detection_noninferiority": true,
+  "component_attribution": true,
+  "small_runtime_and_parameter_state": true,
+  "small_added_process_memory": true,
+  "full_exact_replay": true,
+  "single_pass_pca": "Already validated by the complete same-backbone experiment and independent resource matrix. Current score experiment reuses fitted PCA; no new fit speed is claimed.",
+  "remaining": []
+}

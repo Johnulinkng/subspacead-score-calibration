@@ -9,5 +9,6 @@ artifacts/deliveries/
 artifacts/audits/
 artifacts/editorial/
 __pycache__/
+.publish/
 .pytest_cache/
 vendor/SubspaceAD/

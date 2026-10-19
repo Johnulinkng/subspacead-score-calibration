@@ -1,0 +1,102 @@
+{
+  "status": "supported",
+  "effectiveness_gate_passed": true,
+  "goal_achieved": true,
+  "checks": [
+    {
+      "dataset": "mvtec_ad",
+      "image_noninferiority": true,
+      "pixel_ap_stable_gain": true,
+      "aupro_stable_gain": false,
+      "false_positive_gain_without_recall_loss": false,
+      "delta": {
+        "image_auroc": 0.0003535845687144823,
+        "pixel_auroc": 0.0003173693574853864,
+        "pixel_ap": 0.0031550459091088667,
+        "aupro_0_30": 0.0007612179228445592,
+        "normal_pixel_fpr": 0.0002297726022635685,
+        "background_pixel_fpr": 0.0030360780398776682,
+        "anomaly_pixel_recall": 0.0038975909760640137,
+        "normal_image_fpr": 0.0,
+        "anomaly_image_tpr": 0.0
+      },
+      "candidate_minus_ablation": {
+        "image_auroc": 0.00015388555807482884,
+        "pixel_auroc": 0.00039059514153061414,
+        "pixel_ap": 0.0014255779438095972,
+        "aupro_0_30": 0.001009274891843548,
+        "normal_pixel_fpr": 0.00012206649290255264,
+        "background_pixel_fpr": 0.001224187428957163,
+        "anomaly_pixel_recall": 0.0010334621904158903,
+        "normal_image_fpr": 0.005555555555555536,
+        "anomaly_image_tpr": 0.0
+      },
+      "category_gains": {
+        "pixel_ap": {
+          "positive": 15,
+          "total": 15,
+          "median": 0.0020486252374789515
+        },
+        "aupro_0_30": {
+          "positive": 10,
+          "total": 15,
+          "median": 0.00030341412748180474
+        }
+      }
+    },
+    {
+      "dataset": "visa",
+      "image_noninferiority": true,
+      "pixel_ap_stable_gain": true,
+      "aupro_stable_gain": false,
+      "false_positive_gain_without_recall_loss": false,
+      "delta": {
+        "image_auroc": 0.0009458195819580517,
+        "pixel_auroc": -0.00018304618382292137,
+        "pixel_ap": 0.003039143361184271,
+        "aupro_0_30": -0.0016238071124987652,
+        "normal_pixel_fpr": 7.282995679328691e-05,
+        "background_pixel_fpr": 0.0003734345762618496,
+        "anomaly_pixel_recall": 0.0001250215839370128,
+        "normal_image_fpr": 0.0016666666666666635,
+        "anomaly_image_tpr": 0.0008333333333332416
+      },
+      "candidate_minus_ablation": {
+        "image_auroc": 0.0003430418041803218,
+        "pixel_auroc": -0.00021601601906440226,
+        "pixel_ap": 6.317239432707122e-05,
+        "aupro_0_30": -0.0005054618446438397,
+        "normal_pixel_fpr": -1.7360901281777627e-05,
+        "background_pixel_fpr": -2.5801935054130254e-05,
+        "anomaly_pixel_recall": -0.004649290164357112,
+        "normal_image_fpr": 0.0,
+        "anomaly_image_tpr": 0.0008333333333332416
+      },
+      "category_gains": {
+        "pixel_ap": {
+          "positive": 10,
+          "total": 12,
+          "median": 0.0027005553512852443
+        },
+        "aupro_0_30": {
+          "positive": 4,
+          "total": 12,
+          "median": -0.001043052979933845
+        }
+      }
+    }
+  ],
+  "same_gain_branch_both_datasets": true,
+  "component_support_both_datasets": true,
+  "resource_timing_and_parameter_gate": true,
+  "maximum_paired_gpu_extra_fraction": 0.03195782252898568,
+  "calibration_parameter_max_bytes": 600,
+  "notice": "Final delivered result passed the stable pixel-AP branch in both datasets; independent replay, isolated resources, portable offline verification and original-image inference completed. AUPRO and false-positive regressions remain disclosed.",
+  "test_notice": "Previously accessed benchmarks; settings frozen before this new evaluation; not independent blind validation",
+  "normal_partition": "reuse previous normal training statistics/threshold split, PCA has seen both; no coverage guarantee",
+  "novelty_notice": "Prototype conditioning, quantile calibration and bounded suppression are established ideas. Own implementation/experiments do not establish an original publishable algorithm.",
+  "audit_completed": true,
+  "decision_phase": "after_independent_full_replay_and_portable_verification",
+  "source_evaluation_decision_sha256": "728cf0d5721def32161e5d20b6d219fed0fe2d7053535915d5bd89343b0a20f5",
+  "completion_audit_sha256": "875cab72d29dbfc1d3bc3dfd67f2a35cdeb5df4c0274d6974fef0a28fc1f0ebf"
+}

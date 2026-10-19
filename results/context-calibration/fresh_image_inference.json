@@ -1,0 +1,119 @@
+{
+  "original_images": 4,
+  "paired_maps": 16,
+  "rows": [
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/broken_large/000",
+      "variant": "baseline",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/broken_large/000",
+      "variant": "global",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/broken_large/000",
+      "variant": "conditional_tail",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/broken_large/000",
+      "variant": "conditioning_removed",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/good/000",
+      "variant": "baseline",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/good/000",
+      "variant": "global",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/good/000",
+      "variant": "conditional_tail",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "mvtec_ad",
+      "category": "bottle",
+      "sample_id": "bottle/good/000",
+      "variant": "conditioning_removed",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/bad/000",
+      "variant": "baseline",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/bad/000",
+      "variant": "global",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/bad/000",
+      "variant": "conditional_tail",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/bad/000",
+      "variant": "conditioning_removed",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/good/006",
+      "variant": "baseline",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/good/006",
+      "variant": "global",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/good/006",
+      "variant": "conditional_tail",
+      "max_score_map_error": 0.0
+    },
+    {
+      "dataset": "visa",
+      "category": "cashew",
+      "sample_id": "cashew/good/006",
+      "variant": "conditioning_removed",
+      "max_score_map_error": 0.0
+    }
+  ],
+  "scope": "Four fixed original normal/defect images, actual GPU backbone rerun; complements full-cache metric replay"
+}

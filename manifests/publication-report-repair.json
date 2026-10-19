@@ -1,0 +1,8 @@
+{
+  "date": "2026-10-19",
+  "file": "实验报告.txt",
+  "prior_current_sha256": "5078c78ab063d733daf5db928bcdd7b7e52eb112907a5f97d132529ecb8262f5",
+  "sealed_and_restored_sha256": "42a5c13e621eb49b3632caf28f1c4c6ee78704744f3e0ba8b4a57af171bf9f75",
+  "repair": "Replaced the accidental text zheli with the original text 我们; the resulting complete file bytes match the preexisting sealed SHA-256. Before-repair file retained in docs/local_experiment_report_before_publication.txt.",
+  "all_8012_sealed_files_match_after_repair": true
+}
