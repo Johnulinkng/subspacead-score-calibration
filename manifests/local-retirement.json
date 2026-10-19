@@ -1,0 +1,116 @@
+{
+  "status": "project_files_removed_empty_legacy_directory_pending",
+  "completed_at": "2026-10-19T20:57:50.7065981+08:00",
+  "source_commit_verified_before_deletion": "7252bbcdbb17e7b58814cfc5e4f3a965db52c66b",
+  "release_url": "https://github.com/Johnulinkng/subspacead-score-calibration/releases/tag/archive-20261019",
+  "archive_policy": "Owner explicitly selected source, result reports and complete final portable delivery only; other old models, weights and caches deleted without binary backup.",
+  "asset_verification": {
+    "status": "passed",
+    "source_commit": "7252bbcdbb17e7b58814cfc5e4f3a965db52c66b",
+    "source_fresh_clone_and_git_fsck": "passed",
+    "assets": [
+      {
+        "name": "context-calibration-delivery.zip",
+        "bytes": 150004517,
+        "sha256": "2cfeebd1828b794b793a3e1705a32fc61a0f942f720c6fd5bdeaf8dbcd083bc6",
+        "server_digest_match": true,
+        "download_sha256_match": true
+      },
+      {
+        "name": "research-results.zip",
+        "bytes": 5147121,
+        "sha256": "9ab48f79245bfa13d73852c3431729fb1370001a0dad977957913240865f2cb5",
+        "server_digest_match": true,
+        "download_sha256_match": true
+      },
+      {
+        "name": "archive-inventory.json",
+        "bytes": 301800,
+        "sha256": "257fe52cd3ff97e6849c1a4b3b5ace1581eb0e372b2e8aef9e16df2e989007ad",
+        "server_digest_match": true,
+        "download_sha256_match": true
+      },
+      {
+        "name": "SHA256SUMS.txt",
+        "bytes": 278,
+        "sha256": "128f6e3c0ad2b6d0a27b6630059b43e8b16ea0eb54777b698dfbb510a5c044c7",
+        "server_digest_match": true,
+        "download_sha256_match": true
+      }
+    ],
+    "release_url": "https://github.com/Johnulinkng/subspacead-score-calibration/releases/tag/archive-20261019",
+    "method": "Compare uploaded asset state/size/server SHA-256 and independently stream-download every published asset to compute SHA-256.",
+    "receipt_recovered_from_completed_verifier_output": true
+  },
+  "source_tests_passed": 38,
+  "earlier_main_root_deletion": "E:\\3k was removed in the first cleanup pass after removing 846 reparse links without traversing targets. That pass then stopped on the locked empty D:\\3k directory; this pass removes the remaining roots.",
+  "deleted_roots": [
+    {
+      "path": "E:\\3k",
+      "status": "already_absent",
+      "reparse_links_removed": 0
+    },
+    {
+      "path": "D:\\3k",
+      "status": "empty_directory_locked_by_current_session",
+      "remaining_files": 0,
+      "delete_on_next_reboot_registered": false,
+      "registration_error": 3,
+      "reparse_links_removed": 0
+    },
+    {
+      "path": "D:\\3k-research-20261016",
+      "status": "removed",
+      "reparse_links_removed": 0
+    },
+    {
+      "path": "D:\\3k-publish-20261019",
+      "status": "removed",
+      "reparse_links_removed": 0
+    }
+  ],
+  "post_checks": [
+    {
+      "path": "E:\\3k",
+      "exists": false,
+      "remaining_children": 0
+    },
+    {
+      "path": "D:\\3k",
+      "exists": true,
+      "remaining_children": 0
+    },
+    {
+      "path": "D:\\3k-research-20261016",
+      "exists": false,
+      "remaining_children": 0
+    },
+    {
+      "path": "D:\\3k-publish-20261019",
+      "exists": false,
+      "remaining_children": 0
+    }
+  ],
+  "disk_free_before": [
+    {
+      "drive": "D",
+      "free_bytes": 58301558784
+    },
+    {
+      "drive": "E",
+      "free_bytes": 204642390016
+    }
+  ],
+  "disk_free_after": [
+    {
+      "drive": "D",
+      "free_bytes": 58381012992
+    },
+    {
+      "drive": "E",
+      "free_bytes": 204642390016
+    }
+  ],
+  "preserved": "Unrelated projects, shared runtimes, application/chat history and unrelated paused automations.",
+  "scope_notice": "Project files, code, datasets, weights and publication staging removed from the known roots; only the empty D:\\3k directory may remain locked by this session. No claim of forensic erasure of SSD blocks, backups or application conversation history."
+}
